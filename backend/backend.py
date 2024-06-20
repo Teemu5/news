@@ -1,0 +1,107 @@
+from flask import Flask, jsonify, request
+import pickle
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/')
+def home():
+    return "Recommendations at /recommendations/<userId>"
+
+
+@app.errorhandler(404)
+def resource_not_found(e):
+    return jsonify(error=str(e)), 404
+
+@app.errorhandler(500)
+def internal_error(e):
+    return jsonify(error="An internal error occurred, please try again."), 500
+
+import os
+import time
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "up"}), 200
+
+# Check if the model is finished processing
+def check_model_ready():
+    while not os.path.exists('/app/data/_READY'):
+        print("sleeping 5 secs")
+        app.logger.info("sleeping 5 secs")
+        time.sleep(5)
+    app.logger.info("end sleep")
+    print("end sleep")
+
+#check_model_ready()
+
+def format_articles_for_mind(articles):
+    formatted_articles = []
+    for article in articles:
+        formatted_article = {
+            'NewsID': article['url'],  # URL as a unique identifier
+            'Category': 'General',  # GNews does not provide category; set default or infer if possible
+            'SubCategory': 'None',  # No subcategory information available
+            'Title': article['title'],
+            'Abstract': article['description'] if 'description' in article else '',
+            'URL': article['url'],
+            'TitleEntities': '',  # Placeholder as GNews does not provide entity information
+            'AbstractEntities': ''  # Placeholder
+        }
+        formatted_articles.append(formatted_article)
+    return formatted_articles
+
+from gnews import GNews
+
+def fetch_news_with_gnews(keywords='latest news'):
+    google_news = GNews(language='en', country='US', period='1d', max_results=10)
+    articles = google_news.get_news(keywords)
+    
+    formatted_articles = format_articles_for_mind(articles)
+    return formatted_articles
+
+# Initialize the variables at the top
+user_profiles, tfidf_matrix, news_df = {}, None, None
+
+# Attempt to load precomputed data
+try:
+    with open('/app/data/user_profiles.pkl', 'rb') as f:
+        user_profiles = pickle.load(f)
+    with open('/app/data/tfidf_matrix.pkl', 'rb') as f:
+        tfidf_matrix = pickle.load(f)
+    with open('/app/data/news_df.pkl', 'rb') as f:  # Assuming news details are saved in this file
+        news_df = pickle.load(f)
+except Exception as e:
+    app.logger.error(f"Failed to load models: {e}")
+    raise
+
+@app.route('/recommendations/<user_id>', methods=['GET'])
+def get_recommendations(user_id):
+    if tfidf_matrix is None or user_profiles is None or news_df is None:
+        app.logger.error("Model data not loaded or is incomplete.")
+        return jsonify({"error": "Model data not loaded"}), 500
+
+    if user_id not in user_profiles:
+        return jsonify({"error": "User profile not found"}), 404
+
+    try:
+        user_vector = user_profiles[user_id]
+        user_vector = np.asarray(user_vector)  # Convert to ndarray if it's not already
+        if user_vector.ndim == 1:
+            user_vector = user_vector.reshape(1, -1)
+
+        similarities = cosine_similarity(user_vector, tfidf_matrix)
+        recommended_indices = similarities.argsort()[0][-5:][::-1]
+
+        # Fetch the details of the recommended articles
+        recommended_articles = news_df.iloc[recommended_indices][['Title', 'Abstract']].to_dict(orient='records')
+        return jsonify(recommended_articles)
+    except Exception as e:
+        app.logger.error(f"Error processing recommendations for {user_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
