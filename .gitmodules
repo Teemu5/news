@@ -1,0 +1,3 @@
+[submodule "Fastformer"]
+    path = Fastformer
+    url = https://github.com/Teemu5/Fastformer

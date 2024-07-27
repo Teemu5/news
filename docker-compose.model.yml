@@ -9,9 +9,10 @@ services:
       - CLEAR_DATASETS=${CLEAR_DATASETS}
     command: bash -c "if [ '$CLEAR_DATASETS' = 'true' ]; then echo "CLEAR_DATASETS=$CLEAR_DATASETS"; rm -rf /data/*; fi && python3 model.py"
   fastformer:
-    build: ./model/Fastformer
+    build: ./Fastformer
+    working_dir: /app
     volumes:
-      - ./model/Fastformer:/app
+      - ./Fastformer:/app
       - model_data:/app/data
       - /mnt/c/news-datasets:/data
     command: "python3 Fastformer.py"

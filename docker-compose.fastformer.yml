@@ -14,7 +14,7 @@ services:
               capabilities: [gpu]
     working_dir: /app
     volumes:
-      - ./model/Fastformer:/app
+      - ./Fastformer:/app
       - model_data:/app/data
       - /mnt/c/news-datasets:/data
     command: python3 /app/Fastformer.py
