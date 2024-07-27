@@ -1,0 +1,22 @@
+services:
+  fastformer:
+    build: ./model/Fastformer
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    working_dir: /app
+    volumes:
+      - ./model/Fastformer:/app
+      - model_data:/app/data
+      - /mnt/c/news-datasets:/data
+    command: python3 /app/Fastformer.py
+volumes:
+  model_data:

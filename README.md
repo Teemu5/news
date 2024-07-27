@@ -1,0 +1,1 @@
+For docker to upload datasets from kaggle there needs to be kaggle api token at model/kaggle.json

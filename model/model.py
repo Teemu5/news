@@ -3,7 +3,10 @@ import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 import logging
 import os
+import requests
+import zipfile
 from scipy import sparse
+import subprocess
 
 def update_tfidf_matrix(tfidf, new_articles):
     # This function updates the TF-IDF matrix with new articles
@@ -107,7 +110,49 @@ def integrate_new_articles_and_recommend(user_profiles, tfidf, tfidf_matrix, new
 
 
 # Load data, build profiles, and save them
+dataset_folder = '/data/'
 dataset_folder_train = '/data/MINDsmall_train/'
+news_file = os.path.join(dataset_folder_train, 'news.tsv')
+behaviors_file = os.path.join(dataset_folder_train, 'behaviors.tsv')
+
+# Ensure the dataset folder exists
+os.makedirs(dataset_folder_train, exist_ok=True)
+
+dataset_name = 'mind-news-dataset'
+kaggle_dataset = 'arashnic/' + dataset_name
+#zip_file_path = os.path.join(dataset_folder_train, dataset_name + '.zip')
+
+def extract_zip(file_path, extract_to):
+    with zipfile.ZipFile(file_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
+    print(f"Extracted {file_path} to {extract_to}")
+# Check if files exist, if not download them
+if not os.path.exists(news_file) or not os.path.exists(behaviors_file):
+    print(f"Dataset files not found. Downloading...")
+    subprocess.run(['python', 'download_from_kaggle.py', '--dataset', kaggle_dataset, '--destination', dataset_folder], check=True)
+    downloaded_files = os.listdir(dataset_folder_train)
+    print(f"Contents of the dataset folder: {downloaded_files}")
+#    extract_zip(zip_file_path, dataset_folder_train)
+"""
+# URL to download the dataset zip
+dataset_url = 'https://mind201910small.blob.core.windows.net/release/MINDsmall_train.zip'
+
+def download_file(url, destination):
+    response = requests.get(url)
+    response.raise_for_status()  # Ensure the request was successful
+    with open(destination, 'wb') as f:
+        f.write(response.content)
+    print(f"Downloaded {url} to {destination}")
+"""
+
+os.makedirs(dataset_folder_train, exist_ok=True)
+
+# Check if files exist, if not download and extract them
+#if not os.path.exists(news_file) or not os.path.exists(behaviors_file):
+#    print(f"Dataset files not found. Downloading...")
+#    download_file(dataset_url, zip_file_path)
+#    extract_zip(zip_file_path, dataset_folder_train)
+
 # Example Flask route usage
 try:
     news_df, behaviors_df = load_and_preprocess_data(f"{dataset_folder_train}news.tsv", f"{dataset_folder_train}behaviors.tsv")

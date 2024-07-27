@@ -1,3 +1,4 @@
 # ignore pkl since they are too large
 *.pkl
 _READY
+model/kaggle.json
