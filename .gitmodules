@@ -1,0 +1,3 @@
+[submodule "Fastformer"]
+    path = model/Fastformer
+    url = https://github.com/wuch15/Fastformer.git
