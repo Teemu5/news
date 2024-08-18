@@ -1,6 +1,6 @@
 services:
   fastformer:
-    build: ./model/Fastformer
+    build: ./Fastformer
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
@@ -15,8 +15,9 @@ services:
     working_dir: /app
     volumes:
       - ./Fastformer:/app
+      - ./model:/model
       - model_data:/app/data
       - /mnt/c/news-datasets:/data
-    command: python3 /app/Fastformer.py
+    command: cd /app/Fastformer/cuda-samples/Samples/1_Utilities make #python3 /app/Fastformer.py
 volumes:
   model_data:

@@ -8,17 +8,18 @@
     <h1>News Recommendations System</h1>
     <label for="userId">Enter User ID:</label>
     <input type="text" id="userId" value="U8125">
-    <button onclick="fetchRecommendations()">Get Recommendations</button>
+    <button onclick="fetchRecommendations('tfidf')">Get Recommendations (tfidf)</button>
+    <button onclick="fetchRecommendations('fastformer')">Get Recommendations (fastformer)</button>
     <ul id="recommendations"></ul>
 
     <script>
-        function fetchRecommendations() {
+        function fetchRecommendations(method) {
             const userId = document.getElementById('userId').value.trim();
             if (!userId) {
                 alert('Please enter a valid User ID');
                 return;
             }
-            fetch(`http://localhost:5000/recommendations/${userId}`)
+            fetch(`http://localhost:5000/recommendations/${userId}?method=${method}`)
                 .then(response => {
                     console.log(response)
                     if (!response.ok) throw new Error('Network response was not ok');

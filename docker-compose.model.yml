@@ -5,16 +5,29 @@ services:
       - ./model:/app
       - model_data:/app/data
       - /mnt/c/news-datasets:/data
+      - C:/Users/t/Downloads:/app/downloads
     environment:
       - CLEAR_DATASETS=${CLEAR_DATASETS}
     command: bash -c "if [ '$CLEAR_DATASETS' = 'true' ]; then echo "CLEAR_DATASETS=$CLEAR_DATASETS"; rm -rf /data/*; fi && python3 model.py"
   fastformer:
     build: ./Fastformer
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     working_dir: /app
     volumes:
       - ./Fastformer:/app
+      - ./model:/model
       - model_data:/app/data
       - /mnt/c/news-datasets:/data
-    command: "python3 Fastformer.py"
+    command: cd /app/Fastformer/cuda-samples/Samples/1_Utilities make #python3 /app/Fastformer.py
 volumes:
   model_data:

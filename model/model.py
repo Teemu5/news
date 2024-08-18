@@ -7,6 +7,7 @@ import requests
 import zipfile
 from scipy import sparse
 import subprocess
+from models import create_user_profile
 
 def update_tfidf_matrix(tfidf, new_articles):
     # This function updates the TF-IDF matrix with new articles
@@ -42,32 +43,37 @@ def load_and_preprocess_data(news_path, behaviors_path):
     # Preprocess and combine title and abstract for TF-IDF
     news_df['combined_text'] = news_df['Title'].fillna('') + " " + news_df['Abstract'].fillna('')
     return news_df, behaviors_df
-def save_data_frames(news_df, behaviors_df, user_profiles, tfidf_matrix):
+def save_data(df, df_name):
     directory = '/app/data'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    with open('/app/data/news_df.pkl', 'wb') as f:
-        pickle.dump(news_df, f)
-    with open('/app/data/user_profiles.pkl', 'wb') as f:
-        pickle.dump(user_profiles, f)
-    with open('/app/data/tfidf_matrix.pkl', 'wb') as f:
-        pickle.dump(tfidf_matrix, f)
+    with open(f"/app/data/{df_name}.pkl", 'wb') as f:
+        pickle.dump(df, f)
+def save_data_frames(news_df, behaviors_df, user_profiles, tfidf_matrix):
+    save_data(news_df, "news_df")
+    save_data(user_profiles, "user_profiles")
+    save_data(tfidf_matrix, "tfidf_matrix")
 
-def build_user_profiles_and_save_matrix(news_df, behaviors_df):
-    tfidf = TfidfVectorizer(stop_words='english', max_features=1000)
-    tfidf_matrix = tfidf.fit_transform(news_df['combined_text'])
-
+def build_user_profiles_and_save_matrix(news_df, behaviors_df, model = "tfidf"):
     user_profiles = {}
     news_id_index = pd.Series(data=news_df.index, index=news_df.NewsID).to_dict()
+    if model == "tfidf":
+        tfidf = TfidfVectorizer(stop_words='english', max_features=1000)
+        tfidf_matrix = tfidf.fit_transform(news_df['combined_text'])
     for _, row in behaviors_df.iterrows():
         user_id = row['UserID']
         clicked_articles = [impression.split("-")[0] for impression in row['Impressions'].split() if impression.endswith("-1")]
         indices = [news_id_index[article_id] for article_id in clicked_articles if article_id in news_id_index]
         if indices:
-            user_profiles[user_id] = tfidf_matrix[indices].mean(axis=0)
-
-    # Save user profiles and the TF-IDF matrix
-    save_data_frames(news_df, behaviors_df, user_profiles, tfidf_matrix)
+            if model == "tfidf":
+                user_profiles[user_id] = tfidf_matrix[indices].mean(axis=0)
+            else:
+                user_profiles[user_id] = create_user_profile(clicked_articles, model)
+    if model == "tfidf":
+        # Save user profiles and the TF-IDF matrix
+        save_data_frames(news_df, behaviors_df, user_profiles, tfidf_matrix)
+    else:
+        save_data(user_profiles, "fastformer_user_profiles")
 
 import feedparser
 
@@ -156,6 +162,14 @@ os.makedirs(dataset_folder_train, exist_ok=True)
 # Example Flask route usage
 try:
     news_df, behaviors_df = load_and_preprocess_data(f"{dataset_folder_train}news.tsv", f"{dataset_folder_train}behaviors.tsv")
+    from models import Model
+    from transformers import BertConfig
+    from transformers.models.bert.modeling_bert import BertSelfOutput, BertIntermediate, BertOutput
+    config=BertConfig.from_json_file('fastformer.json')
+    model = Model(config)
+    model.load_state_dict(torch.load('/app/downloads/fastformer_model.pth', map_location=torch.device('cpu')))
+    model.eval()
+    build_user_profiles_and_save_matrix(news_df, behaviors_df, model)
     build_user_profiles_and_save_matrix(news_df, behaviors_df)
     logging.info("user_profiles.pkl created successfully.")
 except Exception as e:

@@ -3,3 +3,8 @@ scikit-learn
 numpy
 feedparser
 gnews
+torch
+transformers
+pandas
+nltk
+datasets

@@ -3,7 +3,17 @@ import pickle
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from flask_cors import CORS
-
+import torch
+from models import Model
+from transformers import BertConfig
+from transformers.models.bert.modeling_bert import BertSelfOutput, BertIntermediate, BertOutput
+config=BertConfig.from_json_file('fastformer.json')
+model = Model(config)
+model.load_state_dict(torch.load('/app/downloads/fastformer_model.pth', map_location=torch.device('cpu')))
+model.eval()
+#import torch.optim as optim
+#optimizer = optim.Adam([ {'params': model.parameters(), 'lr': 1e-3}])
+#model.cuda()
 app = Flask(__name__)
 CORS(app)
 
@@ -80,6 +90,7 @@ except Exception as e:
 
 @app.route('/recommendations/<user_id>', methods=['GET'])
 def get_recommendations(user_id):
+    method = request.args.get('method', 'tfidf').lower()
     if tfidf_matrix is None or user_profiles is None or news_df is None:
         app.logger.error("Model data not loaded or is incomplete.")
         return jsonify({"error": "Model data not loaded"}), 500
@@ -90,11 +101,29 @@ def get_recommendations(user_id):
     try:
         user_vector = user_profiles[user_id]
         user_vector = np.asarray(user_vector)  # Convert to ndarray if it's not already
+        print(f"user_vector:{user_vector}")
         if user_vector.ndim == 1:
             user_vector = user_vector.reshape(1, -1)
+        print(f"user_vector:{user_vector}")
+        if method == 'fastformer':
+            # Prepare the input for the Fastformer model
+            log_ids = torch.LongTensor(user_vector).unsqueeze(0).to('cpu')  # Assuming inputs are tokenized
+            print(f"log_ids:{log_ids}")
+            
+            # Create a dummy target tensor (size should match your batch size)
+            dummy_targets = torch.zeros(log_ids.size(0)).long().to('cpu')
+            print(f"dummy_targets:{dummy_targets}")
 
-        similarities = cosine_similarity(user_vector, tfidf_matrix)
-        recommended_indices = similarities.argsort()[0][-5:][::-1]
+            # Run the model to get predictions
+            with torch.no_grad():
+                predictions = model(log_ids, dummy_targets)
+            print(f"predictions:{predictions}")
+            # Get top N recommendations based on predictions
+            top_n = 5
+            recommended_indices = torch.topk(predictions, k=top_n).indices.cpu().numpy().flatten()
+        else:
+            similarities = cosine_similarity(user_vector, tfidf_matrix)
+            recommended_indices = similarities.argsort()[0][-5:][::-1]
 
         # Fetch the details of the recommended articles
         recommended_articles = news_df.iloc[recommended_indices][['Title', 'Abstract']].to_dict(orient='records')
