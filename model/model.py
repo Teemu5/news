@@ -62,13 +62,17 @@ def build_user_profiles_and_save_matrix(news_df, behaviors_df, model = "tfidf"):
         tfidf_matrix = tfidf.fit_transform(news_df['combined_text'])
     for _, row in behaviors_df.iterrows():
         user_id = row['UserID']
+        #print(row)
         clicked_articles = [impression.split("-")[0] for impression in row['Impressions'].split() if impression.endswith("-1")]
         indices = [news_id_index[article_id] for article_id in clicked_articles if article_id in news_id_index]
         if indices:
             if model == "tfidf":
                 user_profiles[user_id] = tfidf_matrix[indices].mean(axis=0)
             else:
-                user_profiles[user_id] = create_user_profile(clicked_articles, model)
+                #print(clicked_articles)
+                #print(indices)
+                #print(news_df.iloc[indices[0]])
+                user_profiles[user_id] = create_user_profile(indices, model, news_df)
     if model == "tfidf":
         # Save user profiles and the TF-IDF matrix
         save_data_frames(news_df, behaviors_df, user_profiles, tfidf_matrix)
@@ -165,6 +169,7 @@ try:
     from models import Model
     from transformers import BertConfig
     from transformers.models.bert.modeling_bert import BertSelfOutput, BertIntermediate, BertOutput
+    import torch
     config=BertConfig.from_json_file('fastformer.json')
     model = Model(config)
     model.load_state_dict(torch.load('/app/downloads/fastformer_model.pth', map_location=torch.device('cpu')))

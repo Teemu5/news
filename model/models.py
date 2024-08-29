@@ -1,4 +1,5 @@
 import nltk
+nltk.download('wordnet')
 nltk.download('punkt')
 
 
@@ -253,16 +254,16 @@ class Model(torch.nn.Module):
         if isinstance(module, nn.Linear) and module.bias is not None:
             module.bias.data.zero_()
 
-    def forward(self,input_ids,targets):
-        print(f"t")
+    def forward(self,input_ids,targets=None):
+        #print(f"t")
         mask=input_ids.bool().float()
-        print(f"mask:{mask}")
+        #print(f"mask:{mask}")
         embds=self.word_embedding(input_ids)
-        print(f"embds:{embds}")
+        #print(f"embds:{embds}")
         text_vec = self.fastformer_model(embds,mask)
-        print(f"text_vec:{text_vec}")
+        #print(f"text_vec:{text_vec}")
         score = self.dense_linear(text_vec)
-        print(f"targets:{targets}")
+        #print(f"targets:{targets}")
         if targets is not None:
             loss = self.criterion(score, targets)
             return loss, score
@@ -290,10 +291,12 @@ def generate_article_embedding(article, model):
     
     return embedding.squeeze(0)
 
-def create_user_profile(articles, model):
+def create_user_profile(articles, model, news_df):
     embeddings = []
     for article in articles:
-        embedding = generate_article_embedding(article, model)
+        #print(article)
+        #print(news_df.iloc[article])
+        embedding = generate_article_embedding(news_df.iloc[article], model)
         embeddings.append(embedding)
 
     user_profile = torch.mean(torch.stack(embeddings), dim=0)

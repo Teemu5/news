@@ -253,25 +253,39 @@ class Model(torch.nn.Module):
         if isinstance(module, nn.Linear) and module.bias is not None:
             module.bias.data.zero_()
 
-    def forward(self,input_ids,targets):
-        print(f"t")
-        mask=input_ids.bool().float()
-        print(f"mask:{mask}")
-        embds=self.word_embedding(input_ids)
-        print(f"embds:{embds}")
-        text_vec = self.fastformer_model(embds,mask)
-        print(f"text_vec:{text_vec}")
-        score = self.dense_linear(text_vec)
-        print(f"targets:{targets}")
-        if targets is not None:
+    def forward(self,input_ids,targets,error_msg=""):
+        try:
+            print(f"t")
+            error_msg += f"t"
+            #input_ids = input_ids.long() 
+            def preprocess_input_ids(input_ids, valid_range): # Why are there negatives?
+                # Replace negative values or out-of-range values with padding index (0)
+                input_ids = torch.clamp(input_ids, min=0, max=valid_range-1)
+                return input_ids
+            valid_range = len(self.word_embedding.weight)  # Assuming valid indices are within [0, valid_range-1]
+            input_ids = preprocess_input_ids(input_ids, valid_range)
+
+            mask=input_ids.bool().float()
+            print(f"mask:{mask}")
+            error_msg += f"mask:{mask}"
+            embds=self.word_embedding(input_ids)
+            print(f"embds:{embds}")
+            error_msg += f"embds:{embds}"
+            text_vec = self.fastformer_model(embds,mask)
+            print(f"text_vec:{text_vec}")
+            error_msg += f"text_vec:{text_vec}"
+            score = self.dense_linear(text_vec)
+            print(f"targets:{targets}")
+            error_msg += f"targets:{targets}"
             loss = self.criterion(score, targets)
             return loss, score
-        else:
-            return score
+
+        except Exception as e:
+            return f"error: {e} {error_msg}"
 import torch
 from transformers import BertConfig
 config = BertConfig.from_json_file('fastformer.json')
-model = Model(config, word_dict)
+model = Model(config)
 #model.load_state_dict(torch.load('/path/to/fastformer_model.pth'))
 model.load_state_dict(torch.load('/app/downloads/fastformer_model.pth', map_location=torch.device('cpu')))
 model.eval()

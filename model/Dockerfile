@@ -8,6 +8,8 @@ WORKDIR /app
 COPY . /app/
 RUN apt-get update && \
     apt-get install -y wget
+RUN pip3 install nltk==3.8.1
+RUN python3 -m nltk.downloader all
 # Install any required packages
 RUN pip install --no-cache-dir -r requirements.txt
 # Install Kaggle API
