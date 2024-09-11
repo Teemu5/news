@@ -11,13 +11,16 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [gpu, utility, compute]
     working_dir: /app
+    ports:
+      - "8888:8888"
     volumes:
-      - ./Fastformer:/app
-      - ./model:/model
-      - model_data:/app/data
-      - /mnt/c/news-datasets:/data
-    command: cd /app/Fastformer/cuda-samples/Samples/1_Utilities make #python3 /app/Fastformer.py
+      - .:/workspace
+#      - ./Fastformer:/app
+#      - ./model:/model
+#      - model_data:/app/data
+#      - /mnt/c/news-datasets:/data
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --NotebookApp.token='' #cd /app/Fastformer/cuda-samples/Samples/1_Utilities make #python3 /app/Fastformer.py
 volumes:
   model_data:

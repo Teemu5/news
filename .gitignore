@@ -2,3 +2,10 @@
 *.pkl
 _READY
 model/kaggle.json
+Fastformer/data/*
+Fastformer/datas/*
+Fastformer/dataset/*
+Fastformer/datasets/*
+Fastformer/user_models/*
+*.vec
+*.h5
