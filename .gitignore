@@ -11,3 +11,4 @@ Fastformer/user_models/*
 *.h5
 *.tsv
 *.zip
+models/*

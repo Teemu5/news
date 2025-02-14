@@ -10,3 +10,7 @@ gnews
 pandas
 nltk
 datasets
+fastapi
+uvicorn
+pydantic
+tensorflow>=2.8.0
