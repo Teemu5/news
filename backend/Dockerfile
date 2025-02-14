@@ -13,4 +13,5 @@ EXPOSE 5000
 ENV NAME World
 
 # Run app.py when the container launches
-CMD ["python", "backend.py"]
+#CMD ["python", "backend.py"]
+CMD ["python", "fastapi.py"]

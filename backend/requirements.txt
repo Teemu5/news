@@ -10,3 +10,6 @@ gnews
 pandas
 nltk
 datasets
+fastapi
+uvicorn
+pydantic
