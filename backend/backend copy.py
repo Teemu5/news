@@ -1,19 +1,25 @@
 from fastapi import FastAPI, HTTPException, Query, Path
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import pickle
 import numpy as np
-import os
-import torch
-import pandas as pd
-import time
 from sklearn.metrics.pairwise import cosine_similarity
+import torch
+import os
+import time
+from models import Model
 from transformers import BertConfig
-from models import Model  # Your PyTorch model definition
-from utils import build_and_load_weights, train_models  # Helper that builds & loads a Keras model
+from transformers.models.bert.modeling_bert import BertSelfOutput, BertIntermediate, BertOutput
+from gnews import GNews
+import pandas as pd
+from utils import build_and_load_weights  # Adjust import as needed
+import numpy as np
+from sklearn.linear_model import LogisticRegression
 
+# Initialize FastAPI app
 app = FastAPI(title="News Recommendation API")
 
-# Configure CORS (allow all origins)
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,49 +28,70 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global variables for data and models
+# Global variables for model data
 user_profiles = {}
 tfidf_matrix = None
 news_df = None
 fastformer_user_profiles = {}
-
-# PyTorch fastformer model (for fastformer method)
-pt_model = None
-
-# Keras ensemble models (for ensemble methods)
+# For ensemble, we assume multiple Fastformer models (here simulated by dummy functions)
+# In practice, you might load three separate models with build_and_load_weights
 model1 = None
 model2 = None
 model3 = None
 
-# ---------------------------
-# Dummy Preprocessing Function
-# ---------------------------
-def tokenize_input(input_text: str):
-    """
-    Dummy preprocessing to transform raw input text into the 
-    required input shape for Keras ensemble models.
-    Replace this with your actual text preprocessing.
-    """
-    return np.array([[len(input_text), 1]])
+# Load configuration and models during startup
+@app.on_event("startup")
+def load_model_data():
+    global user_profiles, tfidf_matrix, news_df, fastformer_user_profiles, model1, model2, model3
+    try:
+        config = BertConfig.from_json_file('fastformer.json')
+        from models import Model  # Ensure Model is in your PYTHONPATH
+        # Load three models for ensemble
+        model1 = Model(config)
+        model1.load_state_dict(torch.load('/app/downloads/fastformer_model1.pth', map_location=torch.device('cpu')))
+        model1.eval()
 
-# ---------------------------
-# Ensemble Prediction Functions (Keras Models)
-# ---------------------------
+        model2 = Model(config)
+        model2.load_state_dict(torch.load('/app/downloads/fastformer_model2.pth', map_location=torch.device('cpu')))
+        model2.eval()
+
+        model3 = Model(config)
+        model3.load_state_dict(torch.load('/app/downloads/fastformer_model3.pth', map_location=torch.device('cpu')))
+        model3.eval()
+
+        with open('/app/data/user_profiles.pkl', 'rb') as f:
+            user_profiles = pickle.load(f)
+        with open('/app/data/tfidf_matrix.pkl', 'rb') as f:
+            tfidf_matrix = pickle.load(f)
+        with open('/app/data/news_df.pkl', 'rb') as f:
+            news_df = pickle.load(f)
+        with open('/app/data/fastformer_user_profiles.pkl', 'rb') as f:
+            fastformer_user_profiles = pickle.load(f)
+    except Exception as e:
+        print(f"Failed to load model data: {e}")
+        raise e
+
+# Pydantic model for request input
+class RecommendationRequest(BaseModel):
+    user_id: str
+    input_text: str
+
+# --- Dummy Prediction Functions for Ensemble Methods ---
+# In practice, these functions should call model1, model2, and model3 for inference.
 def fastformer_model1_predict(input_text: str) -> np.ndarray:
-    input_arr = tokenize_input(input_text)
-    preds = model1.predict(input_arr)
-    return preds[0]
+    # For example, perform preprocessing and model inference using model1
+    # Here, we simulate with dummy predictions
+    return np.array([0.80, 0.55, 0.30, 0.20])
 
 def fastformer_model2_predict(input_text: str) -> np.ndarray:
-    input_arr = tokenize_input(input_text)
-    preds = model2.predict(input_arr)
-    return preds[0]
+    return np.array([0.75, 0.60, 0.35, 0.25])
 
 def fastformer_model3_predict(input_text: str) -> np.ndarray:
-    input_arr = tokenize_input(input_text)
-    preds = model3.predict(input_arr)
-    return preds[0]
+    return np.array([0.85, 0.50, 0.25, 0.15])
 
+# --- Ensemble Methods Implementation ---
+
+# Bagging: simple averaging
 def ensemble_bagging(input_text: str) -> np.ndarray:
     y1 = fastformer_model1_predict(input_text)
     y2 = fastformer_model2_predict(input_text)
@@ -72,6 +99,7 @@ def ensemble_bagging(input_text: str) -> np.ndarray:
     predictions = np.vstack([y1, y2, y3])
     return np.mean(predictions, axis=0)
 
+# Boosting: weighted averaging (weights inversely proportional to errors)
 def ensemble_boosting(input_text: str, errors: np.ndarray) -> np.ndarray:
     y1 = fastformer_model1_predict(input_text)
     y2 = fastformer_model2_predict(input_text)
@@ -82,96 +110,51 @@ def ensemble_boosting(input_text: str, errors: np.ndarray) -> np.ndarray:
     weights = weights / np.sum(weights)
     return np.average(predictions, axis=0, weights=weights)
 
-def train_stacking_meta_model(X_train: np.ndarray, y_train: np.ndarray):
-    from sklearn.linear_model import LogisticRegression
+# Stacking: meta-model learns to combine base predictions
+def train_stacking_meta_model(X_train: np.ndarray, y_train: np.ndarray) -> LogisticRegression:
     meta_model = LogisticRegression()
     meta_model.fit(X_train, y_train)
     return meta_model
 
-def ensemble_stacking(input_text: str, meta_model) -> np.ndarray:
+def ensemble_stacking(input_text: str, meta_model: LogisticRegression) -> np.ndarray:
     y1 = fastformer_model1_predict(input_text)
     y2 = fastformer_model2_predict(input_text)
     y3 = fastformer_model3_predict(input_text)
-    X = np.vstack([y1, y2, y3]).T  # each column is one model's prediction
+    X = np.vstack([y1, y2, y3]).T  # each column is a model's prediction
     final_predictions = meta_model.predict_proba(X)[:, 1]
     return final_predictions
 
-def hybrid_ensemble(input_text: str, boosting_errors: np.ndarray, stacking_meta_model) -> np.ndarray:
+# Hybrid Ensemble: combine outputs from bagging, boosting, and stacking
+def hybrid_ensemble(input_text: str, boosting_errors: np.ndarray, stacking_meta_model: LogisticRegression) -> np.ndarray:
     bagging_pred = ensemble_bagging(input_text)
     boosting_pred = ensemble_boosting(input_text, boosting_errors)
     stacking_pred = ensemble_stacking(input_text, stacking_meta_model)
+    # Final ensemble: simple average of the three ensemble outputs
     final_prediction = (bagging_pred + boosting_pred + stacking_pred) / 3
     return final_prediction
 
-# ---------------------------
-# Startup: Load Models and Data
-# ---------------------------
-@app.on_event("startup")
-def load_model_data():
-    global user_profiles, tfidf_matrix, news_df, fastformer_user_profiles
-    global pt_model, model1, model2, model3
-    try:
-        # Load PyTorch fastformer model
-        config = BertConfig.from_json_file('fastformer.json')
-        pt_model = Model(config)
-        pt_model.load_state_dict(torch.load('/app/downloads/fastformer_model.pth', map_location=torch.device('cpu')))
-        pt_model.eval()
-
-        # Load Keras ensemble models.
-        #model1 = build_and_load_weights('/app/models/fastformer_cluster_0_full_balanced_1_epoch.weights.h5')
-        #model2 = build_and_load_weights('/app/models/fastformer_cluster_1_full_balanced_1_epoch.weights.h5')
-        #model3 = build_and_load_weights('/app/models/fastformer_cluster_2_full_balanced_1_epoch.weights.h5')
-        # OR TRAIN MODELS
-        model1, model2, model3 = train_models()
-        # Load pickled data
-        with open('/app/data/user_profiles.pkl', 'rb') as f:
-            user_profiles = pickle.load(f)
-        with open('/app/data/tfidf_matrix.pkl', 'rb') as f:
-            tfidf_matrix = pickle.load(f)
-        with open('/app/data/news_df.pkl', 'rb') as f:
-            news_df = pickle.load(f)
-        with open('/app/data/fastformer_user_profiles.pkl', 'rb') as f:
-            fastformer_user_profiles = pickle.load(f)
-
-    except Exception as e:
-        print(f"Failed to load model data: {e}")
-        raise e
-
-# ---------------------------
-# Endpoints
-# ---------------------------
-@app.get("/")
-async def root():
-    return {"message": "Recommendations available at /recommendations/<user_id>"}
-
-@app.get("/health")
-async def health_check():
-    return {"status": "up"}
-
+# --- Recommendations Endpoint with Ensemble Integration ---
 @app.get("/recommendations/{user_id}")
 async def get_recommendations(
     user_id: str = Path(..., description="The unique identifier of the user"),
-    method: str = Query("tfidf", description="Recommendation method: 'tfidf', 'fastformer', or 'ensemble'")
+    method: str = Query("tfidf", description="Recommendation method: 'tfidf', 'fastformer', or 'ensemble'"),
+    ensemble_method: str = Query(None, description="For ensemble method: choose 'bagging', 'boosting', 'stacking', or 'hybrid'")
 ):
-    ensemble_method = method
-    global user_profiles, tfidf_matrix, news_df, fastformer_user_profiles, pt_model, model1, model2, model3
     if tfidf_matrix is None or user_profiles is None or news_df is None:
         raise HTTPException(status_code=500, detail="Model data not loaded")
-    
     if user_id not in user_profiles:
         raise HTTPException(status_code=404, detail="User profile not found")
     
     try:
-        if method.lower() in ["bagging", "boosting", "stacking", "hybrid"]:
+        if method.lower() == "ensemble":
             if ensemble_method is None:
                 raise HTTPException(status_code=400, detail="Ensemble method not specified")
-            # Use a dummy input string based on the user_id for ensemble predictions.
-            input_text = "dummy input: " + user_id
+            # For demonstration, use dummy ensemble predictions based on input_text
             if ensemble_method.lower() == "bagging":
-                final_scores = ensemble_bagging(input_text)
+                final_scores = ensemble_bagging("dummy input: " + user_id)
             elif ensemble_method.lower() == "boosting":
                 dummy_errors = np.array([0.2, 0.15, 0.25])
-                final_scores = ensemble_boosting(input_text, dummy_errors)
+                final_scores = ensemble_boosting("dummy input: " + user_id, dummy_errors)
             elif ensemble_method.lower() == "stacking":
                 X_train_dummy = np.array([
                     [0.80, 0.75, 0.85],
@@ -181,7 +164,7 @@ async def get_recommendations(
                 ])
                 y_train_dummy = np.array([1, 0, 1, 0])
                 meta_model = train_stacking_meta_model(X_train_dummy, y_train_dummy)
-                final_scores = ensemble_stacking(input_text, meta_model)
+                final_scores = ensemble_stacking("dummy input: " + user_id, meta_model)
             elif ensemble_method.lower() == "hybrid":
                 dummy_errors = np.array([0.2, 0.15, 0.25])
                 X_train_dummy = np.array([
@@ -192,38 +175,37 @@ async def get_recommendations(
                 ])
                 y_train_dummy = np.array([1, 0, 1, 0])
                 meta_model = train_stacking_meta_model(X_train_dummy, y_train_dummy)
-                final_scores = hybrid_ensemble(input_text, dummy_errors, meta_model)
+                final_scores = hybrid_ensemble("dummy input: " + user_id, dummy_errors, meta_model)
             else:
                 raise HTTPException(status_code=400, detail="Invalid ensemble method specified")
             
+            # For demonstration, assume recommended_indices are derived from final_scores:
             top_n = 5
             recommended_indices = np.argsort(final_scores)[-top_n:][::-1]
-
-        elif method.lower() == "fastformer":
+        
+        elif method.lower() == 'fastformer':
             if user_id not in fastformer_user_profiles:
                 raise HTTPException(status_code=404, detail="Fastformer user profile not found")
-            # Use the PyTorch model for fastformer-based recommendations.
-            user_vector = fastformer_user_profiles[user_id]
-            user_vector = np.asarray(user_vector)
+            user_vector = np.asarray(fastformer_user_profiles[user_id])
+            if user_vector.ndim == 1:
+                user_vector = user_vector.reshape(1, -1)
             log_ids = torch.LongTensor([user_vector]).to('cpu')
-            dummy_targets = torch.zeros(log_ids.size(0), dtype=torch.long).to('cpu')
-            error_msg = ""
+            dummy_targets = torch.zeros(log_ids.size(0)).long().to('cpu')
             with torch.no_grad():
-                predictions = pt_model(log_ids, dummy_targets, error_msg)
+                predictions = model(log_ids, dummy_targets, "")
             if isinstance(predictions, tuple):
                 predictions = predictions[1]
             top_n = 5
             recommended_indices = torch.topk(predictions, k=top_n).indices.cpu().numpy().flatten()
         else:
-            # TFIDF-based recommendations
-            user_vector = user_profiles[user_id]
-            user_vector = np.asarray(user_vector)
+            # tfidf-based recommendations
+            user_vector = np.asarray(user_profiles[user_id])
             if user_vector.ndim == 1:
                 user_vector = user_vector.reshape(1, -1)
             similarities = cosine_similarity(user_vector, tfidf_matrix)
             recommended_indices = similarities.argsort()[0][-5:][::-1]
         
-        # Retrieve article details from news_df
+        # Fetch article details for recommended indices
         recommended_articles = news_df.iloc[recommended_indices][['Title', 'Abstract']].to_dict(orient='records')
         return recommended_articles
 
@@ -231,6 +213,6 @@ async def get_recommendations(
         print(f"Error processing recommendations for {user_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5000)
