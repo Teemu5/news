@@ -1,5 +1,4 @@
-# ignore pkl since they are too large
-*.pkl
+# Instead of ignoring big files they should be tracked by lfs
 _READY
 model/kaggle.json
 Fastformer/data/*
@@ -7,7 +6,4 @@ Fastformer/datas/*
 Fastformer/dataset/*
 Fastformer/datasets/*
 Fastformer/user_models/*
-*.vec
-*.tsv
-*.zip
 models/*
