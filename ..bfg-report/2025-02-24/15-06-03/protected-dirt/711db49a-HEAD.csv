@@ -1,0 +1,6 @@
+64a88d06e9ee0e89f46a3e4f58e11a3fd0ebba38,DELETE,regular-file,backend/models/fastformer_cluster_0_full_balanced_1_epoch.weights.h5,134,
+9af5ccc2dcfbcd78734744e930f4372d4b082b0f,DELETE,regular-file,backend/models/fastformer_cluster_1_full_balanced_1_epoch.weights.h5,134,
+1e147d9b7d0d35d145eca9c86f7553c0065c5983,DELETE,regular-file,backend/models/fastformer_cluster_2_full_balanced_1_epoch.weights.h5,134,
+64a88d06e9ee0e89f46a3e4f58e11a3fd0ebba38,DELETE,regular-file,model/fastformer_cluster_0_full_balanced_1_epoch.weights.h5,134,
+9af5ccc2dcfbcd78734744e930f4372d4b082b0f,DELETE,regular-file,model/fastformer_cluster_1_full_balanced_1_epoch.weights.h5,134,
+1e147d9b7d0d35d145eca9c86f7553c0065c5983,DELETE,regular-file,model/fastformer_cluster_2_full_balanced_1_epoch.weights.h5,134,
