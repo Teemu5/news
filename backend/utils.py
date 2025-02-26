@@ -19,6 +19,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, CSVLogger
 import pickle
 import tensorflow as tf
+from huggingface_hub import hf_hub_download
+
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 # Download NLTK stopwords
 nltk.download('stopwords')
@@ -26,10 +28,10 @@ stop_words = set(stopwords.words('english'))
 
 def is_colab():
     return 'COLAB_GPU' in os.environ
-def init():
+def init(process_dfs = False):
     global data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
     zip_file = f"MINDlarge_train.zip"
-    valid_zip_file = f"MINDlarge_test.zip"
+    valid_zip_file = f"MINDlarge_dev.zip"
     data_dir = 'dataset/train/'  # Adjust path as necessary
     valid_data_dir = 'dataset/valid/'  # Adjust path as necessary
     if is_colab():
@@ -40,7 +42,16 @@ def init():
     #zip_file = f"MINDsmall_train.zip"
     zip_file_path = f"{data_dir}{zip_file}"
     valid_zip_file_path = f"{valid_data_dir}{valid_zip_file}"
-    # Get the directory where the zip file is located
+    local_model_path = hf_hub_download(
+        repo_id=f"Teemu5/news",
+        filename=zip_file,
+        local_dir=data_dir
+    )
+    local_model_path = hf_hub_download(
+        repo_id=f"Teemu5/news",
+        filename=valid_zip_file,
+        local_dir=valid_data_dir
+    )
     output_folder = os.path.dirname(zip_file_path)
     
     # Unzip the file
@@ -211,26 +222,39 @@ def init():
     missing_user_ids = set(unique_user_ids) - set(user_profile_ids)
     print(f"Number of missing UserIDs in user_category_profiles: {len(missing_user_ids)}")
     tokenizer = Tokenizer()
-    process_dfs = True
+    num_clusters = 3
     if process_dfs:
         clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters = prepare_train_df(
             data_dir=data_dir,
             news_file=news_file,
             behaviours_file=behaviors_file,
             user_category_profiles=user_category_profiles,
-            num_clusters=3,
+            num_clusters=num_clusters,
             fraction=1,
             max_title_length=30,
             max_history_length=50
         )
+    local_model_path = hf_hub_download(
+        repo_id=f"Teemu5/news",
+        filename="news_df_processed.pkl",
+        local_dir="models"
+    )
+    local_model_path = hf_hub_download(
+        repo_id=f"Teemu5/news",
+        filename="train_df_processed.pkl",
+        local_dir="models"
+    )
     news_df = pd.read_pickle("models/news_df_processed.pkl")
     train_df = pd.read_pickle("models/train_df_processed.pkl")
+
+    clustered_data = make_clustered_data(train_df, num_clusters)
 
     tokenizer.fit_on_texts(news_df['CombinedText'].tolist())
     vocab_size = len(tokenizer.word_index) + 1
     max_history_length = 50
     max_title_length = 30
     batch_size = 64 # Adjust as needed
+    return data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
 #init()
 
 # --- [Imports and Constants] ---
@@ -270,6 +294,23 @@ def clean_text(text):
     words = text.split()
     words = [w for w in words if not w in stop_words]
     return ' '.join(words)
+
+def make_clustered_data(train_df, num_clusters):
+    clustered_data = {}
+    for cluster in range(num_clusters):
+        cluster_data = train_df[train_df['Cluster'] == cluster]
+
+        if cluster_data.empty:
+            print(f"No data for Cluster {cluster}. Skipping...")
+            continue  # Skip to the next cluster
+
+        train_data, val_data = train_test_split(cluster_data, test_size=0.2, random_state=42)
+        clustered_data[cluster] = {
+            'train': train_data.reset_index(drop=True),
+            'val': val_data.reset_index(drop=True)
+        }
+        print(f"Cluster {cluster}: {len(train_data)} training samples, {len(val_data)} validation samples.")
+    return clustered_data
 
 # --- [Data Preparation Function] ---
 def prepare_train_df(
@@ -945,6 +986,11 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
         model_file = f'{m_name}.h5'
         if cluster in load_models: # load_models should be list of number indicating which models to load and not train
             print(f"\nLoading model for Cluster {cluster} from {weights_file}")
+            local_model_path = hf_hub_download(
+                repo_id=f"Teemu5/news",
+                filename=weights_file,
+                local_dir="."
+            )
             model = build_and_load_weights(weights_file)
             models[cluster] = model
             continue
