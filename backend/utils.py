@@ -1336,3 +1336,4 @@ def get_models(process_dfs = False, process_behaviors = False):
         epochs=1,
         load_models=[0,1,2,3]
     )
+    return models
