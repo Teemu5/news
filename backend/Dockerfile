@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --default-timeout=600 --no-cache-dir -r requirements.txt
 #RUN pip install nltk
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
@@ -13,5 +13,5 @@ EXPOSE 5000
 ENV NAME World
 
 # Run app.py when the container launches
-#CMD ["python", "backend.py"]
-CMD ["python", "fastapi.py"]
+CMD ["python", "backend.py"]
+#CMD ["python", "fastapi.py"]
