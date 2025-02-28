@@ -193,11 +193,7 @@ def init(process_dfs = False, process_behaviors = False):
         
         # Add 'Other' to the list
         actual_categories.append('Other')
-<<<<<<< HEAD
-        
-=======
         print(f"Number of new column names: {len(actual_categories)}")
->>>>>>> 6ffc75a30ed52f018a3f743581706fcf09dbf478
         # Assign new column names
         filtered_user_category_profiles.columns = [f'Category_{cat}' for cat in actual_categories]
         print("\nFiltered user_category_profiles with Top N Categories and 'Other':")
@@ -209,11 +205,8 @@ def init(process_dfs = False, process_behaviors = False):
         filtered_user_category_profiles.to_pickle(user_category_profiles_path)
         user_category_profiles = filtered_user_category_profiles
         print(f"\nSaved user_category_profiles to {user_category_profiles_path}")
-<<<<<<< HEAD
-=======
         behaviors_df.to_pickle("behaviors_df_processed.pkl")
         print(f"\nSaved behaviors_df to behaviors_df_processed.pkl")
->>>>>>> 6ffc75a30ed52f018a3f743581706fcf09dbf478
     else:
         local_model_path = hf_hub_download(
             repo_id=f"Teemu5/news",
@@ -1317,22 +1310,6 @@ def build_and_load_weights(weights_file):
     model.load_weights(weights_file)
     return model
 
-<<<<<<< HEAD
-def get_models():
-    news_file = 'news.tsv'
-    behaviors_file = 'behaviors.tsv'
-    data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters = init()
-    clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters = prepare_train_df(
-        data_dir=data_dir,
-        news_file=news_file,
-        behaviours_file=behaviors_file,
-        user_category_profiles=user_category_profiles,
-        num_clusters=3,
-        fraction=1,
-        max_title_length=30,
-        max_history_length=50
-    )
-=======
 def get_models(process_dfs = False, process_behaviors = False):
     news_file = 'news.tsv'
     behaviors_file = 'behaviors.tsv'
@@ -1348,7 +1325,6 @@ def get_models(process_dfs = False, process_behaviors = False):
             max_title_length=30,
             max_history_length=50
         )
->>>>>>> 6ffc75a30ed52f018a3f743581706fcf09dbf478
     models = train_cluster_models(
         clustered_data=clustered_data,
         tokenizer=tokenizer,
