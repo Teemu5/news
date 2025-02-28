@@ -14,3 +14,4 @@ fastapi
 uvicorn
 pydantic
 tensorflow>=2.8.0
+huggingface_hub

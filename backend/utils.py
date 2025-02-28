@@ -28,7 +28,7 @@ stop_words = set(stopwords.words('english'))
 
 def is_colab():
     return 'COLAB_GPU' in os.environ
-def init(process_dfs = False):
+def init(process_dfs = False, process_behaviors = False):
     global data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
     zip_file = f"MINDlarge_train.zip"
     valid_zip_file = f"MINDlarge_dev.zip"
@@ -87,124 +87,137 @@ def init(process_dfs = False):
     
     print("\nLoaded behaviors data:")
     print(behaviors_df.head())
-    # Handle missing 'HistoryText' by replacing NaN with empty string
-    behaviors_df['HistoryText'] = behaviors_df['HistoryText'].fillna('')
-    
-    # Create a NewsID to Category mapping
-    newsid_to_category = news_df.set_index('NewsID')['Category'].to_dict()
-    
-    # Function to extract categories from HistoryText
-    def extract_categories(history_text):
-        if not history_text:
-            return []
-        news_ids = history_text.split(' ')
-        categories = [newsid_to_category.get(news_id, 'Unknown') for news_id in news_ids]
-        return categories
-    
-    # Apply the function to extract categories
-    behaviors_df['HistoryCategories'] = behaviors_df['HistoryText'].apply(extract_categories)
-    
-    print("\nSample HistoryCategories:")
-    print(behaviors_df[['UserID', 'HistoryCategories']].head())
-    from collections import defaultdict
-    
-    # Initialize a dictionary to hold category counts per user
-    user_category_counts = defaultdict(lambda: defaultdict(int))
-    
-    # Populate the dictionary
-    for idx, row in behaviors_df.iterrows():
-        user_id = row['UserID']
-        categories = row['HistoryCategories']
-        for category in categories:
-            user_category_counts[user_id][category] += 1
-    
-    # Convert the dictionary to a DataFrame
-    user_category_profiles = pd.DataFrame(user_category_counts).T.fillna(0)
-    
-    # Optionally, rename columns to indicate category
-    user_category_profiles.columns = [f'Category_{cat}' for cat in user_category_profiles.columns]
-    
-    print("\nCreated user_category_profiles:")
-    print(user_category_profiles.head())
-    print(f"\nShape of user_category_profiles: {user_category_profiles.shape}")
-    # Handle missing 'HistoryText' by replacing NaN with empty string
-    behaviors_df['HistoryText'] = behaviors_df['HistoryText'].fillna('')
-    
-    # Create a NewsID to Category mapping
-    newsid_to_category = news_df.set_index('NewsID')['Category'].to_dict()
-    
-    # Get all unique UserIDs from behaviors_df
-    unique_user_ids = behaviors_df['UserID'].unique()
-    
-    # Function to extract categories from HistoryText
-    def extract_categories(history_text):
-        if not history_text:
-            return []
-        news_ids = history_text.split(' ')
-        categories = [newsid_to_category.get(news_id, 'Unknown') for news_id in news_ids]
-        return categories
-    
-    # Apply the function to extract categories
-    behaviors_df['HistoryCategories'] = behaviors_df['HistoryText'].apply(extract_categories)
-    
-    # Explode 'HistoryCategories' to have one category per row
-    behaviors_exploded = behaviors_df[['UserID', 'HistoryCategories']].explode('HistoryCategories')
-    
-    # Replace missing categories with 'Unknown'
-    behaviors_exploded['HistoryCategories'] = behaviors_exploded['HistoryCategories'].fillna('Unknown')
-    
-    # Create a cross-tabulation (pivot table) of counts
-    user_category_counts = pd.crosstab(
-        index=behaviors_exploded['UserID'],
-        columns=behaviors_exploded['HistoryCategories']
-    )
-    
-    # Rename columns to include 'Category_' prefix
-    user_category_counts.columns = [f'Category_{col}' for col in user_category_counts.columns]
-    
-    # Reindex to include all users, filling missing values with zero
-    user_category_profiles = user_category_counts.reindex(unique_user_ids, fill_value=0)
-    
-    print(f"\nCreated user_category_profiles with {user_category_profiles.shape[0]} users and {user_category_profiles.shape[1]} categories.")
-    
-    # Determine top N categories
-    top_n = 20
-    category_counts = news_df['Category'].value_counts()
-    top_categories = category_counts.nlargest(top_n).index.tolist()
-    
-    # Get the category names without the 'Category_' prefix
-    user_category_columns = user_category_profiles.columns.str.replace('Category_', '')
-    
-    # Filter columns in user_category_profiles that are in top_categories
-    filtered_columns = user_category_profiles.columns[user_category_columns.isin(top_categories)]
-    
-    # Create filtered_user_category_profiles with these columns
-    filtered_user_category_profiles = user_category_profiles[filtered_columns]
-    
-    # Identify columns that are not in top_categories to sum them into 'Category_Other'
-    other_columns = user_category_profiles.columns[~user_category_columns.isin(top_categories)]
-    
-    # Sum the 'Other' categories
-    filtered_user_category_profiles['Category_Other'] = user_category_profiles[other_columns].sum(axis=1)
-    
-    # Now, get the actual categories present after filtering
-    actual_categories = filtered_columns.str.replace('Category_', '').tolist()
-    
-    # Add 'Other' to the list
-    actual_categories.append('Other')
-    
-    # Assign new column names
-    filtered_user_category_profiles.columns = [f'Category_{cat}' for cat in actual_categories]
-    print("\nFiltered user_category_profiles with Top N Categories and 'Other':")
-    print(filtered_user_category_profiles.head())
-    print(f"\nShape of filtered_user_category_profiles: {filtered_user_category_profiles.shape}")
-    
-    # Save the user_category_profiles to a file for future use
-    user_category_profiles_path = 'user_category_profiles.pkl'
-    filtered_user_category_profiles.to_pickle(user_category_profiles_path)
-    user_category_profiles = filtered_user_category_profiles
-    print(f"\nSaved user_category_profiles to {user_category_profiles_path}")
-
+    if process_behaviors:
+        # Handle missing 'HistoryText' by replacing NaN with empty string
+        behaviors_df['HistoryText'] = behaviors_df['HistoryText'].fillna('')
+        
+        # Create a NewsID to Category mapping
+        newsid_to_category = news_df.set_index('NewsID')['Category'].to_dict()
+        
+        # Function to extract categories from HistoryText
+        def extract_categories(history_text):
+            if not history_text:
+                return []
+            news_ids = history_text.split(' ')
+            categories = [newsid_to_category.get(news_id, 'Unknown') for news_id in news_ids]
+            return categories
+        
+        # Apply the function to extract categories
+        behaviors_df['HistoryCategories'] = behaviors_df['HistoryText'].apply(extract_categories)
+        
+        print("\nSample HistoryCategories:")
+        print(behaviors_df[['UserID', 'HistoryCategories']].head())
+        from collections import defaultdict
+        
+        # Initialize a dictionary to hold category counts per user
+        user_category_counts = defaultdict(lambda: defaultdict(int))
+        
+        # Populate the dictionary
+        for idx, row in behaviors_df.iterrows():
+            user_id = row['UserID']
+            categories = row['HistoryCategories']
+            for category in categories:
+                user_category_counts[user_id][category] += 1
+        
+        # Convert the dictionary to a DataFrame
+        user_category_profiles = pd.DataFrame(user_category_counts).T.fillna(0)
+        
+        # Optionally, rename columns to indicate category
+        user_category_profiles.columns = [f'Category_{cat}' for cat in user_category_profiles.columns]
+        
+        print("\nCreated user_category_profiles:")
+        print(user_category_profiles.head())
+        print(f"\nShape of user_category_profiles: {user_category_profiles.shape}")
+        # Handle missing 'HistoryText' by replacing NaN with empty string
+        behaviors_df['HistoryText'] = behaviors_df['HistoryText'].fillna('')
+        
+        # Create a NewsID to Category mapping
+        newsid_to_category = news_df.set_index('NewsID')['Category'].to_dict()
+        
+        # Get all unique UserIDs from behaviors_df
+        unique_user_ids = behaviors_df['UserID'].unique()
+        
+        # Function to extract categories from HistoryText
+        def extract_categories(history_text):
+            if not history_text:
+                return []
+            news_ids = history_text.split(' ')
+            categories = [newsid_to_category.get(news_id, 'Unknown') for news_id in news_ids]
+            return categories
+        
+        # Apply the function to extract categories
+        behaviors_df['HistoryCategories'] = behaviors_df['HistoryText'].apply(extract_categories)
+        
+        # Explode 'HistoryCategories' to have one category per row
+        behaviors_exploded = behaviors_df[['UserID', 'HistoryCategories']].explode('HistoryCategories')
+        
+        # Replace missing categories with 'Unknown'
+        behaviors_exploded['HistoryCategories'] = behaviors_exploded['HistoryCategories'].fillna('Unknown')
+        
+        # Create a cross-tabulation (pivot table) of counts
+        user_category_counts = pd.crosstab(
+            index=behaviors_exploded['UserID'],
+            columns=behaviors_exploded['HistoryCategories']
+        )
+        
+        # Rename columns to include 'Category_' prefix
+        user_category_counts.columns = [f'Category_{col}' for col in user_category_counts.columns]
+        
+        # Reindex to include all users, filling missing values with zero
+        user_category_profiles = user_category_counts.reindex(unique_user_ids, fill_value=0)
+        
+        print(f"\nCreated user_category_profiles with {user_category_profiles.shape[0]} users and {user_category_profiles.shape[1]} categories.")
+        
+        # Determine top N categories
+        top_n = 20
+        category_counts = news_df['Category'].value_counts()
+        top_categories = category_counts.nlargest(top_n).index.tolist()
+        
+        # Get the category names without the 'Category_' prefix
+        user_category_columns = user_category_profiles.columns.str.replace('Category_', '')
+        
+        # Filter columns in user_category_profiles that are in top_categories
+        filtered_columns = user_category_profiles.columns[user_category_columns.isin(top_categories)]
+        
+        # Create filtered_user_category_profiles with these columns
+        filtered_user_category_profiles = user_category_profiles[filtered_columns]
+        
+        # Identify columns that are not in top_categories to sum them into 'Category_Other'
+        other_columns = user_category_profiles.columns[~user_category_columns.isin(top_categories)]
+        
+        # Sum the 'Other' categories
+        filtered_user_category_profiles['Category_Other'] = user_category_profiles[other_columns].sum(axis=1)
+        
+        # Now, get the actual categories present after filtering
+        actual_categories = filtered_columns.str.replace('Category_', '').tolist()
+        
+        # Add 'Other' to the list
+        actual_categories.append('Other')
+        
+        # Assign new column names
+        filtered_user_category_profiles.columns = [f'Category_{cat}' for cat in actual_categories]
+        print("\nFiltered user_category_profiles with Top N Categories and 'Other':")
+        print(filtered_user_category_profiles.head())
+        print(f"\nShape of filtered_user_category_profiles: {filtered_user_category_profiles.shape}")
+        
+        # Save the user_category_profiles to a file for future use
+        user_category_profiles_path = 'user_category_profiles.pkl'
+        filtered_user_category_profiles.to_pickle(user_category_profiles_path)
+        user_category_profiles = filtered_user_category_profiles
+        print(f"\nSaved user_category_profiles to {user_category_profiles_path}")
+    else:
+        local_model_path = hf_hub_download(
+            repo_id=f"Teemu5/news",
+            filename="user_category_profiles.pkl",
+            local_dir="models"
+        )
+        local_model_path = hf_hub_download(
+            repo_id=f"Teemu5/news",
+            filename="behaviors_df_processed.pkl",
+            local_dir="models"
+        )
+        user_category_profiles = pd.read_pickle("models/user_category_profiles.pkl")
+        behaviors_df = pd.read_pickle("models/behaviors_df_processed.pkl")
     print(f"Number of columns in user_category_profiles: {len(user_category_profiles.columns)}")
     print(f"Number of new column names: {len(actual_categories)}")
     # Number of unique users in behaviors_df
@@ -1296,8 +1309,20 @@ def build_and_load_weights(weights_file):
     model.load_weights(weights_file)
     return model
 
-def train_models():
-    init()
+def get_models():
+    news_file = 'news.tsv'
+    behaviors_file = 'behaviors.tsv'
+    data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters = init()
+    clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters = prepare_train_df(
+        data_dir=data_dir,
+        news_file=news_file,
+        behaviours_file=behaviors_file,
+        user_category_profiles=user_category_profiles,
+        num_clusters=3,
+        fraction=1,
+        max_title_length=30,
+        max_history_length=50
+    )
     models = train_cluster_models(
         clustered_data=clustered_data,
         tokenizer=tokenizer,

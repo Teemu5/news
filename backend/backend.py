@@ -9,7 +9,7 @@ import time
 from sklearn.metrics.pairwise import cosine_similarity
 from transformers import BertConfig
 from models import Model  # Your PyTorch model definition
-from utils import build_and_load_weights, train_models  # Helper that builds & loads a Keras model
+from utils import build_and_load_weights, get_models  # Helper that builds & loads a Keras model
 
 app = FastAPI(title="News Recommendation API")
 
@@ -122,7 +122,7 @@ def load_model_data():
         #model2 = build_and_load_weights('/app/models/fastformer_cluster_1_full_balanced_1_epoch.weights.h5')
         #model3 = build_and_load_weights('/app/models/fastformer_cluster_2_full_balanced_1_epoch.weights.h5')
         # OR TRAIN MODELS
-        model1, model2, model3 = train_models()
+        model1, model2, model3 = get_models()
         # Load pickled data
         with open('/app/data/user_profiles.pkl', 'rb') as f:
             user_profiles = pickle.load(f)
