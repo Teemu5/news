@@ -1008,16 +1008,21 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
         weights_file = f'{m_name}.weights.h5'
         model_file = f'{m_name}.keras'
         model_h5_file = f'{m_name}.h5'
+        model_hdf5_file = f'{m_name}.hdf5'
         model_json_file = f'{m_name}.json'
         if cluster in load_models: # load_models should be list of number indicating which models to load and not train
-            print(f"\nLoading model for Cluster {cluster} from {weights_file}")
+            print(f"\nLoading model for Cluster {cluster} from {model_hdf5_file}")
             local_model_path = hf_hub_download(
                 repo_id=f"Teemu5/news",
-                filename=weights_file,
+                filename=model_hdf5_file,
                 local_dir="."
             )
-            model = build_and_load_weights(weights_file)
-            models[cluster] = model
+            from tensorflow.keras.utils import custom_object_scope
+            with custom_object_scope({'UserEncoder': UserEncoder, 'NewsEncoder': NewsEncoder}):
+                model = tf.keras.models.load_model(model_hdf5_file)#build_and_load_weights(weights_file)
+                models[cluster] = model
+            #model.save(model_file)
+            #print(f"Saved model for Cluster {cluster} into {model_file}.")
             continue
         print(f"\nTraining model for Cluster {cluster} into {weights_file}")
         # Retrieve training and validation data
