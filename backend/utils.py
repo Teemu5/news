@@ -912,9 +912,18 @@ class UserEncoder(Layer):
         config = super(UserEncoder, self).get_config()
         config.update({
             'embedding_dim': self.embedding_dim,
+            'news_encoder_layer': tf.keras.utils.serialize_keras_object(self.news_encoder_layer),
         })
         return config
-
+    @classmethod
+    def from_config(cls, config):
+        # Extract the serialized news_encoder_layer config
+        news_encoder_config = config.pop("news_encoder_layer")
+        # Reconstruct the news_encoder_layer instance
+        news_encoder_layer = tf.keras.utils.deserialize_keras_object(
+            news_encoder_config, custom_objects={'NewsEncoder': NewsEncoder}
+        )
+        return cls(news_encoder_layer, **config)
 # --- [Build Model Function] ---
 def build_model(vocab_size, max_title_length=30, max_history_length=50, embedding_dim=256, nb_head=8, size_per_head=32, dropout_rate=0.2):
     # Define Inputs
@@ -997,7 +1006,8 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
     for cluster in range(num_clusters):
         m_name = f'fastformer_cluster_{cluster}_full_balanced_1_epoch'
         weights_file = f'{m_name}.weights.h5'
-        model_file = f'{m_name}.h5'
+        model_file = f'{m_name}.keras'
+        model_h5_file = f'{m_name}.h5'
         model_json_file = f'{m_name}.json'
         if cluster in load_models: # load_models should be list of number indicating which models to load and not train
             print(f"\nLoading model for Cluster {cluster} from {weights_file}")
@@ -1006,12 +1016,7 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
                 filename=weights_file,
                 local_dir="."
             )
-            local_model_path = hf_hub_download(
-                repo_id=f"Teemu5/news",
-                filename=model_json_file,
-                local_dir="."
-            )
-            model = load_model_and_weights(weights_file, model_json_file)
+            model = build_and_load_weights(weights_file)
             models[cluster] = model
             continue
         print(f"\nTraining model for Cluster {cluster} into {weights_file}")
@@ -1068,6 +1073,8 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
         # Save model weights
         model.save_weights(weights_file)
         print(f"Saved model weights for Cluster {cluster} into {weights_file}.")
+        model.save(model_h5_file)
+        print(f"Saved h5 model for Cluster {cluster} into {model_h5_file}.")
         model.save(model_file)
         print(f"Saved model for Cluster {cluster} into {model_file}.")
 
@@ -1319,8 +1326,10 @@ def load_model_and_weights(weights_file, model_json_file):
     json_file = open(model_json_file, 'r')
     loaded_model_json = json_file.read()
     json_file.close()
-    model = model_from_json(loaded_model_json)
-    model.load_weights(weights_file)
+    with tf.keras.utils.custom_object_scope({'UserEncoder': UserEncoder,
+                                             'NewsEncoder': NewsEncoder}):
+        model = model_from_json(loaded_model_json)
+        model.load_weights(weights_file)
 def get_models(process_dfs = False, process_behaviors = False):
     news_file = 'news.tsv'
     behaviors_file = 'behaviors.tsv'
