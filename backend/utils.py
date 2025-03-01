@@ -791,7 +791,7 @@ class Fastformer(Layer):
 
 @register_keras_serializable()
 class NewsEncoder(Layer):
-    def __init__(self, vocab_size, embedding_dim=256, dropout_rate=0.2, nb_head=8, size_per_head=32, **kwargs):
+    def __init__(self, vocab_size, embedding_dim=256, dropout_rate=0.2, nb_head=8, size_per_head=32, embedding_layer=None, **kwargs):
         super(NewsEncoder, self).__init__(**kwargs)
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
@@ -846,9 +846,16 @@ class NewsEncoder(Layer):
             'embedding_dim': self.embedding_dim,
             'dropout_rate': self.dropout_rate,
             'nb_head': self.nb_head,
-            'size_per_head': self.size_per_head
+            'size_per_head': self.size_per_head,
+            'embedding_layer': tf.keras.utils.serialize_keras_object(self.embedding_layer)
         })
         return config
+
+    @classmethod
+    def from_config(cls, config):
+        embedding_layer_config = config.pop('embedding_layer', None)
+        embedding_layer = tf.keras.layers.deserialize(embedding_layer_config) if embedding_layer_config else None
+        return cls(embedding_layer=embedding_layer, **config)
 
 @register_keras_serializable()
 class MaskLayer(Layer):
@@ -1008,6 +1015,7 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
         weights_file = f'{m_name}.weights.h5'
         model_file = f'{m_name}.keras'
         model_h5_file = f'{m_name}.h5'
+        model_hdf5_file = f'{m_name}.hdf5'
         model_json_file = f'{m_name}.json'
         if cluster in load_models: # load_models should be list of number indicating which models to load and not train
             print(f"\nLoading model for Cluster {cluster} from {weights_file}")
@@ -1023,10 +1031,10 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
             )
             from tensorflow.keras.utils import custom_object_scope
             with custom_object_scope({'UserEncoder': UserEncoder, 'NewsEncoder': NewsEncoder}):
-                model = build_and_load_weights(weights_file)
-                model.save(model_h5_file)
-                print(f"Saved model for Cluster {cluster} into {model_h5_file}.")
-                model = tf.keras.models.load_model(model_h5_file)#build_and_load_weights(weights_file)
+                model = tf.keras.models.load_model(model_hdf5_file)#build_and_load_weights(weights_file)
+                model.save(model_file)
+                print(f"Saved model for Cluster {cluster} into {model_file}.")
+                model = tf.keras.models.load_model(model_file)#build_and_load_weights(weights_file)
                 models[cluster] = model
             #model.save(model_file)
             #print(f"Saved model for Cluster {cluster} into {model_file}.")
