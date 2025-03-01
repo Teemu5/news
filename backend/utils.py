@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import Sequence
-from keras.models import Model
+from keras.models import Model, model_from_json
 from tensorflow.keras.layers import Input, Dot, Activation
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, CSVLogger
@@ -998,6 +998,7 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
         m_name = f'fastformer_cluster_{cluster}_full_balanced_1_epoch'
         weights_file = f'{m_name}.weights.h5'
         model_file = f'{m_name}.h5'
+        model_json_file = f'{m_name}.json'
         if cluster in load_models: # load_models should be list of number indicating which models to load and not train
             print(f"\nLoading model for Cluster {cluster} from {weights_file}")
             local_model_path = hf_hub_download(
@@ -1005,7 +1006,12 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
                 filename=weights_file,
                 local_dir="."
             )
-            model = build_and_load_weights(weights_file)
+            local_model_path = hf_hub_download(
+                repo_id=f"Teemu5/news",
+                filename=model_json_file,
+                local_dir="."
+            )
+            model = load_model_and_weights(weights_file, model_json_file)
             models[cluster] = model
             continue
         print(f"\nTraining model for Cluster {cluster} into {weights_file}")
@@ -1309,7 +1315,12 @@ def build_and_load_weights(weights_file):
     #model.build(input_shapes)
     model.load_weights(weights_file)
     return model
-
+def load_model_and_weights(weights_file, model_json_file):
+    json_file = open(model_json_file, 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    model = model_from_json(loaded_model_json)
+    model.load_weights(weights_file)
 def get_models(process_dfs = False, process_behaviors = False):
     news_file = 'news.tsv'
     behaviors_file = 'behaviors.tsv'

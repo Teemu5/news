@@ -13,5 +13,6 @@ datasets
 fastapi
 uvicorn
 pydantic
-tensorflow>=2.8.0
+tensorflow
+keras
 huggingface_hub
