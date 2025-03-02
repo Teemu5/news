@@ -1018,12 +1018,20 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
         model_hdf5_file = f'{m_name}.hdf5'
         model_json_file = f'{m_name}.json'
         if cluster in load_models: # load_models should be list of number indicating which models to load and not train
-            print(f"\nLoading model for Cluster {cluster} from {model_hdf5_file}")
+            print(f"\nLoading model for Cluster {cluster} from {model_file}")
             local_model_path = hf_hub_download(
                 repo_id=f"Teemu5/news",
-                filename=model_hdf5_file,
+                filename=model_file,
                 local_dir="."
             )
+            import tensorflow as tf
+            import keras
+            import os
+            entries = os.listdir('.')
+            for entry in entries:
+                print(entry)
+            print(tf.__version__)
+            print(keras.__version__)
             from tensorflow.keras.utils import custom_object_scope
             with custom_object_scope({'UserEncoder': UserEncoder, 'NewsEncoder': NewsEncoder}):
                 model = tf.keras.models.load_model(model_file)#build_and_load_weights(weights_file)

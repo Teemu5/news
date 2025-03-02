@@ -1,5 +1,12 @@
 import numpy as np
-from utils import tokenize_input
+#from utils import tokenize_input
+def tokenize_input(input_text: str):
+    """
+    Dummy preprocessing to transform raw input text into the 
+    required input shape for Keras ensemble models.
+    !! Replace this with your actual text preprocessing. !!
+    """
+    return np.array([[len(input_text), 1]])
 
 def fastformer_model1_predict(input_text: str, model):
     input_arr = tokenize_input(input_text)
