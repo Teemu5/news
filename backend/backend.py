@@ -10,6 +10,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 from transformers import BertConfig
 from models import Model  # Your PyTorch model definition
 from utils import build_and_load_weights, get_models  # Helper that builds & loads a Keras model
+from recommender import (  # import functions from recommender module
+    fastformer_model1_predict,
+    fastformer_model2_predict,
+    fastformer_model3_predict,
+    ensemble_bagging,
+    ensemble_boosting,
+    train_stacking_meta_model,
+    ensemble_stacking,
+    hybrid_ensemble
+)
 
 app = FastAPI(title="News Recommendation API")
 
@@ -46,62 +56,6 @@ def tokenize_input(input_text: str):
     Replace this with your actual text preprocessing.
     """
     return np.array([[len(input_text), 1]])
-
-# ---------------------------
-# Ensemble Prediction Functions (Keras Models)
-# ---------------------------
-def fastformer_model1_predict(input_text: str) -> np.ndarray:
-    input_arr = tokenize_input(input_text)
-    preds = model1.predict(input_arr)
-    return preds[0]
-
-def fastformer_model2_predict(input_text: str) -> np.ndarray:
-    input_arr = tokenize_input(input_text)
-    preds = model2.predict(input_arr)
-    return preds[0]
-
-def fastformer_model3_predict(input_text: str) -> np.ndarray:
-    input_arr = tokenize_input(input_text)
-    preds = model3.predict(input_arr)
-    return preds[0]
-
-def ensemble_bagging(input_text: str) -> np.ndarray:
-    y1 = fastformer_model1_predict(input_text)
-    y2 = fastformer_model2_predict(input_text)
-    y3 = fastformer_model3_predict(input_text)
-    predictions = np.vstack([y1, y2, y3])
-    return np.mean(predictions, axis=0)
-
-def ensemble_boosting(input_text: str, errors: np.ndarray) -> np.ndarray:
-    y1 = fastformer_model1_predict(input_text)
-    y2 = fastformer_model2_predict(input_text)
-    y3 = fastformer_model3_predict(input_text)
-    predictions = np.vstack([y1, y2, y3])
-    errors = np.where(errors == 0, 1e-6, errors)
-    weights = 1 / errors
-    weights = weights / np.sum(weights)
-    return np.average(predictions, axis=0, weights=weights)
-
-def train_stacking_meta_model(X_train: np.ndarray, y_train: np.ndarray):
-    from sklearn.linear_model import LogisticRegression
-    meta_model = LogisticRegression()
-    meta_model.fit(X_train, y_train)
-    return meta_model
-
-def ensemble_stacking(input_text: str, meta_model) -> np.ndarray:
-    y1 = fastformer_model1_predict(input_text)
-    y2 = fastformer_model2_predict(input_text)
-    y3 = fastformer_model3_predict(input_text)
-    X = np.vstack([y1, y2, y3]).T  # each column is one model's prediction
-    final_predictions = meta_model.predict_proba(X)[:, 1]
-    return final_predictions
-
-def hybrid_ensemble(input_text: str, boosting_errors: np.ndarray, stacking_meta_model) -> np.ndarray:
-    bagging_pred = ensemble_bagging(input_text)
-    boosting_pred = ensemble_boosting(input_text, boosting_errors)
-    stacking_pred = ensemble_stacking(input_text, stacking_meta_model)
-    final_prediction = (bagging_pred + boosting_pred + stacking_pred) / 3
-    return final_prediction
 
 # ---------------------------
 # Startup: Load Models and Data
