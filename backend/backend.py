@@ -9,11 +9,9 @@ import time
 from sklearn.metrics.pairwise import cosine_similarity
 from transformers import BertConfig
 from models import Model  # Your PyTorch model definition
-from utils import build_and_load_weights, get_models  # Helper that builds & loads a Keras model
+from utils import build_and_load_weights, get_models, generate_input_tensors_for_user  # Helper that builds & loads a Keras model
 from recommender import (  # import functions from recommender module
-    fastformer_model1_predict,
-    fastformer_model2_predict,
-    fastformer_model3_predict,
+    fastformer_model_predict,
     ensemble_bagging,
     ensemble_boosting,
     train_stacking_meta_model,
@@ -35,16 +33,10 @@ app.add_middleware(
 # Global variables for data and models
 user_profiles = {}
 tfidf_matrix = None
-news_df = None
 fastformer_user_profiles = {}
 
 # PyTorch fastformer model (for fastformer method)
 pt_model = None
-
-# Keras ensemble models (for ensemble methods)
-model1 = None
-model2 = None
-model3 = None
 
 # ---------------------------
 # Dummy Preprocessing Function
@@ -62,7 +54,7 @@ def tokenize_input(input_text: str):
 # ---------------------------
 @app.on_event("startup")
 def load_model_data():
-    global user_profiles, tfidf_matrix, news_df, fastformer_user_profiles
+    global user_profiles, tfidf_matrix, fastformer_user_profiles, news_df, behaviors_df, tokenizer, models_dict
     global pt_model, model1, model2, model3
     try:
         # Load PyTorch fastformer model
@@ -76,7 +68,7 @@ def load_model_data():
         #model2 = build_and_load_weights('/app/models/fastformer_cluster_1_full_balanced_1_epoch.weights.h5')
         #model3 = build_and_load_weights('/app/models/fastformer_cluster_2_full_balanced_1_epoch.weights.h5')
         # OR TRAIN MODELS
-        model1, model2, model3 = get_models()
+        models_dict, news_df, behaviors_df, tokenizer = get_models()
         # Load pickled data
         with open('/app/data/user_profiles.pkl', 'rb') as f:
             user_profiles = pickle.load(f)
@@ -121,32 +113,29 @@ async def get_recommendations(
                 raise HTTPException(status_code=400, detail="Ensemble method not specified")
             # Use a dummy input string based on the user_id for ensemble predictions.
             input_text = "dummy input: " + user_id
+            history_tensor, candidate_tensor = generate_input_tensors_for_user(user_id, news_df, behaviors_df, tokenizer, max_history_length=50, max_title_length=30)
             if ensemble_method.lower() == "bagging":
-                final_scores = ensemble_bagging(input_text)
+                final_scores = ensemble_bagging(history_tensor, candidate_tensor, models_dict)
             elif ensemble_method.lower() == "boosting":
                 dummy_errors = np.array([0.2, 0.15, 0.25])
-                final_scores = ensemble_boosting(input_text, dummy_errors)
+                final_scores = ensemble_boosting(history_tensor, candidate_tensor, models_dict, dummy_errors)
             elif ensemble_method.lower() == "stacking":
-                X_train_dummy = np.array([
-                    [0.80, 0.75, 0.85],
-                    [0.55, 0.60, 0.50],
-                    [0.30, 0.35, 0.25],
-                    [0.20, 0.25, 0.15]
-                ])
+                X_train_dummy = np.array([[0.80, 0.75, 0.85],
+                                        [0.55, 0.60, 0.50],
+                                        [0.30, 0.35, 0.25],
+                                        [0.20, 0.25, 0.15]])
                 y_train_dummy = np.array([1, 0, 1, 0])
                 meta_model = train_stacking_meta_model(X_train_dummy, y_train_dummy)
-                final_scores = ensemble_stacking(input_text, meta_model)
+                final_scores = ensemble_stacking(history_tensor, candidate_tensor, models_dict, meta_model)
             elif ensemble_method.lower() == "hybrid":
                 dummy_errors = np.array([0.2, 0.15, 0.25])
-                X_train_dummy = np.array([
-                    [0.80, 0.75, 0.85],
-                    [0.55, 0.60, 0.50],
-                    [0.30, 0.35, 0.25],
-                    [0.20, 0.25, 0.15]
-                ])
+                X_train_dummy = np.array([[0.80, 0.75, 0.85],
+                                        [0.55, 0.60, 0.50],
+                                        [0.30, 0.35, 0.25],
+                                        [0.20, 0.25, 0.15]])
                 y_train_dummy = np.array([1, 0, 1, 0])
                 meta_model = train_stacking_meta_model(X_train_dummy, y_train_dummy)
-                final_scores = hybrid_ensemble(input_text, dummy_errors, meta_model)
+                final_scores = hybrid_ensemble(history_tensor, candidate_tensor, models_dict, dummy_errors, meta_model)
             else:
                 raise HTTPException(status_code=400, detail="Invalid ensemble method specified")
             
