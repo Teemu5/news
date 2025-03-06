@@ -26,6 +26,74 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 
+def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behaviors_df: pd.DataFrame, tokenizer, max_history_length=50, max_title_length=30):
+    """
+    Generate input tensors for a given user based on the MIND test dataset.
+    
+    Parameters:
+      - user_id: The unique identifier of the user.
+      - news_df: DataFrame containing news data with at least columns 'NewsID' and 'Title'.
+      - behaviors_df: DataFrame containing user behaviors with columns such as 'UserID', 'HistoryText', and 'Impressions'.
+      - tokenizer: A fitted tokenizer to convert text to sequences.
+      - max_history_length: Maximum number of historical news articles to consider.
+      - max_title_length: Maximum token length for each news title.
+      
+    Returns:
+      - history_tensor: Tensor of shape (1, max_history_length, max_title_length) representing the user's news history.
+      - candidate_tensor: Tensor of shape (1, max_title_length) representing one candidate news article.
+    """
+    # Filter behaviors for the given user_id
+    user_behaviors = behaviors_df[behaviors_df['UserID'] == user_id]
+    if user_behaviors.empty:
+        raise ValueError(f"No behaviors found for user_id {user_id}")
+    
+    # For demonstration, pick the first behavior sample for the user.
+    sample = user_behaviors.iloc[0]
+    
+    # Process user's history: HistoryText is a space-separated string of NewsIDs
+    history_text = sample['HistoryText']
+    history_ids = history_text.split() if pd.notna(history_text) else []
+    
+    # Create a dictionary mapping NewsID to Title from news_df
+    news_dict = dict(zip(news_df['NewsID'], news_df['Title']))
+    
+    # Retrieve titles for each news ID in the history (default to empty string if missing)
+    history_titles = [news_dict.get(nid, "") for nid in history_ids]
+    
+    # Convert history titles to sequences using the tokenizer
+    history_sequences = tokenizer.texts_to_sequences(history_titles)
+    # Pad each sequence to the fixed length (max_title_length)
+    history_padded = pad_sequences(history_sequences, maxlen=max_title_length, 
+                                   padding='post', truncating='post', value=0)
+    
+    # Ensure the history has exactly max_history_length rows:
+    if history_padded.shape[0] < max_history_length:
+        # Pre-pad with zeros if there are fewer history items
+        pad_rows = np.zeros((max_history_length - history_padded.shape[0], max_title_length), dtype=int)
+        history_padded = np.vstack([pad_rows, history_padded])
+    else:
+        # If there are more than max_history_length, take the last max_history_length items (assuming recency)
+        history_padded = history_padded[-max_history_length:]
+    
+    # Process candidate news: Impressions is a space-separated list like "newsID-label newsID-label ..."
+    impressions = sample['Impressions']
+    if pd.isna(impressions) or impressions.strip() == "":
+        raise ValueError(f"No candidate impressions available for user_id {user_id}")
+    first_candidate = impressions.split()[0]  # Take the first candidate
+    candidate_news_id = first_candidate.split('-')[0]
+    candidate_title = news_dict.get(candidate_news_id, "")
+    
+    # Tokenize and pad candidate title
+    candidate_sequence = tokenizer.texts_to_sequences([candidate_title])
+    candidate_padded = pad_sequences(candidate_sequence, maxlen=max_title_length, 
+                                     padding='post', truncating='post', value=0)[0]
+    
+    # Convert the padded sequences to TensorFlow tensors
+    history_tensor = tf.convert_to_tensor([history_padded], dtype=tf.int32)      # Shape: (1, max_history_length, max_title_length)
+    candidate_tensor = tf.convert_to_tensor([candidate_padded], dtype=tf.int32)  # Shape: (1, max_title_length)
+    
+    return history_tensor, candidate_tensor
+
 def is_colab():
     return 'COLAB_GPU' in os.environ
 def init(process_dfs = False, process_behaviors = False):
@@ -1376,4 +1444,4 @@ def get_models(process_dfs = False, process_behaviors = False):
         epochs=1,
         load_models=[0,1,2,3]
     )
-    return models
+    return models, news_df, behaviors_df, tokenizer
