@@ -8,6 +8,7 @@ Fastformer/datasets/*
 Fastformer/user_models/*
 models/*
 *.h5
+*.hdf5
 *.vec
 *.tsv
 *.zip
