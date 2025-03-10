@@ -26,73 +26,131 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 
-def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behaviors_df: pd.DataFrame, tokenizer, max_history_length=50, max_title_length=30):
+from datetime import datetime, timedelta
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behaviors_df: pd.DataFrame, tokenizer, 
+                                    max_history_length=50, max_title_length=30, candidate_timeframe_hours=24,
+                                    current_date: datetime = None, max_candidates=-1):
     """
-    Generate input tensors for a given user based on the MIND test dataset.
+    Generate input tensors for a given user for news recommendation.
+    
+    Since the news_df does not contain publication dates, candidate filtering is done 
+    using the 'Time' field in the behaviors dataset. Specifically, it:
+      - Filters all behavior samples for the user that occurred within the last `candidate_timeframe_hours`
+        relative to `current_date`.
+      - Extracts all candidate news IDs from the Impressions fields of those behavior samples.
+      - Removes any candidate already in the user's history.
+      - Retrieves the candidate news articles from news_df and creates padded candidate tensors.
+      - Also builds the user's history tensor from the latest behavior sample.
+      - Prints all candidate information along with the behavior time from which they were collected.
     
     Parameters:
-      - user_id: The unique identifier of the user.
-      - news_df: DataFrame containing news data with at least columns 'NewsID' and 'Title'.
-      - behaviors_df: DataFrame containing user behaviors with columns such as 'UserID', 'HistoryText', and 'Impressions'.
-      - tokenizer: A fitted tokenizer to convert text to sequences.
-      - max_history_length: Maximum number of historical news articles to consider.
-      - max_title_length: Maximum token length for each news title.
-      
+      - user_id: The unique identifier for the user.
+      - news_df: DataFrame with news data; must include at least "NewsID" and "Title".
+      - behaviors_df: DataFrame with user behavior data; must include "UserID", "Time", "HistoryText", and "Impressions".
+      - tokenizer: A fitted tokenizer.
+      - max_history_length: Maximum number of articles in user history.
+      - max_title_length: Maximum token length for each article title.
+      - candidate_timeframe_hours: Only consider behavior samples within the last these hours (relative to current_date).
+      - current_date: The reference date (as a datetime object) to use as "now". Defaults to datetime.now() if None.
+      - max_candidates: If > 0, limit the number of candidate articles.
+    
     Returns:
-      - history_tensor: Tensor of shape (1, max_history_length, max_title_length) representing the user's news history.
-      - candidate_tensor: Tensor of shape (1, max_title_length) representing one candidate news article.
+      - history_tensor: TensorFlow tensor of shape (1, max_history_length, max_title_length) representing the user's history.
+      - candidate_tensors: List of TensorFlow tensors for each candidate article.
+      - candidate_ids: List of candidate NewsIDs.
     """
+    # Use provided current_date or default to now.
+    if current_date is None:
+        current_date = datetime.now()
+    
+    # Ensure the "Time" column is in datetime format
+    if not np.issubdtype(behaviors_df['Time'].dtype, np.datetime64):
+        behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    
     # Filter behaviors for the given user_id
     user_behaviors = behaviors_df[behaviors_df['UserID'] == user_id]
     if user_behaviors.empty:
         raise ValueError(f"No behaviors found for user_id {user_id}")
     
-    # For demonstration, pick the first behavior sample for the user.
-    sample = user_behaviors.iloc[0]
+    # Filter behavior samples within the desired timeframe (last candidate_timeframe_hours)
+    #cutoff_time = current_date - timedelta(hours=candidate_timeframe_hours)
+    cutoff_time = np.datetime64(current_date - timedelta(hours=candidate_timeframe_hours))
+    recent_behaviors = user_behaviors[user_behaviors['Time'] >= cutoff_time]
+    print(f"Cutoff date (current_date - {candidate_timeframe_hours} hours): {cutoff_time}")
     
-    # Process user's history: HistoryText is a space-separated string of NewsIDs
-    history_text = sample['HistoryText']
+    if recent_behaviors.empty:
+        raise ValueError("No behavior samples found within the desired timeframe.")
+    
+    # Extract candidate news IDs from all recent behaviors' Impressions
+    candidate_ids_set = set()
+    # Optionally, also print the Time for each behavior sample considered
+    for idx, row in recent_behaviors.iterrows():
+        behavior_time = row['Time']
+        impressions = row['Impressions']
+        if pd.isna(impressions) or impressions.strip() == "":
+            continue
+        # Each impression is in "newsID-label" format; extract newsID
+        for imp in impressions.split():
+            candidate_news_id = imp.split('-')[0]
+            candidate_ids_set.add(candidate_news_id)
+        print(f"Behavior at {behavior_time}: extracted impressions -> {impressions}")
+    
+    # Use the latest behavior sample for the user's history
+    latest_sample = user_behaviors.iloc[-1]
+    history_text = latest_sample['HistoryText']
     history_ids = history_text.split() if pd.notna(history_text) else []
     
-    # Create a dictionary mapping NewsID to Title from news_df
+    # Remove articles already read (in history) from candidate set
+    candidate_ids_set = candidate_ids_set - set(history_ids)
+    
+    # Now, filter the news_df to get candidate articles with these NewsIDs
+    candidates_df = news_df[news_df['NewsID'].isin(candidate_ids_set)]
+    if candidates_df.empty:
+        raise ValueError("No candidate articles found in news_df matching the filtered candidate IDs.")
+    
+    candidate_tensors = []
+    candidate_ids = []
+    # Print full candidate info for debugging
+    for _, row in candidates_df.iterrows():
+        cand_info = row.to_dict()
+        print("Candidate Info:", cand_info)
+        
+        candidate_news_id = row['NewsID']
+        candidate_title = row['Title']
+        candidate_sequence = tokenizer.texts_to_sequences([candidate_title])
+        candidate_padded = pad_sequences(candidate_sequence, maxlen=max_title_length, padding='post', truncating='post', value=0)[0]
+        candidate_tensor = tf.convert_to_tensor([candidate_padded], dtype=tf.int32)  # Shape: (1, max_title_length)
+        candidate_tensors.append(candidate_tensor)
+        candidate_ids.append(candidate_news_id)
+    
+    # Optionally limit the number of candidates if max_candidates > 0
+    if max_candidates > 0:
+        candidate_tensors = candidate_tensors[:max_candidates]
+        candidate_ids = candidate_ids[:max_candidates]
+    
+    # Build the history tensor (from the latest sample)
     news_dict = dict(zip(news_df['NewsID'], news_df['Title']))
-    
-    # Retrieve titles for each news ID in the history (default to empty string if missing)
     history_titles = [news_dict.get(nid, "") for nid in history_ids]
-    
-    # Convert history titles to sequences using the tokenizer
     history_sequences = tokenizer.texts_to_sequences(history_titles)
-    # Pad each sequence to the fixed length (max_title_length)
-    history_padded = pad_sequences(history_sequences, maxlen=max_title_length, 
-                                   padding='post', truncating='post', value=0)
-    
-    # Ensure the history has exactly max_history_length rows:
+    history_padded = pad_sequences(history_sequences, maxlen=max_title_length, padding='post', truncating='post', value=0)
     if history_padded.shape[0] < max_history_length:
-        # Pre-pad with zeros if there are fewer history items
         pad_rows = np.zeros((max_history_length - history_padded.shape[0], max_title_length), dtype=int)
         history_padded = np.vstack([pad_rows, history_padded])
     else:
-        # If there are more than max_history_length, take the last max_history_length items (assuming recency)
         history_padded = history_padded[-max_history_length:]
+    history_tensor = tf.convert_to_tensor([history_padded], dtype=tf.int32)
     
-    # Process candidate news: Impressions is a space-separated list like "newsID-label newsID-label ..."
-    impressions = sample['Impressions']
-    if pd.isna(impressions) or impressions.strip() == "":
-        raise ValueError(f"No candidate impressions available for user_id {user_id}")
-    first_candidate = impressions.split()[0]  # Take the first candidate
-    candidate_news_id = first_candidate.split('-')[0]
-    candidate_title = news_dict.get(candidate_news_id, "")
+    print(f"User {user_id} history tensor shape: {history_tensor.shape}")
+    print(f"Number of candidate articles selected: {len(candidate_tensors)}")
     
-    # Tokenize and pad candidate title
-    candidate_sequence = tokenizer.texts_to_sequences([candidate_title])
-    candidate_padded = pad_sequences(candidate_sequence, maxlen=max_title_length, 
-                                     padding='post', truncating='post', value=0)[0]
-    
-    # Convert the padded sequences to TensorFlow tensors
-    history_tensor = tf.convert_to_tensor([history_padded], dtype=tf.int32)      # Shape: (1, max_history_length, max_title_length)
-    candidate_tensor = tf.convert_to_tensor([candidate_padded], dtype=tf.int32)  # Shape: (1, max_title_length)
-    
-    return history_tensor, candidate_tensor
+    return history_tensor, candidate_tensors, candidate_ids
+
+
+
 
 def is_colab():
     return 'COLAB_GPU' in os.environ
