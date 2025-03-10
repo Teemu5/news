@@ -6,6 +6,7 @@ import os
 import torch
 import pandas as pd
 import time
+import datetime
 from sklearn.metrics.pairwise import cosine_similarity
 from transformers import BertConfig
 from models import Model  # Your PyTorch model definition
@@ -18,6 +19,7 @@ from recommender import (  # import functions from recommender module
     ensemble_stacking,
     hybrid_ensemble
 )
+from dateutil.parser import isoparse
 
 app = FastAPI(title="News Recommendation API")
 
@@ -93,14 +95,14 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "up"}
-
 @app.get("/recommendations/{user_id}")
 async def get_recommendations(
     user_id: str = Path(..., description="The unique identifier of the user"),
-    method: str = Query("tfidf", description="Recommendation method: 'tfidf', 'fastformer', or 'ensemble'")
+    method: str = Query("tfidf", description="Recommendation method: 'tfidf', 'fastformer', or 'ensemble'"),
+    ref_date: str = Query(None, description="Optional reference date in ISO format (e.g. 2023-02-01T00:00:00)"),
+    max_candidates: int = Query(-1, description="Optional maximum number of candidate articles to consider")
 ):
-    ensemble_method = method
-    global user_profiles, tfidf_matrix, news_df, fastformer_user_profiles, pt_model, model1, model2, model3
+    global user_profiles, tfidf_matrix, news_df, fastformer_user_profiles, pt_model, models_dict
     if tfidf_matrix is None or user_profiles is None or news_df is None:
         raise HTTPException(status_code=500, detail="Model data not loaded")
     
@@ -108,40 +110,74 @@ async def get_recommendations(
         raise HTTPException(status_code=404, detail="User profile not found")
     
     try:
+        # Parse the reference date if provided
+        current_date = None
+        if ref_date:
+            try:
+                #current_date = datetime.fromisoformat(ref_date)
+                current_date = isoparse(ref_date)
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=f"Invalid date format (ref_date={ref_date}). Use ISO format (e.g. 2023-02-01T00:00:00)")
+        
+        # For ensemble methods, generate input tensors for all candidate articles based on the reference date and max_candidates.
         if method.lower() in ["bagging", "boosting", "stacking", "hybrid"]:
-            if ensemble_method is None:
-                raise HTTPException(status_code=400, detail="Ensemble method not specified")
-            # Use a dummy input string based on the user_id for ensemble predictions.
-            input_text = "dummy input: " + user_id
-            history_tensor, candidate_tensor = generate_input_tensors_for_user(user_id, news_df, behaviors_df, tokenizer, max_history_length=50, max_title_length=30)
-            if ensemble_method.lower() == "bagging":
-                final_scores = ensemble_bagging(history_tensor, candidate_tensor, models_dict)
-            elif ensemble_method.lower() == "boosting":
-                dummy_errors = np.array([0.2, 0.15, 0.25])
-                final_scores = ensemble_boosting(history_tensor, candidate_tensor, models_dict, dummy_errors)
-            elif ensemble_method.lower() == "stacking":
-                X_train_dummy = np.array([[0.80, 0.75, 0.85],
-                                        [0.55, 0.60, 0.50],
-                                        [0.30, 0.35, 0.25],
-                                        [0.20, 0.25, 0.15]])
-                y_train_dummy = np.array([1, 0, 1, 0])
-                meta_model = train_stacking_meta_model(X_train_dummy, y_train_dummy)
-                final_scores = ensemble_stacking(history_tensor, candidate_tensor, models_dict, meta_model)
-            elif ensemble_method.lower() == "hybrid":
-                dummy_errors = np.array([0.2, 0.15, 0.25])
-                X_train_dummy = np.array([[0.80, 0.75, 0.85],
-                                        [0.55, 0.60, 0.50],
-                                        [0.30, 0.35, 0.25],
-                                        [0.20, 0.25, 0.15]])
-                y_train_dummy = np.array([1, 0, 1, 0])
-                meta_model = train_stacking_meta_model(X_train_dummy, y_train_dummy)
-                final_scores = hybrid_ensemble(history_tensor, candidate_tensor, models_dict, dummy_errors, meta_model)
-            else:
-                raise HTTPException(status_code=400, detail="Invalid ensemble method specified")
+            history_tensor, candidate_tensors, candidate_ids = generate_input_tensors_for_user(
+                user_id, news_df, behaviors_df, tokenizer,
+                max_history_length=50, max_title_length=30,
+                candidate_timeframe_hours=24,
+                current_date=current_date,
+                max_candidates=max_candidates
+            )
+            candidate_scores = []
+            candidate_debug_info = []
+            for idx, candidate_tensor in enumerate(candidate_tensors):
+                cand_id = candidate_ids[idx]
+                cand_title_arr = news_df.loc[news_df['NewsID'] == cand_id, 'Title'].values
+                cand_title = cand_title_arr[0] if len(cand_title_arr) > 0 else "Unknown Title"
+                if method.lower() == "bagging":
+                    score = ensemble_bagging(history_tensor, candidate_tensor, models_dict)
+                elif method.lower() == "boosting":
+                    dummy_errors = np.array([0.2, 0.15, 0.25])
+                    score = ensemble_boosting(history_tensor, candidate_tensor, models_dict, dummy_errors)
+                elif method.lower() == "stacking":
+                    X_train_dummy = np.array([
+                        [0.80, 0.75, 0.85],
+                        [0.55, 0.60, 0.50],
+                        [0.30, 0.35, 0.25],
+                        [0.20, 0.25, 0.15]
+                    ])
+                    y_train_dummy = np.array([1, 0, 1, 0])
+                    meta_model = train_stacking_meta_model(X_train_dummy, y_train_dummy)
+                    score = ensemble_stacking(history_tensor, candidate_tensor, models_dict, meta_model)
+                elif method.lower() == "hybrid":
+                    dummy_errors = np.array([0.2, 0.15, 0.25])
+                    X_train_dummy = np.array([
+                        [0.80, 0.75, 0.85],
+                        [0.55, 0.60, 0.50],
+                        [0.30, 0.35, 0.25],
+                        [0.20, 0.25, 0.15]
+                    ])
+                    y_train_dummy = np.array([1, 0, 1, 0])
+                    meta_model = train_stacking_meta_model(X_train_dummy, y_train_dummy)
+                    score = hybrid_ensemble(history_tensor, candidate_tensor, models_dict, dummy_errors, meta_model)
+                else:
+                    raise HTTPException(status_code=400, detail="Invalid ensemble method specified")
+                candidate_scores.append(score)
+                candidate_debug_info.append({
+                    "NewsID": cand_id,
+                    "Title": cand_title,
+                    "Score": score
+                })
+                print(f"Candidate {idx}: NewsID={cand_id}, Title='{cand_title}', Score={score}")
             
+            candidate_scores = np.array(candidate_scores).flatten()
             top_n = 5
-            recommended_indices = np.argsort(final_scores)[-top_n:][::-1]
-
+            recommended_indices = np.argsort(candidate_scores)[-top_n:][::-1]
+            print("\nAll candidate scores:")
+            for info in candidate_debug_info:
+                print(info)
+            print("\nTop candidate indices:", recommended_indices)
+        
         elif method.lower() == "fastformer":
             if user_id not in fastformer_user_profiles:
                 raise HTTPException(status_code=404, detail="Fastformer user profile not found")
@@ -150,9 +186,8 @@ async def get_recommendations(
             user_vector = np.asarray(user_vector)
             log_ids = torch.LongTensor([user_vector]).to('cpu')
             dummy_targets = torch.zeros(log_ids.size(0), dtype=torch.long).to('cpu')
-            error_msg = ""
             with torch.no_grad():
-                predictions = pt_model(log_ids, dummy_targets, error_msg)
+                predictions = pt_model(log_ids, dummy_targets, "")
             if isinstance(predictions, tuple):
                 predictions = predictions[1]
             top_n = 5
@@ -166,8 +201,14 @@ async def get_recommendations(
             similarities = cosine_similarity(user_vector, tfidf_matrix)
             recommended_indices = similarities.argsort()[0][-5:][::-1]
         
-        # Retrieve article details from news_df
-        recommended_articles = news_df.iloc[recommended_indices][['Title', 'Abstract']].to_dict(orient='records')
+        # Retrieve article details from news_df using recommended_indices.
+        # Here, the recommended_indices from ensemble methods correspond to the index within candidate_ids.
+        if method.lower() in ["bagging", "boosting", "stacking", "hybrid"]:
+            recommended_ids = [candidate_ids[i] for i in recommended_indices]
+            recommended_articles = news_df[news_df['NewsID'].isin(recommended_ids)][['Title', 'Abstract']].to_dict(orient='records')
+        else:
+            recommended_articles = news_df.iloc[recommended_indices][['Title', 'Abstract']].to_dict(orient='records')
+        
         return recommended_articles
 
     except Exception as e:
