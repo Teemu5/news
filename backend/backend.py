@@ -10,7 +10,7 @@ import datetime
 from sklearn.metrics.pairwise import cosine_similarity
 from transformers import BertConfig
 from models import Model  # Your PyTorch model definition
-from utils import build_and_load_weights, get_models, generate_input_tensors_for_user  # Helper that builds & loads a Keras model
+from utils import build_and_load_weights, get_models, generate_input_tensors_for_user, ranking, run_experiments  # Helper that builds & loads a Keras model
 from recommender import (  # import functions from recommender module
     fastformer_model_predict,
     ensemble_bagging,
@@ -20,6 +20,7 @@ from recommender import (  # import functions from recommender module
     hybrid_ensemble
 )
 from dateutil.parser import isoparse
+import matplotlib.pyplot as plt
 
 app = FastAPI(title="News Recommendation API")
 
@@ -100,7 +101,9 @@ async def get_recommendations(
     user_id: str = Path(..., description="The unique identifier of the user"),
     method: str = Query("tfidf", description="Recommendation method: 'tfidf', 'fastformer', or 'ensemble'"),
     ref_date: str = Query(None, description="Optional reference date in ISO format (e.g. 2023-02-01T00:00:00)"),
-    max_candidates: int = Query(-1, description="Optional maximum number of candidate articles to consider")
+    max_candidates: int = Query(-1, description="Optional maximum number of candidate articles to consider"),
+    showArticles: int = Query(5, description="Number of articles fetched"),
+    timeframe: int = Query(24, description="Timeframe in hours to consider candidate articles")
 ):
     global user_profiles, tfidf_matrix, news_df, fastformer_user_profiles, pt_model, models_dict
     if tfidf_matrix is None or user_profiles is None or news_df is None:
@@ -114,20 +117,30 @@ async def get_recommendations(
         current_date = None
         if ref_date:
             try:
-                #current_date = datetime.fromisoformat(ref_date)
                 current_date = isoparse(ref_date)
             except Exception as e:
                 raise HTTPException(status_code=400, detail=f"Invalid date format (ref_date={ref_date}). Use ISO format (e.g. 2023-02-01T00:00:00)")
         
-        # For ensemble methods, generate input tensors for all candidate articles based on the reference date and max_candidates.
+        # For ensemble methods, generate input tensors for all candidate articles based on the provided timeframe.
         if method.lower() in ["bagging", "boosting", "stacking", "hybrid"]:
+            print(f"method:{method}")
+            # STAGE 1 CANDIDATE GENERATION
+            print(f"start stage 1")
             history_tensor, candidate_tensors, candidate_ids = generate_input_tensors_for_user(
                 user_id, news_df, behaviors_df, tokenizer,
                 max_history_length=50, max_title_length=30,
-                candidate_timeframe_hours=24,
+                candidate_timeframe_hours=timeframe,
                 current_date=current_date,
                 max_candidates=max_candidates
             )
+            print(f"Stage 1: {len(candidate_ids)} candidates generated.")
+
+            # Optionally, store candidate details from Stage 1 for analysis.
+            stage1_results = [{"NewsID": cid, "Title": news_df.loc[news_df['NewsID'] == cid, 'Title'].values[0]} for cid in candidate_ids]
+            
+            # STAGE 2: RANKING AND STAGE 3: ENSEMBLE AGGREGATION
+            # Stage 2: Candidate Ranking (for each candidate, get individual model scores)
+            print(f"start stage 2")
             candidate_scores = []
             candidate_debug_info = []
             for idx, candidate_tensor in enumerate(candidate_tensors):
@@ -169,14 +182,38 @@ async def get_recommendations(
                     "Score": score
                 })
                 print(f"Candidate {idx}: NewsID={cand_id}, Title='{cand_title}', Score={score}")
-            
-            candidate_scores = np.array(candidate_scores).flatten()
-            top_n = 5
+
+            # Compute statistics on Stage 2 scores
+            candidate_scores = scores_arr = np.array(candidate_scores).flatten()
+            print("Stage 2 Score Statistics:", {
+                "min": scores_arr.min(),
+                "max": scores_arr.max(),
+                "mean": scores_arr.mean(),
+                "std": scores_arr.std()
+            })
+            top_n = showArticles
             recommended_indices = np.argsort(candidate_scores)[-top_n:][::-1]
             print("\nAll candidate scores:")
             for info in candidate_debug_info:
                 print(info)
             print("\nTop candidate indices:", recommended_indices)
+            scores_arr = np.array(candidate_scores).flatten()
+            plt.hist(scores_arr, bins=10, color='skyblue', edgecolor='black')
+            plt.xlabel("Prediction Score")
+            plt.ylabel("Number of Candidates")
+            plt.title("Histogram of Stage 2 Prediction Scores")
+            plt.show()
+            # Optionally, save the figure:
+            plt.savefig("stage2_score_histogram.png")
+            # Stage 3: Ensemble Aggregation (if using multiple ensemble methods, compare their output)
+            # Here, we assume ensemble_bagging is the chosen method.
+            # If you want to test multiple methods, you can compute their scores and compare.
+            final_scores = scores_arr  # For simplicity, we use the bagging result as final.
+            top_indices = np.argsort(final_scores)[-top_n:][::-1]
+            final_debug_info = [candidate_debug_info[i] for i in top_indices]
+            print("Stage 3: Top candidates after ensemble aggregation:")
+            for info in final_debug_info:
+                print(info)
         
         elif method.lower() == "fastformer":
             if user_id not in fastformer_user_profiles:
@@ -202,12 +239,11 @@ async def get_recommendations(
             recommended_indices = similarities.argsort()[0][-5:][::-1]
         
         # Retrieve article details from news_df using recommended_indices.
-        # Here, the recommended_indices from ensemble methods correspond to the index within candidate_ids.
         if method.lower() in ["bagging", "boosting", "stacking", "hybrid"]:
             recommended_ids = [candidate_ids[i] for i in recommended_indices]
-            recommended_articles = news_df[news_df['NewsID'].isin(recommended_ids)][['Title', 'Abstract']].to_dict(orient='records')
+            recommended_articles = news_df[news_df['NewsID'].isin(recommended_ids)][['Title', 'Abstract']].fillna("").to_dict(orient='records')
         else:
-            recommended_articles = news_df.iloc[recommended_indices][['Title', 'Abstract']].to_dict(orient='records')
+            recommended_articles = news_df.iloc[recommended_indices][['Title', 'Abstract']].fillna("").to_dict(orient='records')
         
         return recommended_articles
 

@@ -58,13 +58,13 @@ def get_ground_truth_impressions(user_id: str, behaviors_df: pd.DataFrame, after
     # Ensure the Time column is datetime
     if not np.issubdtype(behaviors_df['Time'].dtype, np.datetime64):
         behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
-    ref_dt64 = np.datetime64(after_time)
+    
     # Filter behavior samples for the given user that occurred after the reference time.
-    future_behaviors = behaviors_df[(behaviors_df['UserID'] == user_id) & (behaviors_df['Time'] > ref_dt64)]
+    future_behaviors = behaviors_df[(behaviors_df['UserID'] == user_id) & (behaviors_df['Time'] > after_time)]
+    
     ground_truth_ids = set()
     for idx, row in future_behaviors.iterrows():
         impressions = row['Impressions']
-        print(f"For user:{user_id}, row{idx}:{row['Impressions']}")
         if pd.isna(impressions) or impressions.strip() == "":
             continue
         # Each impression is assumed to be in "newsID-label" format.
@@ -78,13 +78,12 @@ def get_ground_truth_impressions(user_id: str, behaviors_df: pd.DataFrame, after
                 continue
     return ground_truth_ids
 
-def get_ground_truth_clicks(impressions: set) -> set:
+def get_ground_truth_clicks(impressions: str) -> set:
     """
     Given an impressions string like "news1-0 news2-1 news3-0", return a set of NewsIDs that have a label of 1.
     """
     clicked = set()
-    for imp in impressions:
-        print(f"impression:{imp}")
+    for imp in impressions.split():
         try:
             news_id, label = imp.split('-')
             if int(label) == 1:
@@ -107,9 +106,8 @@ def ranking(recommended_ids, userID, k, ref_time):
     ground_truth_ids = get_ground_truth_clicks(ground_truth)
     precision, recall = compute_precision_recall_at_k(recommended_ids, ground_truth_ids, k)
     print(f"Precision@{k}: {precision:.2f}, Recall@{k}: {recall:.2f}")
-    return precision, recall
 
-def run_experiments(behaviors_df, models_dict, max_candidates=-1, test_user_count=1, n_dates=3, timeframe_hours=1, k=5, filter_method="both", tfidf_vectorizer=None):
+def run_experiments(behaviors_df, models_dict, test_user_count=10, n_dates=3, timeframe_hours=1, k=5, max_candidates=-1, filter_method="both", tfidf_vectorizer=None):
     # Assume behaviors_df has already been loaded and its "Time" column is datetime type.
     # Ensure "Time" is datetime.
     if not np.issubdtype(behaviors_df['Time'].dtype, np.datetime64):
@@ -139,7 +137,7 @@ def run_experiments(behaviors_df, models_dict, max_candidates=-1, test_user_coun
     print("Selected Reference Dates:", ref_dates)
     # List to store results
     results = []
-    ind_results = [[],[],[]]
+    
     # Iterate over each reference date and user
     for ref_date_str in ref_dates:
         try:
@@ -149,8 +147,6 @@ def run_experiments(behaviors_df, models_dict, max_candidates=-1, test_user_coun
             continue
         
         for user_id in test_user_ids:
-            user_data = behaviors_df[behaviors_df['UserID'] == user_id]
-            print(f"user_id:{user_id}, user_data:{user_data[['Time']]}")
             try:
                 start_time = time.time()
                 
@@ -160,44 +156,40 @@ def run_experiments(behaviors_df, models_dict, max_candidates=-1, test_user_coun
                     max_history_length=50, max_title_length=30,
                     candidate_timeframe_hours=timeframe_hours,
                     current_date=ref_date,
-                    max_candidates=max_candidates
+                    max_candidates=max_candidates,
+                    filter_method=filter_method,
+                    tfidf_vectorizer=tfidf_vectorizer
                 )
                 
                 # Stage 2: Compute prediction scores for each candidate using an ensemble method (e.g., bagging)
-                candidate_scores = candidate_individual_scores = []
+                candidate_scores = []
                 for idx, candidate_tensor in enumerate(candidate_tensors):
-                    score, individual_scores = ensemble_bagging(history_tensor, candidate_tensor, models_dict)
+                    score = ensemble_bagging(history_tensor, candidate_tensor, models_dict)
                     candidate_scores.append(score)
-                    candidate_individual_scores.append(individual_scores)
                 candidate_scores = np.array(candidate_scores).flatten()
-                def select_candidates(candidate_scores, candidate_ids, results, user_id, ref_date_str, k):
-                    # Rank candidates
-                    top_indices = np.argsort(candidate_scores)[-k:][::-1]
-                    recommended_ids = [candidate_ids[i] for i in top_indices]
-                    
-                    # Ground truth: Get clicked articles after ref_date
-                    #ground_truth_ids = get_ground_truth_clicks(user_id, behaviors_df, ref_date)
-                    #precision, recall = compute_precision_recall_at_k(recommended_ids, ground_truth_ids, k)
-                    precision, recall = ranking(recommended_ids, user_id, k, f"{ref_date}")
-                    
-                    end_time = time.time()
-                    inference_time = end_time - start_time
-                    
-                    results.append({
-                        "user_id": user_id,
-                        "ref_date": ref_date_str,
-                        "num_candidates": len(candidate_ids),
-                        "recommended_ids": recommended_ids,
-                        f"precision@{k}": precision,
-                        f"recall@{k}": recall,
-                        "inference_time": inference_time
-                    })
-                    print(f"User {user_id}, Ref Date {ref_date_str} -> Precision@{k}: {precision:.2f}, Recall@{k}: {recall:.2f}, Time: {inference_time:.2f}s")
-                select_candidates(candidate_scores, candidate_ids, results, user_id, ref_date_str, k)
-                #select_candidates(candidate_individual_scores[0, :], candidate_ids, ind_results[0], user_id, ref_date_str, k)
-                #select_candidates(candidate_individual_scores[1, :], candidate_ids, ind_results[1], user_id, ref_date_str, k)
-                #select_candidates(candidate_individual_scores[2, :], candidate_ids, ind_results[2], user_id, ref_date_str, k)
-
+                
+                # Rank candidates
+                top_indices = np.argsort(candidate_scores)[-k:][::-1]
+                recommended_ids = [candidate_ids[i] for i in top_indices]
+                
+                # Ground truth: Get clicked articles after ref_date
+                ground_truth_ids = get_ground_truth_clicks(user_id, behaviors_df, ref_date)
+                precision, recall = compute_precision_recall_at_k(recommended_ids, ground_truth_ids, k)
+                
+                end_time = time.time()
+                inference_time = end_time - start_time
+                
+                results.append({
+                    "user_id": user_id,
+                    "ref_date": ref_date_str,
+                    "num_candidates": len(candidate_ids),
+                    "recommended_ids": recommended_ids,
+                    "precision@K": precision,
+                    "recall@K": recall,
+                    "inference_time": inference_time
+                })
+                
+                print(f"User {user_id}, Ref Date {ref_date_str} -> Precision@{k}: {precision:.2f}, Recall@{k}: {recall:.2f}, Time: {inference_time:.2f}s")
             except Exception as e:
                 print(f"Error processing user {user_id} with ref_date {ref_date_str}: {e}")
                 continue
@@ -239,7 +231,6 @@ def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behavio
       - candidate_ids: List of candidate NewsIDs.
     """
     # Use provided current_date or default to now.
-    print(f"current_date:{current_date}")
     if current_date is None:
         current_date = datetime.now()
     
@@ -266,12 +257,8 @@ def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behavio
     #cutoff_time = current_date - timedelta(hours=candidate_timeframe_hours)
     # Getting all behaviors of the timeframe
     cutoff_time = np.datetime64(current_date - timedelta(hours=candidate_timeframe_hours))
-    print(f"cutoff_time:{cutoff_time}")
-    ref_dt64 = np.datetime64(current_date)
-    #recent_behaviors = user_behaviors[(behaviors_df['Time'] >= cutoff_time) & (behaviors_df['Time'] <= ref_dt64)]
     recent_behaviors = behaviors_df[behaviors_df['Time'] >= cutoff_time]
-    recent_behaviors = recent_behaviors[recent_behaviors['Time'] <= ref_dt64]
-    print(f"recent_behaviors:{recent_behaviors}")
+    recent_behaviors = recent_behaviors[recent_behaviors['Time'] <= current_date]
     print(f"Cutoff date (current_date - {candidate_timeframe_hours} hours): {cutoff_time}")
     
     if recent_behaviors.empty:
@@ -292,15 +279,8 @@ def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behavio
         print(f"Behavior at {behavior_time}: extracted impressions -> {impressions}")
         print(f"max_candidates:{max_candidates},len(candidate_ids_set):{len(candidate_ids_set)}")
         if max_candidates > 0 and max_candidates < len(candidate_ids_set):
-            impressions = get_ground_truth_impressions(user_id, behaviors_df, current_date)
-            future_clicked = [i.split("-")[0] for i in impressions]
-            print(f"impressions:{impressions}\nfuture_clicked:{future_clicked}\ncandidate_ids_set:{candidate_ids_set}")
-            if set(candidate_ids_set) & set(future_clicked):
-                print(f"At least 1 clicked article included: {set(candidate_ids_set)} & {set(future_clicked)}")
-                break
-            elif max_candidates*10 < len(candidate_ids_set):
-                print(f"max_candidates*10={max_candidates*10} < len(candidate_ids_set)={len(candidate_ids_set)}")
-                break    
+            break
+    
     # Use the latest behavior sample for the user's history
     latest_sample = user_behaviors.iloc[-1]
     history_text = latest_sample['HistoryText']

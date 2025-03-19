@@ -20,7 +20,7 @@ def ensemble_bagging(history_tensor, candidate_tensor, models: dict) -> np.ndarr
     y2 = fastformer_model_predict(history_tensor, candidate_tensor, models[1])
     y3 = fastformer_model_predict(history_tensor, candidate_tensor, models[2])
     predictions = np.vstack([y1, y2, y3])
-    return np.mean(predictions, axis=0)
+    return np.mean(predictions, axis=0), predictions
 
 def ensemble_boosting(history_tensor, candidate_tensor, models: dict, errors: np.ndarray) -> np.ndarray:
     y1 = fastformer_model_predict(history_tensor, candidate_tensor, models[0])

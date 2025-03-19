@@ -11,12 +11,20 @@
   <input type="text" id="userId" value="U8125">
   
   <br/><br/>
-  <label for="refDate">Reference Date (ISO format, e.g., 2023-02-01T00:00:00):</label>
-  <input type="text" id="refDate" placeholder="Optional">
+  <label for="refDate">Reference Date (ISO format, e.g., 2019-11-11T00:00:00):</label>
+  <input type="text" id="refDate" placeholder="Optional" value="2019-11-11T00:00:00">
   
   <br/><br/>
   <label for="maxCandidates">Max Candidates:</label>
   <input type="number" id="maxCandidates" placeholder="Optional" value="-1">
+
+  <br/><br/>
+  <label for="showArticles">Fetch Articles:</label>
+  <input type="number" id="showArticles" placeholder="Optional" value="5">
+
+  <br/><br/>
+  <label for="timeframe">Time Frame (in hours):</label>
+  <input type="number" id="timeframe" placeholder="Optional" value="24">
   
   <div style="margin-top: 10px;">
     <button onclick="fetchRecommendations('tfidf')">TFIDF</button>
@@ -39,14 +47,21 @@
       
       const refDate = document.getElementById('refDate').value.trim();
       const maxCandidates = document.getElementById('maxCandidates').value.trim();
-      
-      // Build the query parameters, adding ref_date and max_candidates if provided
+      const timeframe = document.getElementById('timeframe').value.trim();
+      const showArticles = document.getElementById('showArticles').value.trim();
+      // Build the query parameters, adding ref_date, max_candidates and timeframe if provided
       let queryParams = `?method=${method}`;
       if (refDate) {
         queryParams += `&ref_date=${encodeURIComponent(refDate)}`;
       }
       if (maxCandidates && maxCandidates !== "-1") {
         queryParams += `&max_candidates=${encodeURIComponent(maxCandidates)}`;
+      }
+      if (timeframe) {
+        queryParams += `&timeframe=${encodeURIComponent(timeframe)}`;
+      }
+      if (showArticles) {
+        queryParams += `&showArticles=${encodeURIComponent(showArticles)}`;
       }
       
       const url = `http://localhost:5000/recommendations/${userId}${queryParams}`;
@@ -72,14 +87,22 @@
       
       const refDate = document.getElementById('refDate').value.trim();
       const maxCandidates = document.getElementById('maxCandidates').value.trim();
-      
-      // Build the query parameters, adding ref_date and max_candidates if provided
+      const timeframe = document.getElementById('timeframe').value.trim();
+      const showArticles = document.getElementById('showArticles').value.trim();
+
+      // Build the query parameters, adding ref_date, max_candidates, showArticles and timeframe if provided
       let queryParams = `?method=${ensembleMethod}`;
       if (refDate) {
         queryParams += `&ref_date=${encodeURIComponent(refDate)}`;
       }
       if (maxCandidates && maxCandidates !== "-1") {
         queryParams += `&max_candidates=${encodeURIComponent(maxCandidates)}`;
+      }
+      if (timeframe) {
+        queryParams += `&timeframe=${encodeURIComponent(timeframe)}`;
+      }
+      if (showArticles) {
+        queryParams += `&showArticles=${encodeURIComponent(showArticles)}`;
       }
       
       const url = `http://localhost:5000/recommendations/${userId}${queryParams}`;
