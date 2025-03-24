@@ -38,224 +38,6 @@ nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import os
-import pandas as pd
-from datetime import datetime
-
-def save_stage_results(stage_name, results_data, output_dir="results"):
-    """
-    Save the results of a stage to a CSV file.
-    
-    Parameters:
-      - stage_name: A string identifying the stage (e.g., "stage1_candidates", "stage2_scores", etc.).
-      - results_data: The data to be saved. Can be a dictionary, a list of dictionaries, or a DataFrame.
-      - output_dir: Directory where the file is saved.
-    """
-    os.makedirs(output_dir, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_name = os.path.join(output_dir, f"{stage_name}_results_{results_data['user_id']}_{timestamp}.csv")
-    
-    # Convert results_data to DataFrame if needed.
-    if isinstance(results_data, dict):
-        df = pd.DataFrame([results_data])
-    elif isinstance(results_data, list):
-        # Assume list of dictionaries.
-        df = pd.DataFrame(results_data)
-    elif isinstance(results_data, pd.DataFrame):
-        df = results_data.copy()
-    else:
-        raise ValueError("results_data must be a dict, list of dicts, or a DataFrame")
-    
-    df.to_csv(file_name, index=False)
-    print(f"[save_stage_results] {stage_name} results saved to {file_name}")
-    return file_name
-
-# ----------------------------------------------------------------------------
-# Modular experiment stages functions (simplified version)
-# ----------------------------------------------------------------------------
-
-def candidate_generation(user_id, ref_date, news_df, behaviors_df, tokenizer,
-                         candidate_timeframe_hours=24, max_candidates=-1,
-                         tfidf_vectorizer=None, min_tfidf_similarity=0.02):
-    """
-    Stage 1: Candidate Generation.
-    Calls generate_input_tensors_for_user and logs the candidate information.
-    """
-    history_tensor, candidate_tensors, candidate_ids = generate_input_tensors_for_user(
-        user_id, news_df, behaviors_df, tokenizer,
-        max_history_length=50, max_title_length=30,
-        candidate_timeframe_hours=candidate_timeframe_hours,
-        current_date=ref_date,
-        max_candidates=max_candidates,
-        tfidf_vectorizer=tfidf_vectorizer,
-        min_tfidf_similarity=min_tfidf_similarity
-    )
-    # Create a DataFrame of candidate information for logging.
-    candidate_info = []
-    for cid in candidate_ids:
-        title = news_df.loc[news_df['NewsID'] == cid, 'Title'].values
-        candidate_info.append({
-            "NewsID": cid,
-            "Title": title[0] if len(title) > 0 else "Unknown"
-        })
-    save_stage_results("stage1_candidates", {"user_id": user_id,
-                                               "ref_date": ref_date,
-                                               "num_candidates": len(candidate_ids),
-                                               "candidates": candidate_info})
-    return history_tensor, candidate_tensors, candidate_ids
-
-def candidate_scoring(history_tensor, candidate_tensors, models_dict, ensemble_method="bagging", user_id = "", ref_date = ""):
-    """
-    Stage 2: Candidate Scoring.
-    Computes the prediction score for each candidate using the specified ensemble method.
-    Returns a flat numpy array of scores.
-    """
-    candidate_scores = []
-    candidate_individual_scores = []
-    for idx, candidate_tensor in enumerate(candidate_tensors):
-        score, individual_scores = ensemble_bagging(history_tensor, candidate_tensor, models_dict)
-        print(f"bagging Done for #{idx} {candidate_tensor} score:{score}, individual_scores:{individual_scores}")
-        candidate_scores.append(score)
-        candidate_individual_scores.append(individual_scores)
-    print("bagging done")
-    print(f"candidate_scores:{candidate_scores}")
-    candidate_scores = np.array(candidate_scores).flatten()
-    print(f"candidate_scores:{candidate_scores}")
-
-    # Save score statistics
-    score_stats = {"min": float(candidate_scores.min()),
-                   "max": float(candidate_scores.max()),
-                   "mean": float(candidate_scores.mean()),
-                   "std": float(candidate_scores.std())}
-    save_stage_results("stage2_scores", {"user_id": user_id,
-                                        "ref_date": ref_date, 
-                                        "score_stats": score_stats,
-                                        "raw_scores": candidate_scores.tolist()})
-    return candidate_scores
-
-def rank_candidates(candidate_scores, candidate_ids, k, user_id = "", ref_date = ""):
-    """
-    Stage 3: Ranking.
-    Ranks candidates by score and returns the top k candidate IDs.
-    """
-    top_indices = np.argsort(candidate_scores)[-k:][::-1]
-    recommended_ids = [candidate_ids[i] for i in top_indices]
-    save_stage_results("stage3_ranking", {"user_id": user_id,
-                                        "ref_date": ref_date, "top_indices": top_indices.tolist(),
-                                          "recommended_ids": recommended_ids})
-    return recommended_ids
-
-def evaluate_recommendations(recommended_ids, user_id, ref_date_str, k):
-    """
-    Stage 4: Evaluation.
-    Uses your ranking() function to compute precision and recall, and logs the metrics.
-    """
-    precision, recall = ranking(recommended_ids, user_id, k, ref_date_str)
-    stage4_results = {"user_id": user_id,
-                      "ref_date": ref_date_str,
-                      f"precision@{k}": precision,
-                      f"recall@{k}": recall}
-    save_stage_results("stage4_evaluation", stage4_results)
-    return precision, recall
-
-def run_experiments_modular(behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer,
-                            max_candidates=-1, test_user_count=10, n_dates=3,
-                            timeframe_hours=24, k=10, ensemble_method="bagging",
-                            min_tfidf_similarity=0.02):
-    """
-    Master function that runs the modular experiment.
-    It dynamically selects test users and reference dates, and for each, it runs candidate generation,
-    scoring, ranking, and evaluation while saving intermediate stage results.
-    """
-    # Ensure behaviors_df 'Time' is datetime
-    if not np.issubdtype(behaviors_df['Time'].dtype, np.datetime64):
-        behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
-    behaviors_df['Date'] = behaviors_df['Time'].dt.date
-    unique_dates = sorted(behaviors_df['Date'].unique())
-    if len(unique_dates) >= n_dates:
-        indices = np.linspace(0, len(unique_dates) - 1, n_dates, dtype=int)
-        ref_dates = [f"{unique_dates[i]}T00:00:00Z" for i in indices]
-    else:
-        ref_dates = [f"{d}T00:00:00Z" for d in unique_dates]
-    print("Selected Reference Dates:", ref_dates)
-
-    # Randomly choose test users
-    all_user_ids = behaviors_df['UserID'].unique()
-    test_user_ids = np.random.choice(all_user_ids, size=test_user_count, replace=False).tolist()
-    print("Test User IDs:", test_user_ids)
-
-    results = []
-    for ref_date_str in ref_dates:
-        try:
-            ref_date = isoparse(ref_date_str)
-        except Exception as e:
-            print(f"Invalid ref_date {ref_date_str}: {e}")
-            continue
-        for user_id in test_user_ids:
-            try:
-                start_time = time.time()
-                # Stage 1: Candidate Generation
-                history_tensor, candidate_tensors, candidate_ids = candidate_generation(
-                user_id, ref_date, news_df, behaviors_df, tokenizer,
-                candidate_timeframe_hours=timeframe_hours, max_candidates=max_candidates,
-                tfidf_vectorizer=tfidf_vectorizer, min_tfidf_similarity=min_tfidf_similarity
-            )
-                
-                # NEW: Compute ground-truth coverage
-                coverage, total_gt = compute_ground_truth_coverage(user_id, behaviors_df, ref_date, candidate_ids)
-                save_stage_results("stage1_coverage", {"user_id": user_id,
-                                                        "ref_date": ref_date_str,
-                                                        "num_candidates": len(candidate_ids),
-                                                        "ground_truth_count": total_gt,
-                                                        "coverage": coverage})
-                print(f"Ground-truth coverage: {coverage} out of {total_gt} future clicked articles in candidate set.")
-
-                # Stage 2: Candidate Scoring
-                candidate_scores = candidate_scoring(history_tensor, candidate_tensors, models_dict, ensemble_method, user_id, ref_date)
-                
-                # Stage 3: Ranking
-                recommended_ids = rank_candidates(candidate_scores, candidate_ids, k, user_id, ref_date)
-                
-                # Stage 4: Evaluation
-                precision, recall = evaluate_recommendations(recommended_ids, user_id, ref_date_str, k)
-                inference_time = time.time() - start_time
-                result_entry = {"user_id": user_id,
-                                "ref_date": ref_date_str,
-                                "num_candidates": len(candidate_ids),
-                                "recommended_ids": recommended_ids,
-                                f"precision@{k}": precision,
-                                f"recall@{k}": recall,
-                                "inference_time": inference_time,
-                                "coverage": coverage,
-                                "ground_truth_count": total_gt}
-                results.append(result_entry)
-                print(f"User {user_id}, Ref Date {ref_date_str} -> Precision@{k}: {precision:.2f}, Recall@{k}: {recall:.2f}, Coverage: {coverage}/{total_gt}, Time: {inference_time:.2f}s")
-            except Exception as e:
-                print(f"Error processing user {user_id} with ref_date {ref_date_str}: {e}")
-                continue
-    results_df = pd.DataFrame(results)
-    results_df.to_csv("experiment_results.csv", index=False)
-    print("Experiment results saved to 'experiment_results.csv'")
-    return results_df
-
-# Example usage in __main__:
-if __name__ == "__main__":
-    # Example: load your data, models, tokenizer, and fit the TF-IDF vectorizer.
-    # For instance, assume get_models() returns models_dict, news_df, behaviors_df, tokenizer.
-    models_dict, news_df, behaviors_df, tokenizer = get_models()
-    
-    # Fit a TF-IDF vectorizer on the news combined text.
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    tfidf_vectorizer = TfidfVectorizer()
-    tfidf_vectorizer.fit(news_df["CombinedText"])
-    
-    results_df = run_experiments_modular(
-        behaviors_df, news_df, models_dict, tokenizer,
-        tfidf_vectorizer=tfidf_vectorizer,
-        max_candidates=-1, test_user_count=10, n_dates=3,
-        timeframe_hours=24, k=10, ensemble_method="bagging",
-        min_tfidf_similarity=0.02
-    )
 
 def tfidf_filter_candidates(candidates_df: pd.DataFrame, user_history_text: str, tfidf_vectorizer: TfidfVectorizer, min_similarity: float = 0.1) -> pd.DataFrame:
     """
@@ -342,25 +124,6 @@ def get_ground_truth_impressions(user_id: str, behaviors_df: pd.DataFrame, after
                 print(f"Error parsing impression '{imp}': {e}")
                 continue
     return ground_truth_ids
-def compute_ground_truth_coverage(user_id, behaviors_df, ref_date, candidate_ids):
-    """
-    Compute how many of the articles that the user clicked (future impressions) appear
-    in the candidate set.
-
-    Parameters:
-      - user_id: The unique identifier for the user.
-      - behaviors_df: The behavior DataFrame.
-      - ref_date: A datetime object indicating the reference date.
-      - candidate_ids: A list of candidate NewsIDs.
-    
-    Returns:
-      - coverage: Number of ground truth clicked articles that are in candidate_ids.
-      - total: Total number of ground truth clicked articles (future impressions).
-    """
-    ground_truth = get_ground_truth_impressions(user_id, behaviors_df, ref_date)
-    coverage = len(set(candidate_ids) & ground_truth)
-    total = len(ground_truth)
-    return coverage, total
 
 def get_ground_truth_clicks(impressions: set) -> set:
     """
@@ -612,10 +375,6 @@ def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behavio
     candidates_df = news_df[news_df['NewsID'].isin(candidate_ids_set)]
     if candidates_df.empty:
         raise ValueError("No candidate articles found in news_df matching the filtered candidate IDs.")
-    iter_rows = list(candidates_df.iterrows())
-    print(f"candidate row example: {iter_rows[0]}")
-    print(f"candidate rows before tfidf: {len(iter_rows)}")
-
     news_dict = dict(zip(news_df['NewsID'], news_df['Title']))
     history_titles = [news_dict.get(nid, "") for nid in history_ids]
     if tfidf_vectorizer is not None:
@@ -623,7 +382,6 @@ def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behavio
         user_history_text = " ".join(history_titles)
         candidates_df = tfidf_filter_candidates(candidates_df, user_history_text, tfidf_vectorizer, min_similarity=min_tfidf_similarity)
         
-        print(f"candidate rows after tfidf:{len(iter_rows)}")
         clicked_ids = get_ground_truth_impressions(user_id, behaviors_df, current_date)
     
         # Filter candidates that were clicked.
@@ -633,8 +391,7 @@ def generate_input_tensors_for_user(user_id: str, news_df: pd.DataFrame, behavio
             print("TF-IDF similarities for clicked articles:")
             print(clicked_candidates[['NewsID', 'TFIDF_Similarity']])
             # Optionally, save to a CSV file for further analysis:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            clicked_candidates[['NewsID', 'TFIDF_Similarity']].to_csv(f"tfidf_clicked_articles_{user_id}_{timestamp}.csv", index=False)
+            clicked_candidates[['NewsID', 'TFIDF_Similarity']].to_csv("tfidf_clicked_articles.csv", index=False)
         else:
             print("No clicked articles found among the candidate set.")
 
