@@ -33,6 +33,9 @@ from recommender import (  # import functions from recommender module
     ensemble_stacking,
     hybrid_ensemble
 )
+import hashlib
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
 # (Assume your other functions – candidate_generation, candidate_scoring, etc. – are defined above.)
 # --- [Cleaning Function] ---
 def clean_text(text):
@@ -46,9 +49,70 @@ def clean_text(text):
     words = text.split()
     words = [w for w in words if not w in stop_words]
     return ' '.join(words)
-# ===================== Cluster-Level Evaluation Functions =====================
+import logging
 
+# Configure logging: you can place this at the top of your module.
+logging.basicConfig(
+    filename='cluster_profile.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+# ===================== Cluster-Level Evaluation Functions =====================
 def build_cluster_profile(cluster_users, behaviors_df, news_df, cutoff_time, tokenizer, max_history_length=50, max_title_length=30):
+    """
+    Build an aggregated cluster profile based on user histories.
+    This function processes each user's history and aggregates them.
+    
+    Logs progress every 100 users.
+    """
+    cluster_history_tensor = []
+    cluster_profile_ids = []
+    
+    # Optionally, open a file to append progress (if you prefer manual file writes)
+    # with open("cluster_profile_progress.log", "a") as log_file:
+    
+    total_users = len(cluster_users)
+    for i, user_id in enumerate(cluster_users):
+        # Filter the user history by time (assuming cutoff_time is provided as a datetime)
+        try:
+            behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'])
+
+            # Convert cutoff_time to a datetime
+            cutoff_time = pd.to_datetime(cutoff_time)
+            user_hist = behaviors_df[
+                (behaviors_df['UserID'] == user_id) & 
+                (behaviors_df['Time'] <= np.datetime64(cutoff_time))
+            ]
+        except Exception as e:
+            logging.error(f"Error processing user {user_id}: {e}")
+            continue
+
+        # Process each user's history (this is a placeholder for your actual processing)
+        if not user_hist.empty:
+            # For example, get history text from the latest row:
+            latest_sample = user_hist.iloc[-1]
+            history_text = latest_sample.get("HistoryText", "")
+            # Tokenize and pad history_text, for instance:
+            history_sequence = tokenizer.texts_to_sequences([history_text])
+            history_padded = pad_sequences(history_sequence, maxlen=max_title_length, padding='post', truncating='post', value=0)
+            cluster_history_tensor.append(history_padded)
+            cluster_profile_ids.append(user_id)
+        
+        # Log progress every 100 users
+        if (i + 1) % 1000 == 0:
+            logging.info(f"Processed {i + 1} of {total_users} users in build_cluster_profile")
+    
+    # Log final progress
+    logging.info(f"Finished processing all {total_users} users for cluster profile")
+    
+    # Aggregate the user histories into a cluster profile tensor, for example by averaging:
+    if cluster_history_tensor:
+        cluster_profile_tensor = np.mean(np.array(cluster_history_tensor), axis=0)
+    else:
+        cluster_profile_tensor = None
+
+    return cluster_profile_tensor, cluster_profile_ids
+def build_cluster_profile2(cluster_users, behaviors_df, news_df, cutoff_time, tokenizer, max_history_length=50, max_title_length=30):
     """
     Build a cluster history by aggregating (union) the articles clicked by each user in the cluster 
     *before* the cutoff_time. Then, create a pseudo-history tensor using the news titles.
@@ -62,7 +126,8 @@ def build_cluster_profile(cluster_users, behaviors_df, news_df, cutoff_time, tok
     article_times = {}
     cutoff_time = pd.to_datetime(cutoff_time)
     behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
-    for user_id in cluster_users:
+    total_users = len(cluster_users)
+    for i, user_id in enumerate(cluster_users):
         user_hist = behaviors_df[(behaviors_df['UserID'] == user_id) & (behaviors_df['Time'] <= np.datetime64(cutoff_time))]
         for idx, row in user_hist.iterrows():
             # Parse history from HistoryText (assume space‐separated article IDs)
@@ -74,6 +139,9 @@ def build_cluster_profile(cluster_users, behaviors_df, news_df, cutoff_time, tok
                 t = row["Time"]
                 if art not in article_times or t > article_times[art]:
                     article_times[art] = t
+                # Log progress every 100 users
+        if (i + 1) % 1000 == 0:
+            logging.info(f"Processed {i + 1} of {total_users} users in build_cluster_profile2")
 
     # Now, sort the profile items by time (we choose the most recent ones)
     sorted_profile = sorted(list(cluster_profile_set), key=lambda art: article_times.get(art, np.datetime64('1970-01-01')), reverse=True)
@@ -105,24 +173,119 @@ def get_cluster_profile_cached(cluster_users, behaviors_df, news_df, cutoff_time
     # Check if cache file exists
     if os.path.exists(cache_file):
         print(f"Loading cluster profile from {cache_file}")
+        logging.info(f"Loading cluster profile from {cache_file}")
         with open(cache_file, "rb") as f:
-            cluster_profile = pickle.load(f)
+            cluster_profile, profile_ids = pickle.load(f)
     else:
-        print("Building cluster profile...")
+        print(f"Building cluster profile {cache_file}...")
+        logging.info(f"Building cluster profile {cache_file}...")
         # Run your slow build_cluster_profile function
-        cluster_profile, profile_ids = build_cluster_profile(cluster_users, behaviors_df, news_df, cutoff_time, tokenizer)
+        cluster_profile, profile_ids = build_cluster_profile2(cluster_users, behaviors_df, news_df, cutoff_time, tokenizer)
         # Save the results to a cache file
         with open(cache_file, "wb") as f:
             pickle.dump((cluster_profile, profile_ids), f)
     return cluster_profile, profile_ids
+def get_cache_filename(cluster_users, cutoff_time, cache_dir, base_name="ground_truth_freq", cluster_id=""):
+    """
+    Create a unique cache filename based on the cutoff time, cluster ID, and the sorted list of cluster users.
+    """
+    os.makedirs(cache_dir, exist_ok=True)
+    # Create a unique string based on the sorted cluster users.
+    users_str = ",".join(sorted(cluster_users))
+    users_hash = hashlib.md5(users_str.encode('utf-8')).hexdigest()
+    cutoff_time_str = pd.to_datetime(cutoff_time).strftime("%Y%m%d_%H%M%S")
+    cache_filename = os.path.join(cache_dir, f"{base_name}_{cluster_id}_{cutoff_time_str}_{users_hash}.pkl")
+    return cache_filename
 
-def get_cluster_ground_truth(cluster_users, behaviors_df, cutoff_time):
+def load_cache(cache_filename, force_new=False):
+    """
+    If a cache file exists and force_new is False, load and return the cached object.
+    Otherwise, return None.
+    """
+    if os.path.exists(cache_filename) and not force_new:
+        logging.info(f"Loading cached data from {cache_filename}")
+        with open(cache_filename, 'rb') as f:
+            return pickle.load(f)
+    return None
+def get_cluster_ground_truth_frequency(cluster_users, behaviors_df, cutoff_time, cache_dir="cache", cluster_id = "", force_new = False):
+    """
+    Build a frequency-based ground truth: count how many times each article was clicked by users in the cluster after cutoff_time.
+    """
+    cache_filename = get_cache_filename(cluster_users, cutoff_time, cache_dir, "ground_truth_freq", cluster_id)
+    cached_result = load_cache(cache_filename, force_new)
+    if cached_result is not None:
+        return cached_result
+
+    # Ensure the Time column is in datetime format.
+    behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    cutoff_time_dt = pd.to_datetime(cutoff_time)
+    ground_truth_freq = {}
+    total_users = len(cluster_users)
+    for i, user_id in enumerate(cluster_users):
+        user_future = behaviors_df[
+            (behaviors_df['UserID'] == user_id) & (behaviors_df['Time'] > np.datetime64(cutoff_time_dt))
+        ]
+        for _, row in user_future.iterrows():
+            if pd.isna(row["Impressions"]) or row["Impressions"].strip() == "":
+                continue
+            for imp in row["Impressions"].split():
+                try:
+                    art, label = imp.split('-')
+                    if int(label) == 1:
+                        ground_truth_freq[art] = ground_truth_freq.get(art, 0) + 1
+                except Exception as e:
+                    print(f"Error parsing impression {imp}: {e}")
+        if (i + 1) % 100 == 0:
+            logging.info(f"Processed {i + 1} of {total_users} users in get_cluster_ground_truth_frequency")
+    # Save the result in the cache.
+    with open(cache_filename, 'wb') as f:
+        pickle.dump(ground_truth_freq, f)
+    logging.info(f"Cached ground truth frequency to {cache_filename}")
+    return ground_truth_freq
+
+def compute_weighted_precision_recall_at_k(recommended_ids, ground_truth_freq, k):
+    """
+    Compute weighted precision and recall based on click frequency.
+    
+    recommended_ids: ordered list of recommended article IDs.
+    ground_truth_freq: dict mapping article IDs to click counts.
+    k: number of top recommendations.
+    
+    Here, weighted precision is calculated relative to the best possible cumulative frequency
+    that could be achieved by recommending the top-k most popular articles.
+    """
+    recommended_k = recommended_ids[:k]
+    weighted_hits = sum(ground_truth_freq.get(rec, 0) for rec in recommended_k)
+    total_clicks = sum(ground_truth_freq.values())
+    
+    # The ideal top-k sum is computed from the k highest frequencies in the ground truth.
+    top_k_possible = sum(sorted(ground_truth_freq.values(), reverse=True)[:k])
+    
+    precision = weighted_hits / top_k_possible if top_k_possible > 0 else 0
+    recall = weighted_hits / total_clicks if total_clicks > 0 else 0
+    return precision, recall
+
+def cluster_evaluate_weighted(recommended_ids, cluster_ground_truth_freq, k):
+    """
+    Evaluate a cluster's recommendations using frequency-based weighted precision and recall.
+    """
+    precision, recall = compute_weighted_precision_recall_at_k(recommended_ids, cluster_ground_truth_freq, k)
+    return precision, recall
+
+def get_cluster_ground_truth(cluster_users, behaviors_df, cutoff_time, cache_dir="cache", cluster_id = "", force_new = False):
     """
     Get the union of all articles that any user in the cluster clicked *after* cutoff_time.
     Returns a set of article IDs.
     """
+    cache_filename = get_cache_filename(cluster_users, cutoff_time, cache_dir, "ground_truth", cluster_id)
+    cached_result = load_cache(cache_filename, force_new)
+    if cached_result is not None:
+        return cached_result
+    
     ground_truth = set()
-    for user_id in cluster_users:
+    cutoff_time = pd.to_datetime(cutoff_time)
+    total_users = len(cluster_users)
+    for i, user_id in enumerate(cluster_users):
         user_future = behaviors_df[(behaviors_df['UserID'] == user_id) & (behaviors_df['Time'] > np.datetime64(cutoff_time))]
         for idx, row in user_future.iterrows():
             if pd.isna(row["Impressions"]) or row["Impressions"].strip() == "":
@@ -134,6 +297,12 @@ def get_cluster_ground_truth(cluster_users, behaviors_df, cutoff_time):
                         ground_truth.add(art)
                 except Exception as e:
                     print(f"Error parsing impression {imp}: {e}")
+        if (i + 1) % 100 == 0:
+            logging.info(f"Processed {i + 1} of {total_users} users in get_cluster_ground_truth")
+    # Save the result in the cache.
+    with open(cache_filename, 'wb') as f:
+        pickle.dump(ground_truth, f)
+    logging.info(f"Cached ground truth frequency to {cache_filename}")
     return ground_truth
 
 def tfidf_filter_candidates(candidates_df: pd.DataFrame, user_history_text: str, tfidf_vectorizer: TfidfVectorizer, min_similarity: float = 0.1) -> pd.DataFrame:
@@ -191,15 +360,39 @@ def cluster_candidate_generation(cluster_history_ids, news_df, behaviors_df, cut
        - candidate_tensors: list of TensorFlow tensors for each candidate article.
        - candidate_ids: list of candidate NewsIDs.
     """
+
     # First, compute for each article the first interaction time from behaviors_df.
-    first_interactions = behaviors_df.groupby('NewsID')['Time'].min()
-    # Candidate pool: articles with first_interaction <= cutoff_time.
-    candidate_pool = first_interactions[first_interactions <= np.datetime64(cutoff_time)].index.tolist()
+    behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    behaviors_df['Time'] = behaviors_df['Time'].apply(lambda t: t.tz_convert(None) if (t is not None and t.tzinfo is not None) else t)
+    
+    # Convert cutoff_time to datetime and remove timezone if present
+    cutoff_time_dt = pd.to_datetime(cutoff_time)
+    if cutoff_time_dt.tzinfo is not None:
+        cutoff_time_dt = cutoff_time_dt.tz_convert(None)
+    first_interactions = {}
+    # Iterate over behaviors_df to compute the first interaction time for each news article
+    for _, row in behaviors_df.iterrows():
+        time_val = row["Time"]
+        if pd.isna(time_val):
+            continue
+        if pd.isna(row["Impressions"]) or row["Impressions"].strip() == "":
+            continue
+        for imp in row["Impressions"].split():
+            try:
+                art, label = imp.split('-')
+                # Update the first interaction time if this is the earliest seen for the article
+                if art not in first_interactions or time_val < first_interactions[art]:
+                    first_interactions[art] = time_val
+            except Exception as e:
+                print(f"Error parsing impression {imp}: {e}")
+
+    # Build candidate pool: articles with first interaction time <= cutoff_time
+    candidate_pool = [art for art, t in first_interactions.items() if t <= cutoff_time_dt]
     # Remove articles that are already in the cluster history.
     candidate_pool = list(set(candidate_pool) - set(cluster_history_ids))
-    # Build a candidate DataFrame.
+    # Build a candidate DataFrame from news_df using NewsID from news_df
     candidates_df = news_df[news_df['NewsID'].isin(candidate_pool)]
-    
+
     # Optionally apply TF-IDF filtering using the cluster’s aggregated history text.
     if tfidf_vectorizer is not None:
         # Build the cluster history text from the cluster history IDs
@@ -242,7 +435,16 @@ def cluster_candidate_scoring(cluster_history_tensor, candidate_tensors, models_
         scores.append(score)
     scores = np.array(scores).flatten()
     return scores
-
+def cluster_candidate_scoring_single(cluster_history_tensor, candidate_tensors, single_model):
+    """
+    For each candidate, compute a score using a single Fastformer model.
+    Returns a numpy array of scores (same length as candidate_tensors).
+    """
+    scores = []
+    for candidate_tensor in candidate_tensors:
+        score = fastformer_model_predict(cluster_history_tensor, candidate_tensor, single_model)
+        scores.append(score)
+    return np.array(scores).flatten()
 def cluster_rank_candidates(candidate_scores, candidate_ids, k):
     """
     Ranks the candidate articles by their score and returns the top-k candidate IDs.
@@ -264,13 +466,109 @@ def cluster_evaluate(recommended_ids, cluster_ground_truth, k):
     # Use the same compute_precision_recall_at_k function
     precision, recall = compute_precision_recall_at_k(recommended_ids, cluster_ground_truth, k)
     return precision, recall
+def average_precision_at_k(recommended_ids, ground_truth_ids, k):
+    """
+    Average Precision for a single user, given top-k recommended_ids and user’s ground_truth_ids.
+    """
+    recommended_k = recommended_ids[:k]
+    hit_count = 0
+    sum_precisions = 0.0
+    for i, rec in enumerate(recommended_k, start=1):
+        if rec in ground_truth_ids:
+            hit_count += 1
+            sum_precisions += hit_count / i
+    if hit_count == 0:
+        return 0.0
+    return sum_precisions / hit_count
 
+def compute_map_at_k(recommended_ids_list, ground_truth_list, k):
+    """
+    recommended_ids_list: list of recommended lists, one per user
+    ground_truth_list: list of sets/lists of ground_truth IDs, one per user
+    returns MAP at k.
+    """
+    ap_values = []
+    for rec_ids, gt_ids in zip(recommended_ids_list, ground_truth_list):
+        ap = average_precision_at_k(rec_ids, gt_ids, k)
+        ap_values.append(ap)
+    return np.mean(ap_values) if ap_values else 0.0
+
+# Similar for nDCG
+import math
+
+def dcg_at_k(recommended_ids, ground_truth_ids, k):
+    recommended_k = recommended_ids[:k]
+    dcg = 0.0
+    for i, rec in enumerate(recommended_k, start=1):
+        if rec in ground_truth_ids:
+            # binary relevance
+            dcg += 1.0 / math.log2(i+1)
+    return dcg
+
+def compute_ndcg_at_k(recommended_ids_list, ground_truth_list, k):
+    ndcg_values = []
+    for rec_ids, gt_ids in zip(recommended_ids_list, ground_truth_list):
+        idcg = dcg_at_k(list(gt_ids), gt_ids, min(k, len(gt_ids)))  # ideal DCG if we recommended all relevant items first
+        if idcg == 0:
+            ndcg_values.append(0.0)
+            continue
+        dcg_val = dcg_at_k(rec_ids, gt_ids, k)
+        ndcg_values.append(dcg_val / idcg)
+    return np.mean(ndcg_values) if ndcg_values else 0.0
+
+def evaluate_cluster_model(
+    cluster_history_tensor,
+    candidate_tensors,
+    candidate_ids,
+    ground_truth,
+    ground_truth_freq,
+    model_obj,
+    model_name,
+    k_values,
+    cluster_id,
+    user_list
+):
+    """
+    Scores candidates using either the ensemble dict or a single model,
+    ranks them, and computes evaluation metrics (precision, recall, weighted).
+    
+    Returns a dictionary of metrics.
+    """
+    # 1) Score candidates
+    if isinstance(model_obj, dict):
+        # Ensemble with model dict
+        candidate_scores = cluster_candidate_scoring(cluster_history_tensor, candidate_tensors, model_obj)
+    else:
+        # Single-model scoring
+        candidate_scores = cluster_candidate_scoring_single(cluster_history_tensor, candidate_tensors, model_obj)
+    metrics = []
+    metrics.append({
+            "model": model_name,
+            "cluster_id": cluster_id,
+            "num_users": len(user_list),
+            "num_candidates": len(candidate_ids)
+        })
+    for k in k_values:
+        # 2) Rank candidates
+        recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
+
+        # 3) Evaluate
+        precision_weighted, recall_weighted = cluster_evaluate_weighted(recommended_ids, ground_truth_freq, k)
+        precision, recall = cluster_evaluate(recommended_ids, ground_truth, k)
+
+        # 4) Add to metrics dict
+        metrics[0][f"recommended_ids@{k}"] = recommended_ids
+        metrics[0][f"precision@{k}"] = precision
+        metrics[0][f"recall@{k}"] = recall
+        metrics[0][f"precision_weighted@{k}"] = precision_weighted
+        metrics[0][f"recall_weighted@{k}"] = recall_weighted
+    return metrics
 def run_cluster_experiments(cluster_mapping, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer,
-                            cutoff_time_str, k=10):
+                            cutoff_time_str, k_values=[5,10,20,50,100]):
     """
     cluster_mapping: dict mapping cluster_id -> list of user_ids.
     cutoff_time_str: a string cutoff time (e.g. "2023-02-01T00:00:00Z")
-    k: number of recommendations per cluster.
+    k_values: number of recommendations per cluster.
     
     For each cluster:
       - Build the cluster profile (history tensor and article IDs).
@@ -287,33 +585,474 @@ def run_cluster_experiments(cluster_mapping, behaviors_df, news_df, models_dict,
     for cluster_id, user_list in cluster_mapping.items():
         print(f"\n=== Evaluating Cluster {cluster_id} with {len(user_list)} users ===")
         # Build cluster history profile.
-        cluster_history_tensor, cluster_profile_ids = get_cluster_profile_cached(user_list, behaviors_df, news_df, cutoff_time, tokenizer)
+        cluster_history_tensor, cluster_profile_ids = get_cluster_profile_cached(user_list, behaviors_df, news_df, cutoff_time, tokenizer, f"cluster_profile2_{cluster_id}.pkl")
         #cluster_history_tensor, cluster_profile_ids = build_cluster_profile(user_list, behaviors_df, news_df, cutoff_time, tokenizer)
         # Get cluster ground truth (future clicked articles by any member, after cutoff).
-        cluster_ground_truth = get_cluster_ground_truth(user_list, behaviors_df, cutoff_time)
+        # Example usage within your cluster experiment:
+        # Instead of:
+        # cluster_ground_truth = get_cluster_ground_truth(user_list, behaviors_df, cutoff_time)
+        # Use:
+        cluster_ground_truth_freq = get_cluster_ground_truth_frequency(user_list, behaviors_df, cutoff_time,"cache", cluster_id, False)
+        cluster_ground_truth = get_cluster_ground_truth(user_list, behaviors_df, cutoff_time,"cache", cluster_id, False)
         print(f"Cluster {cluster_id} ground truth (future clicked): {cluster_ground_truth}")
         # Generate candidate articles for the cluster.
         candidate_tensors, candidate_ids = cluster_candidate_generation(cluster_profile_ids, news_df, behaviors_df, cutoff_time, tokenizer, tfidf_vectorizer)
         print(f"Cluster {cluster_id}: {len(candidate_ids)} candidate articles generated.")
-        # Score candidates using ensemble.
-        candidate_scores = cluster_candidate_scoring(cluster_history_tensor, candidate_tensors, models_dict)
-        # Rank candidates.
-        recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
-        # Evaluate: compute precision and recall.
-        precision, recall = cluster_evaluate(recommended_ids, cluster_ground_truth, k)
-        print(f"Cluster {cluster_id} -> Precision@{k}: {precision:.2f}, Recall@{k}: {recall:.2f}")
-        metrics.append({
-            "cluster_id": cluster_id,
-            "num_users": len(user_list),
-            "num_candidates": len(candidate_ids),
-            "recommended_ids": recommended_ids,
-            "precision@{}".format(k): precision,
-            "recall@{}".format(k): recall
-        })
+
+        # Evaluate ensemble
+        ensemble_metrics = evaluate_cluster_model(
+            cluster_history_tensor=cluster_history_tensor,
+            candidate_tensors=candidate_tensors,
+            candidate_ids=candidate_ids,
+            ground_truth=cluster_ground_truth,
+            ground_truth_freq=cluster_ground_truth_freq,
+            model_obj=models_dict,              # the dictionary for ensemble
+            model_name="ensemble_bagging",
+            k_values=k_values,
+            cluster_id=cluster_id,
+            user_list=user_list
+        )
+        metrics.extend(ensemble_metrics)
+
+        # Evaluate individual models
+        for i, (model_key, single_model) in enumerate(models_dict.items()):
+            single_metrics = evaluate_cluster_model(
+                cluster_history_tensor=cluster_history_tensor,
+                candidate_tensors=candidate_tensors,
+                candidate_ids=candidate_ids,
+                ground_truth=cluster_ground_truth,
+                ground_truth_freq=cluster_ground_truth_freq,
+                model_obj=single_model,           # a single model, not a dict
+                model_name=f"fastformer_{model_key}",
+                k_values=k_values,
+                cluster_id=cluster_id,
+                user_list=user_list
+            )
+            metrics.extend(single_metrics)
+
+        
     results_df = pd.DataFrame(metrics)
     results_df.to_csv("cluster_experiment_results.csv", index=False)
     print("Cluster-level experiment results saved to 'cluster_experiment_results.csv'")
     return results_df
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+def build_user_profile_tensor(
+    user_id,
+    behaviors_df,
+    news_df,
+    cutoff_time,
+    tokenizer,
+    max_history_length=50,
+    max_title_length=30
+):
+    """
+    1) Filter behaviors_df for a single user’s interactions (<= cutoff_time).
+    2) Gather all clicked article IDs from 'HistoryText'.
+    3) Build a single user-level "history tensor" by tokenizing the text of these articles.
+    4) Return (history_tensor, history_article_ids)
+    """
+    # Ensure 'Time' is datetime
+    behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    cutoff_dt = pd.to_datetime(cutoff_time)
+
+    # Filter to user’s rows up to cutoff
+    user_hist = behaviors_df[
+        (behaviors_df['UserID'] == user_id)
+        & (behaviors_df['Time'] <= np.datetime64(cutoff_dt))
+    ].copy()
+
+    # Collect article IDs from user’s HistoryText
+    all_hist_article_ids = set()
+    for _, row in user_hist.iterrows():
+        if pd.isna(row["HistoryText"]) or row["HistoryText"].strip() == "":
+            continue
+        for art in row["HistoryText"].split():
+            all_hist_article_ids.add(art)
+
+    # Sort by most recent if you prefer
+    # (If you have timestamps for each article in HistoryText, you can do so.
+    #  Otherwise, just turn the set to a list.)
+    history_article_ids = list(all_hist_article_ids)
+
+    # If there's a time dimension for each article ID, sort by that. Otherwise skip.
+    # for example, you can store them in a list with timestamps to sort.
+    
+    # Keep only up to max_history_length
+    if len(history_article_ids) > max_history_length:
+        history_article_ids = history_article_ids[-max_history_length:]  # or however you want to slice
+
+    # Build a "history" text from each article’s "CombinedText"
+    # or you can build an array of tokenized titles. (Below is an array-of-titles approach.)
+    history_titles = []
+    for art_id in history_article_ids:
+        # Look up the CombinedText from news_df
+        rows = news_df[news_df['NewsID'] == art_id]
+        if not rows.empty:
+            text = str(rows.iloc[0]['CombinedText'])
+        else:
+            text = ""
+
+        # Tokenize & pad to max_title_length
+        seq = tokenizer.texts_to_sequences([text])[0]
+        # If empty sequence, put a [0]
+        if len(seq) == 0:
+            seq = [0]
+        seq = pad_sequences([seq], maxlen=max_title_length, padding='post', truncating='post', value=0)[0]
+        history_titles.append(seq)
+
+    # Now we have a list of shape (num_history, max_title_length). 
+    # We must pad/truncate to exactly max_history_length rows:
+    if len(history_titles) < max_history_length:
+        # pad the top
+        padding_needed = max_history_length - len(history_titles)
+        padding_rows = np.zeros((padding_needed, max_title_length), dtype=int)
+        history_titles = np.vstack([padding_rows, history_titles])
+    else:
+        history_titles = np.array(history_titles[-max_history_length:])
+
+    # The final shape should be (max_history_length, max_title_length).
+    # Convert to a TF tensor if you want:
+    history_tensor = tf.convert_to_tensor(history_titles, dtype=tf.int32)
+
+    return history_tensor, history_article_ids
+def user_candidate_generation(
+    user_id,
+    user_history_ids,
+    behaviors_df,
+    news_df,
+    tokenizer,
+    tfidf_vectorizer=None,
+    cutoff_time=None,
+    min_tfidf_similarity=0.02,
+    max_candidates=-1,
+    max_title_length=30
+):
+    """
+    Build a candidate pool for a single user.
+    1) Possibly gather all articles that exist up to cutoff_time (if needed).
+    2) Exclude articles in user_history_ids.
+    3) Optionally apply TF–IDF filter.
+    4) Return candidate_tensors, candidate_ids.
+    """
+
+    # Optionally filter articles by cutoff_time
+    if cutoff_time is not None:
+        behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+        cutoff_dt = pd.to_datetime(cutoff_time)
+        if cutoff_dt.tzinfo is not None:
+            cutoff_dt = cutoff_dt.tz_convert(None)
+        first_interactions = {}
+        for _, row in behaviors_df.iterrows():
+            if pd.isna(row["Time"]):
+                continue
+            if pd.isna(row["Impressions"]) or row["Impressions"].strip() == "":
+                continue
+            if row["Time"] <= np.datetime64(cutoff_dt):
+                # record earliest time
+                for imp in row["Impressions"].split():
+                    art_id, label = imp.split('-')
+                    if art_id not in first_interactions or row["Time"] < first_interactions[art_id]:
+                        first_interactions[art_id] = row["Time"]
+        candidate_pool = [art for art, t in first_interactions.items() if t <= cutoff_dt]
+    else:
+        # If no time constraint, let candidate_pool be all news
+        candidate_pool = news_df['NewsID'].unique().tolist()
+
+    # remove user's history from the candidate pool
+    candidate_pool = list(set(candidate_pool) - set(user_history_ids))
+
+    # Build candidates_df
+    candidates_df = news_df[news_df['NewsID'].isin(candidate_pool)].copy()
+
+    # Optional TF–IDF filter
+    if tfidf_vectorizer is not None:
+        # Build user’s aggregated text from user_history_ids
+        texts = []
+        for art_id in user_history_ids:
+            row_news = news_df[news_df['NewsID'] == art_id]
+            if not row_news.empty:
+                texts.append(str(row_news.iloc[0]['CombinedText']))
+        user_history_text = " ".join(texts)
+
+        # Then your function tfidf_filter_candidates
+        candidates_df = tfidf_filter_candidates(candidates_df, user_history_text, tfidf_vectorizer, 
+                                                min_similarity=min_tfidf_similarity)
+
+    # Optionally limit the candidate size
+    if max_candidates > 0 and len(candidates_df) > max_candidates:
+        candidates_df = candidates_df.head(max_candidates)
+
+    # Build the candidate tensors
+    candidate_tensors = []
+    candidate_ids = []
+    for idx, row in candidates_df.iterrows():
+        art_id = row['NewsID']
+        title = row['Title'] if pd.notna(row['Title']) else ""
+        seq = tokenizer.texts_to_sequences([title])[0]
+        if len(seq) == 0:
+            seq = [0]
+        seq = pad_sequences([seq], maxlen=max_title_length, padding='post', truncating='post')[0]
+        candidate_tensors.append(tf.convert_to_tensor([seq], dtype=tf.int32))  # shape (1, max_title_length)
+        candidate_ids.append(art_id)
+
+    return candidate_tensors, candidate_ids
+def get_user_future_clicks(user_id, behaviors_df, cutoff_time):
+    """
+    Return a set of article IDs that user clicked after cutoff_time.
+    Typically from behaviors_df['Impressions'], 
+    where each impression is e.g. "N1234-1" meaning article=‘N1234’, label=1
+    """
+    user_future_clicks = set()
+    behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    cutoff_dt = pd.to_datetime(cutoff_time)
+
+    future_rows = behaviors_df[
+        (behaviors_df['UserID'] == user_id)
+        & (behaviors_df['Time'] > np.datetime64(cutoff_dt))
+    ]
+    for _, row in future_rows.iterrows():
+        if pd.isna(row["Impressions"]) or row["Impressions"].strip() == "":
+            continue
+        for imp in row["Impressions"].split():
+            try:
+                art_id, label = imp.split('-')
+                label = int(label)
+                if label == 1:  # means user actually clicked
+                    user_future_clicks.add(art_id)
+            except:
+                pass
+
+    return user_future_clicks
+def compute_coverage(all_recommended_ids, total_num_articles):
+    """
+    all_recommended_ids: a list of lists (each sub-list is recommended IDs for one user)
+    total_num_articles: total number of articles in your dataset
+    """
+    recommended_set = set()
+    for rec_list in all_recommended_ids:
+        recommended_set.update(rec_list)
+    coverage_value = len(recommended_set) / total_num_articles
+    return coverage_value
+def user_evaluation_loop(models_dict, news_df, behaviors_df, tokenizer, tfidf_vectorizer,
+                         user_ids, cutoff_str="2019-11-10T00:00:00Z", chunk_size=1000):
+    user_ids = list(user_ids)
+    cutoff_dt = pd.to_datetime(cutoff_str)
+    
+    # For measuring final metrics
+    all_metrics = []
+    
+    for start_idx in range(0, len(user_ids), chunk_size):
+        end_idx = start_idx + chunk_size
+        chunk_user_ids = user_ids[start_idx:end_idx]
+        
+        chunk_results = []
+        for user_id in chunk_user_ids:
+            # 1) build_user_profile_tensor
+            user_hist_tensor, user_hist_ids = build_user_profile_tensor(
+                user_id, 
+                behaviors_df, 
+                news_df, 
+                cutoff_dt,  # or cutoff_str
+                tokenizer
+            )
+            
+            # 2) user_candidate_generation
+            candidate_tensors, candidate_ids = user_candidate_generation(
+                user_id, 
+                user_hist_ids, 
+                behaviors_df, 
+                news_df, 
+                tokenizer, 
+                tfidf_vectorizer,
+                cutoff_time=cutoff_dt,
+                max_candidates=300  # e.g., re-rank 300
+            )
+            
+            # 3) Score (ensemble or single)
+                # 1) Score candidates
+            if isinstance(models_dict, dict):
+                # Ensemble with model dict
+                candidate_scores = cluster_candidate_scoring(user_hist_tensor, candidate_tensors, models_dict)
+            else:
+                # Single-model scoring
+                candidate_scores = cluster_candidate_scoring_single(user_hist_tensor, candidate_tensors, models_dict)
+            
+            # 4) ground truth
+            future_clicks = get_user_future_clicks(user_id, behaviors_df, cutoff_dt)
+            
+            # Example: Evaluate at k=10
+            k = 10
+            recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
+            prec, rec = compute_precision_recall_at_k(recommended_ids, future_clicks, k)
+            
+            # 5) Add to chunk results
+            chunk_results.append({
+                "user_id": user_id,
+                "precision@10": prec,
+                "recall@10": rec,
+                # etc.
+            })
+        
+        # Save chunk to CSV
+        chunk_df = pd.DataFrame(chunk_results)
+        chunk_df.to_csv(f"user_metrics_{start_idx}_{end_idx}.csv", index=False)
+        
+        # If you want global aggregates:
+        all_metrics.append(chunk_df)
+    
+    # Combine all chunks if you want
+    final_df = pd.concat(all_metrics, ignore_index=True)
+    final_df.to_csv("user_metrics_all.csv", index=False)
+    return final_df
+def run_cluster_experiments_user_level(
+    cluster_mapping, 
+    train_data, 
+    test_data,
+    news_df,
+    behaviors_df,
+    models_dict, 
+    tokenizer,
+    tfidf_vectorizer,
+    cutoff_time,
+    k_values = [5, 10, 20, 50]
+):
+    """
+    1) For each cluster, for each user:
+       - Build user profile from train_data.
+       - Generate & score candidates.
+       - Evaluate vs. test_data.
+    2) Compute user-level precision, recall, MAP, nDCG, coverage.
+    """
+    # We'll gather all user-level metrics for final summary
+    results = []
+
+    # Keep track for coverage
+    all_recommendations = []
+
+    total_articles = len(news_df)
+    from traceback import format_exc
+
+    for i, user_id in enumerate(tqdm(user_list, desc="Evaluating users")):
+        try:
+            logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+            
+            # 1) Build user profile
+            user_history_tensor, user_history_ids = build_user_profile_tensor(
+                user_id, behaviors_df, news_df, cutoff_time, tokenizer
+            )
+
+            # 2) Build candidates
+            candidate_tensors, candidate_ids = user_candidate_generation(
+                user_id, user_history_ids, train_data, news_df,
+                tokenizer, tfidf_vectorizer, cutoff_time, 0.04
+            )
+
+            # 3) Expand dims
+            user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+
+            # 4) Score
+            candidate_scores = cluster_candidate_scoring(user_history_tensor, candidate_tensors, models_dict)
+
+            # 5) Evaluate
+            user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
+
+            for k in k_values:
+                recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
+                if k == 10:
+                    cluster_recs.append(recommended_ids)
+                prec_u, rec_u = compute_precision_recall_at_k(recommended_ids, user_future_clicks, k)
+                user_metrics[k]["precision"].append(prec_u)
+                user_metrics[k]["recall"].append(rec_u)
+                ap = average_precision_at_k(recommended_ids, user_future_clicks, k)
+                user_maps[k].append(ap)
+                ndcg_val = dcg_at_k(recommended_ids, user_future_clicks, k)
+                ideal_dcg = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
+                ndcg = ndcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
+                user_ndcgs[k].append(ndcg)
+
+            # Save partial results for this user to a CSV so if we crash, we have partial
+            with open("user_level_partial_results.csv", "a") as fout:
+                fout.write(f"{cluster_id},{user_id},{i},DONE\n")
+
+        except Exception as e:
+            logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
+            # Optionally you can continue to next user or break
+            continue
+    for cluster_id, user_list in cluster_mapping.items():
+        user_metrics = {k: {"precision": [], "recall": []} for k in k_values}
+        user_maps = {k: [] for k in k_values}
+        user_ndcgs = {k: [] for k in k_values}
+
+        cluster_recs = []  # for coverage at cluster level
+        total_users = len(user_list)
+        for i, user_id in enumerate(tqdm(user_list, desc="Evaluating users")):
+            # Build user history from train_data
+            user_history_tensor, user_history_ids = build_user_profile_tensor(
+                user_id, behaviors_df, news_df, cutoff_time, tokenizer
+            )
+
+            # Generate candidate articles for user
+            candidate_tensors, candidate_ids = user_candidate_generation(
+                user_id, user_history_ids, train_data, news_df, tokenizer, tfidf_vectorizer, cutoff_time, 0.04
+            )
+            # modify user_history_tensor shape (50, 30) to (1, 50, 30)
+            user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)   # now shape (1, 50, 30)
+            logging.info(f"user_candidate_generation {i}/{user_id} candidate_tensors (len:{len(candidate_tensors)}) out of total news: {len(news_df['NewsID'].unique().tolist())}")
+            # Score using ensemble or single model (example: ensemble)
+            candidate_scores = cluster_candidate_scoring(user_history_tensor, candidate_tensors, models_dict)
+            logging.info(f"cluster_candidate_scoring {i}/{user_id} candidate_scores: {candidate_scores}")
+            # Build ground truth from test_data
+            user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
+
+            # Evaluate for each K
+            for k in k_values:
+                recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
+                # Save for coverage (just store the top-k for each user)
+                if k == 10:  # or whichever you want for coverage
+                    cluster_recs.append(recommended_ids)
+
+                prec_u, rec_u = compute_precision_recall_at_k(recommended_ids, user_future_clicks, k)
+                user_metrics[k]["precision"].append(prec_u)
+                user_metrics[k]["recall"].append(rec_u)
+
+                ap = average_precision_at_k(recommended_ids, user_future_clicks, k)
+                user_maps[k].append(ap)
+
+                # nDCG
+                ndcg_val = dcg_at_k(recommended_ids, user_future_clicks, k) 
+                ideal_dcg = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
+                ndcg = ndcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
+                user_ndcgs[k].append(ndcg)
+            if i % 1000 == 0:
+                logging.info(f"Processed {i}/{total_users} users so far in run_cluster_experiments_user_level.")
+        
+        # Summarize cluster-level
+        coverage_cluster = compute_coverage(cluster_recs, total_articles)  # coverage for top-k=10 by default
+        for k in k_values:
+            mean_precision = np.mean(user_metrics[k]["precision"]) if user_metrics[k]["precision"] else 0
+            mean_recall = np.mean(user_metrics[k]["recall"]) if user_metrics[k]["recall"] else 0
+            map_k = np.mean(user_maps[k]) if user_maps[k] else 0
+            ndcg_k = np.mean(user_ndcgs[k]) if user_ndcgs[k] else 0
+
+            results.append({
+                "cluster_id": cluster_id,
+                "k": k,
+                "precision_user_level": mean_precision,
+                "recall_user_level": mean_recall,
+                "MAP": map_k,
+                "nDCG": ndcg_k,
+                "coverage": coverage_cluster, 
+                "num_users": len(user_list)
+            })
+    results_df = pd.DataFrame(results)
+    results_df.to_csv("user_level_experiment_results.csv", index=False)
+    print("Cluster-level experiment results saved to 'user_level_experiment_results.csv'")
+    return results_df
+
 # --- [Data Preparation Function] ---
 def prepare_train_df(
     data_dir,
@@ -571,8 +1310,12 @@ def prepare_train_df(
         }
         print(f"Cluster {cluster}: {len(train_data)} training samples, {len(val_data)} validation samples.")
     print("Saved after processing: models/news_df_processed.pkl, models/train_df_processed.pkl")
-    news_df.to_pickle("models/news_df_processed.pkl")
-    train_df.to_pickle("models/train_df_processed.pkl")
+    if "small" in data_dir:
+        news_df.to_pickle("models/small_news_df_processed.pkl")
+        train_df.to_pickle("models/small_train_df_processed.pkl")
+    else:
+        news_df.to_pickle("models/news_df_processed.pkl")
+        train_df.to_pickle("models/train_df_processed.pkl")
 
     return clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters
 
@@ -1080,13 +1823,59 @@ def make_clustered_data(train_df, num_clusters):
         }
         print(f"Cluster {cluster}: {len(train_data)} training samples, {len(val_data)} validation samples.")
     return clustered_data
+def make_user_cluster_df(user_category_profiles_path = 'user_category_profiles.pkl', user_cluster_df_path = 'user_cluster_df.pkl'):
+    import pandas as pd
+    import numpy as np
+    import os
+    from sklearn.cluster import KMeans
+    import pickle
 
-def init(process_dfs = False, process_behaviors = False):
-    global data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
-    zip_file = f"MINDlarge_train.zip"
-    valid_zip_file = f"MINDlarge_dev.zip"
-    data_dir = 'dataset/train/'  # Adjust path as necessary
-    valid_data_dir = 'dataset/valid/'  # Adjust path as necessary
+    # Load the user_category_profiles
+    user_category_profiles = pd.read_pickle(user_category_profiles_path)
+
+    # --- [Perform Clustering] ---
+
+    # Optionally, standardize the features
+    from sklearn.preprocessing import StandardScaler
+
+    # Initialize the scaler
+    scaler = StandardScaler()
+
+    # Fit the scaler on the user profiles
+    user_profiles_scaled = scaler.fit_transform(user_category_profiles)
+
+    # Save the scaler for future use
+    scaler_path = 'user_profiles_scaler.pkl'
+    with open(scaler_path, 'wb') as f:
+        pickle.dump(scaler, f)
+    print(f"Saved scaler to {scaler_path}")
+
+    # Initialize the clustering model
+    num_clusters = 3  # Adjust the number of clusters as needed
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+
+    # Fit the clustering model
+    kmeans.fit(user_profiles_scaled)
+
+    # Save the clustering model for future use
+    clustering_model_path = 'kmeans_user_clusters.pkl'
+    with open(clustering_model_path, 'wb') as f:
+        pickle.dump(kmeans, f)
+    print(f"Saved KMeans clustering model to {clustering_model_path}")
+
+    # Assign clusters to users
+    user_clusters = kmeans.predict(user_profiles_scaled)
+
+    # Add the cluster assignments to the user profiles
+    user_category_profiles['Cluster'] = user_clusters
+
+    # Save the cluster assignments
+    user_cluster_df = user_category_profiles[['Cluster']]
+    user_cluster_df.to_pickle(user_cluster_df_path)
+    print(f"Saved user cluster assignments to {user_cluster_df_path}")
+
+def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip"):
+    global vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
     if is_colab():
         print("Running on Google colab")
         data_dir = '/content/train/'
@@ -1095,16 +1884,20 @@ def init(process_dfs = False, process_behaviors = False):
     #zip_file = f"MINDsmall_train.zip"
     zip_file_path = f"{data_dir}{zip_file}"
     valid_zip_file_path = f"{valid_data_dir}{valid_zip_file}"
-    local_model_path = hf_hub_download(
-        repo_id=f"Teemu5/news",
-        filename=zip_file,
-        local_dir=data_dir
-    )
-    local_model_path = hf_hub_download(
-        repo_id=f"Teemu5/news",
-        filename=valid_zip_file,
-        local_dir=valid_data_dir
-    )
+    local_file_path = os.path.join(data_dir, zip_file)
+    local_valid_file_path = os.path.join(valid_data_dir, valid_zip_file)
+    if not os.path.exists(local_file_path):
+        local_model_path = hf_hub_download(
+            repo_id=f"Teemu5/news",
+            filename=zip_file,
+            local_dir=data_dir
+        )
+    if not os.path.exists(local_valid_file_path):
+        local_model_path = hf_hub_download(
+            repo_id=f"Teemu5/news",
+            filename=valid_zip_file,
+            local_dir=valid_data_dir
+        )
     output_folder = os.path.dirname(zip_file_path)
     
     # Unzip the file
@@ -1254,12 +2047,18 @@ def init(process_dfs = False, process_behaviors = False):
         print(f"\nShape of filtered_user_category_profiles: {filtered_user_category_profiles.shape}")
         
         # Save the user_category_profiles to a file for future use
-        user_category_profiles_path = 'user_category_profiles.pkl'
+        if "small" in data_dir:
+            user_category_profiles_path = 'small_user_category_profiles.pkl'
+            behaviors_df_processed_path = "small_behaviors_df_processed.pkl"
+        else:
+            user_category_profiles_path = 'user_category_profiles.pkl'
+            behaviors_df_processed_path = "behaviors_df_processed.pkl"
+        
         filtered_user_category_profiles.to_pickle(user_category_profiles_path)
         user_category_profiles = filtered_user_category_profiles
         print(f"\nSaved user_category_profiles to {user_category_profiles_path}")
-        behaviors_df.to_pickle("behaviors_df_processed.pkl")
-        print(f"\nSaved behaviors_df to behaviors_df_processed.pkl")
+        behaviors_df.to_pickle(behaviors_df_processed_path)
+        print(f"\nSaved behaviors_df to {behaviors_df_processed_path}")
     else:
         local_model_path = hf_hub_download(
             repo_id=f"Teemu5/news",
@@ -1323,10 +2122,10 @@ def init(process_dfs = False, process_behaviors = False):
     batch_size = 64 # Adjust as needed
     return data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
 
-def get_models(process_dfs = False, process_behaviors = False):
+def get_models(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip"):
     news_file = 'news.tsv'
     behaviors_file = 'behaviors.tsv'
-    data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters = init(process_dfs, process_behaviors)
+    data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters = init(process_dfs, process_behaviors, data_dir, valid_data_dir, zip_file, valid_zip_file)
     if process_dfs:
         clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters = prepare_train_df(
             data_dir=data_dir,
@@ -1350,12 +2149,28 @@ def get_models(process_dfs = False, process_behaviors = False):
         load_models=[0,1,2,3]
     )
     return models, news_df, behaviors_df, tokenizer
+def train_test_split_time(behaviors_df, cutoff_str="2019-11-20"):
+    # Ensure Time column is datetime64[ns] and timezone-naive
+    if behaviors_df["Time"].dtype != "datetime64[ns]":
+        behaviors_df["Time"] = pd.to_datetime(behaviors_df["Time"], errors="coerce")
+    if behaviors_df["Time"].dt.tz is not None:
+        behaviors_df["Time"] = behaviors_df["Time"].dt.tz_localize(None)
 
-# ===================== Example __main__ =====================
+    # Also ensure cutoff_dt is timezone-naive
+    cutoff_dt = pd.to_datetime(cutoff_str)
+    if cutoff_dt.tzinfo is not None:
+        cutoff_dt = cutoff_dt.tz_localize(None)
 
-def main():
+    train_data = behaviors_df[behaviors_df["Time"] <= cutoff_dt].copy()
+    test_data = behaviors_df[behaviors_df["Time"] > cutoff_dt].copy()
+    return train_data, test_data
+
+# ===================== __main__ =====================
+
+def main(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip", user_category_profiles_path = '', user_cluster_df_path = ''):
+    logging.info(f"Starting main(process_dfs = {process_dfs}, process_behaviors = {process_behaviors}, data_dir = {data_dir}, valid_data_dir = {valid_data_dir}, zip_file = {zip_file}, valid_zip_file = {valid_zip_file}, user_category_profiles_path = {user_category_profiles_path}, user_cluster_df_path = {user_cluster_df_path}):")
     # Assume get_models() returns models_dict, news_df, behaviors_df, tokenizer
-    models_dict, news_df, behaviors_df, tokenizer = get_models()
+    models_dict, news_df, behaviors_df, tokenizer = get_models(process_dfs, process_behaviors, data_dir, valid_data_dir, zip_file, valid_zip_file)
     
     # Fit TF-IDF vectorizer on the combined text of news articles.
     tfidf_vectorizer = TfidfVectorizer()
@@ -1365,18 +2180,36 @@ def main():
     # For example, if you have a DataFrame 'user_cluster_df' with columns ['UserID', 'Cluster'],
     # then build a dictionary mapping cluster id -> list of user IDs:
     # Download the file from Hugging Face Hub if it's not available locally.
-    local_model_path = hf_hub_download(
-        repo_id="Teemu5/news",
-        filename="user_cluster_df.pkl",
-        local_dir="models"
-    )
-    user_cluster_df = pd.read_pickle(local_model_path)
+    if user_cluster_df_path == '':
+        user_cluster_df_path = hf_hub_download(
+            repo_id="Teemu5/news",
+            filename="user_cluster_df.pkl",
+            local_dir="models"
+        )
+    else:
+        make_user_cluster_df(user_category_profiles_path, user_cluster_df_path)
+    user_cluster_df = pd.read_pickle(user_cluster_df_path)
     cluster_mapping = {}
     for cluster in user_cluster_df['Cluster'].unique():
         cluster_mapping[cluster] = user_cluster_df[user_cluster_df['Cluster'] == cluster].index.tolist()
     
     # Set a cutoff time (simulate recommendations at this time)
-    cutoff_time_str = "2023-02-01T00:00:00Z"
-    k = 10
+    cutoff_time_str = "2019-11-10T00:00:00Z"
+    print("Earliest interaction:", behaviors_df['Time'].min())
+    print("Latest interaction:",   behaviors_df['Time'].max())
+
+    k_values = [5,10,20,50,100]
+    train_data, test_data = train_test_split_time(behaviors_df, cutoff_time_str)
+    results_user_level = run_cluster_experiments_user_level(
+        cluster_mapping, 
+        train_data, 
+        test_data,
+        news_df,
+        behaviors_df,
+        models_dict,
+        tokenizer,
+        tfidf_vectorizer,
+        cutoff_time_str
+    )
     # Run the cluster-level experiment
-    cluster_results_df = run_cluster_experiments(cluster_mapping, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time_str, k)
+    cluster_results_df = run_cluster_experiments(cluster_mapping, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time_str, k_values)

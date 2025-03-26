@@ -1,0 +1,11 @@
+services:
+  test:
+    build: ./backend
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./backend:/app
+      - model_data:/app/data
+    command: python3 test_recommender.py
+volumes:
+  model_data:
