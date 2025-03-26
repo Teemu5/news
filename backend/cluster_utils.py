@@ -33,6 +33,8 @@ from recommender import (  # import functions from recommender module
     ensemble_stacking,
     hybrid_ensemble
 )
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
 # (Assume your other functions – candidate_generation, candidate_scoring, etc. – are defined above.)
 # --- [Cleaning Function] ---
 def clean_text(text):
@@ -46,9 +48,70 @@ def clean_text(text):
     words = text.split()
     words = [w for w in words if not w in stop_words]
     return ' '.join(words)
-# ===================== Cluster-Level Evaluation Functions =====================
+import logging
 
+# Configure logging: you can place this at the top of your module.
+logging.basicConfig(
+    filename='cluster_profile.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+# ===================== Cluster-Level Evaluation Functions =====================
 def build_cluster_profile(cluster_users, behaviors_df, news_df, cutoff_time, tokenizer, max_history_length=50, max_title_length=30):
+    """
+    Build an aggregated cluster profile based on user histories.
+    This function processes each user's history and aggregates them.
+    
+    Logs progress every 100 users.
+    """
+    cluster_history_tensor = []
+    cluster_profile_ids = []
+    
+    # Optionally, open a file to append progress (if you prefer manual file writes)
+    # with open("cluster_profile_progress.log", "a") as log_file:
+    
+    total_users = len(cluster_users)
+    for i, user_id in enumerate(cluster_users):
+        # Filter the user history by time (assuming cutoff_time is provided as a datetime)
+        try:
+            behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'])
+
+            # Convert cutoff_time to a datetime
+            cutoff_time = pd.to_datetime(cutoff_time)
+            user_hist = behaviors_df[
+                (behaviors_df['UserID'] == user_id) & 
+                (behaviors_df['Time'] <= np.datetime64(cutoff_time))
+            ]
+        except Exception as e:
+            logging.error(f"Error processing user {user_id}: {e}")
+            continue
+
+        # Process each user's history (this is a placeholder for your actual processing)
+        if not user_hist.empty:
+            # For example, get history text from the latest row:
+            latest_sample = user_hist.iloc[-1]
+            history_text = latest_sample.get("HistoryText", "")
+            # Tokenize and pad history_text, for instance:
+            history_sequence = tokenizer.texts_to_sequences([history_text])
+            history_padded = pad_sequences(history_sequence, maxlen=max_title_length, padding='post', truncating='post', value=0)
+            cluster_history_tensor.append(history_padded)
+            cluster_profile_ids.append(user_id)
+        
+        # Log progress every 100 users
+        if (i + 1) % 1000 == 0:
+            logging.info(f"Processed {i + 1} of {total_users} users")
+    
+    # Log final progress
+    logging.info(f"Finished processing all {total_users} users for cluster profile")
+    
+    # Aggregate the user histories into a cluster profile tensor, for example by averaging:
+    if cluster_history_tensor:
+        cluster_profile_tensor = np.mean(np.array(cluster_history_tensor), axis=0)
+    else:
+        cluster_profile_tensor = None
+
+    return cluster_profile_tensor, cluster_profile_ids
+def build_cluster_profile2(cluster_users, behaviors_df, news_df, cutoff_time, tokenizer, max_history_length=50, max_title_length=30):
     """
     Build a cluster history by aggregating (union) the articles clicked by each user in the cluster 
     *before* the cutoff_time. Then, create a pseudo-history tensor using the news titles.
@@ -571,8 +634,12 @@ def prepare_train_df(
         }
         print(f"Cluster {cluster}: {len(train_data)} training samples, {len(val_data)} validation samples.")
     print("Saved after processing: models/news_df_processed.pkl, models/train_df_processed.pkl")
-    news_df.to_pickle("models/news_df_processed.pkl")
-    train_df.to_pickle("models/train_df_processed.pkl")
+    if "small" in data_dir:
+        news_df.to_pickle("models/small_news_df_processed.pkl")
+        train_df.to_pickle("models/small_train_df_processed.pkl")
+    else:
+        news_df.to_pickle("models/news_df_processed.pkl")
+        train_df.to_pickle("models/train_df_processed.pkl")
 
     return clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters
 
@@ -1080,13 +1147,59 @@ def make_clustered_data(train_df, num_clusters):
         }
         print(f"Cluster {cluster}: {len(train_data)} training samples, {len(val_data)} validation samples.")
     return clustered_data
+def make_user_cluster_df(user_category_profiles_path = 'user_category_profiles.pkl', user_cluster_df_path = 'user_cluster_df.pkl'):
+    import pandas as pd
+    import numpy as np
+    import os
+    from sklearn.cluster import KMeans
+    import pickle
 
-def init(process_dfs = False, process_behaviors = False):
-    global data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
-    zip_file = f"MINDlarge_train.zip"
-    valid_zip_file = f"MINDlarge_dev.zip"
-    data_dir = 'dataset/train/'  # Adjust path as necessary
-    valid_data_dir = 'dataset/valid/'  # Adjust path as necessary
+    # Load the user_category_profiles
+    user_category_profiles = pd.read_pickle(user_category_profiles_path)
+
+    # --- [Perform Clustering] ---
+
+    # Optionally, standardize the features
+    from sklearn.preprocessing import StandardScaler
+
+    # Initialize the scaler
+    scaler = StandardScaler()
+
+    # Fit the scaler on the user profiles
+    user_profiles_scaled = scaler.fit_transform(user_category_profiles)
+
+    # Save the scaler for future use
+    scaler_path = 'user_profiles_scaler.pkl'
+    with open(scaler_path, 'wb') as f:
+        pickle.dump(scaler, f)
+    print(f"Saved scaler to {scaler_path}")
+
+    # Initialize the clustering model
+    num_clusters = 3  # Adjust the number of clusters as needed
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+
+    # Fit the clustering model
+    kmeans.fit(user_profiles_scaled)
+
+    # Save the clustering model for future use
+    clustering_model_path = 'kmeans_user_clusters.pkl'
+    with open(clustering_model_path, 'wb') as f:
+        pickle.dump(kmeans, f)
+    print(f"Saved KMeans clustering model to {clustering_model_path}")
+
+    # Assign clusters to users
+    user_clusters = kmeans.predict(user_profiles_scaled)
+
+    # Add the cluster assignments to the user profiles
+    user_category_profiles['Cluster'] = user_clusters
+
+    # Save the cluster assignments
+    user_cluster_df = user_category_profiles[['Cluster']]
+    user_cluster_df.to_pickle(user_cluster_df_path)
+    print(f"Saved user cluster assignments to {user_cluster_df_path}")
+
+def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip"):
+    global vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
     if is_colab():
         print("Running on Google colab")
         data_dir = '/content/train/'
@@ -1095,16 +1208,20 @@ def init(process_dfs = False, process_behaviors = False):
     #zip_file = f"MINDsmall_train.zip"
     zip_file_path = f"{data_dir}{zip_file}"
     valid_zip_file_path = f"{valid_data_dir}{valid_zip_file}"
-    local_model_path = hf_hub_download(
-        repo_id=f"Teemu5/news",
-        filename=zip_file,
-        local_dir=data_dir
-    )
-    local_model_path = hf_hub_download(
-        repo_id=f"Teemu5/news",
-        filename=valid_zip_file,
-        local_dir=valid_data_dir
-    )
+    local_file_path = os.path.join(data_dir, zip_file)
+    local_valid_file_path = os.path.join(valid_data_dir, valid_zip_file)
+    if not os.path.exists(local_file_path):
+        local_model_path = hf_hub_download(
+            repo_id=f"Teemu5/news",
+            filename=zip_file,
+            local_dir=data_dir
+        )
+    if not os.path.exists(local_valid_file_path):
+        local_model_path = hf_hub_download(
+            repo_id=f"Teemu5/news",
+            filename=valid_zip_file,
+            local_dir=valid_data_dir
+        )
     output_folder = os.path.dirname(zip_file_path)
     
     # Unzip the file
@@ -1254,12 +1371,18 @@ def init(process_dfs = False, process_behaviors = False):
         print(f"\nShape of filtered_user_category_profiles: {filtered_user_category_profiles.shape}")
         
         # Save the user_category_profiles to a file for future use
-        user_category_profiles_path = 'user_category_profiles.pkl'
+        if "small" in data_dir:
+            user_category_profiles_path = 'small_user_category_profiles.pkl'
+            behaviors_df_processed_path = "small_behaviors_df_processed.pkl"
+        else:
+            user_category_profiles_path = 'user_category_profiles.pkl'
+            behaviors_df_processed_path = "behaviors_df_processed.pkl"
+        
         filtered_user_category_profiles.to_pickle(user_category_profiles_path)
         user_category_profiles = filtered_user_category_profiles
         print(f"\nSaved user_category_profiles to {user_category_profiles_path}")
-        behaviors_df.to_pickle("behaviors_df_processed.pkl")
-        print(f"\nSaved behaviors_df to behaviors_df_processed.pkl")
+        behaviors_df.to_pickle(behaviors_df_processed_path)
+        print(f"\nSaved behaviors_df to {behaviors_df_processed_path}")
     else:
         local_model_path = hf_hub_download(
             repo_id=f"Teemu5/news",
@@ -1323,10 +1446,10 @@ def init(process_dfs = False, process_behaviors = False):
     batch_size = 64 # Adjust as needed
     return data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
 
-def get_models(process_dfs = False, process_behaviors = False):
+def get_models(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip"):
     news_file = 'news.tsv'
     behaviors_file = 'behaviors.tsv'
-    data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters = init(process_dfs, process_behaviors)
+    data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters = init(process_dfs, process_behaviors, data_dir, valid_data_dir, zip_file, valid_zip_file)
     if process_dfs:
         clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters = prepare_train_df(
             data_dir=data_dir,
@@ -1353,9 +1476,9 @@ def get_models(process_dfs = False, process_behaviors = False):
 
 # ===================== Example __main__ =====================
 
-def main():
+def main(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip", user_category_profiles_path = '', user_cluster_df_path = ''):
     # Assume get_models() returns models_dict, news_df, behaviors_df, tokenizer
-    models_dict, news_df, behaviors_df, tokenizer = get_models()
+    models_dict, news_df, behaviors_df, tokenizer = get_models(process_dfs, process_behaviors, data_dir, valid_data_dir, zip_file, valid_zip_file)
     
     # Fit TF-IDF vectorizer on the combined text of news articles.
     tfidf_vectorizer = TfidfVectorizer()
@@ -1365,12 +1488,15 @@ def main():
     # For example, if you have a DataFrame 'user_cluster_df' with columns ['UserID', 'Cluster'],
     # then build a dictionary mapping cluster id -> list of user IDs:
     # Download the file from Hugging Face Hub if it's not available locally.
-    local_model_path = hf_hub_download(
-        repo_id="Teemu5/news",
-        filename="user_cluster_df.pkl",
-        local_dir="models"
-    )
-    user_cluster_df = pd.read_pickle(local_model_path)
+    if user_cluster_df_path == '':
+        user_cluster_df_path = hf_hub_download(
+            repo_id="Teemu5/news",
+            filename="user_cluster_df.pkl",
+            local_dir="models"
+        )
+    else:
+        make_user_cluster_df(user_category_profiles_path, user_cluster_df_path)
+    user_cluster_df = pd.read_pickle(user_cluster_df_path)
     cluster_mapping = {}
     for cluster in user_cluster_df['Cluster'].unique():
         cluster_mapping[cluster] = user_cluster_df[user_cluster_df['Cluster'] == cluster].index.tolist()
