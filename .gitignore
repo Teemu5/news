@@ -14,3 +14,5 @@ models/*
 *.pkl
 *.keras
 *.csv
+backend/models/news_df_processed.pkl
+backend/user_category_profiles.pkl
