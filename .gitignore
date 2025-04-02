@@ -1,4 +1,3 @@
-# Instead of ignoring big files they should be tracked by lfs
 _READY
 model/kaggle.json
 Fastformer/data/*

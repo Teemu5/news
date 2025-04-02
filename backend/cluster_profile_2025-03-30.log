@@ -1,0 +1,2018 @@
+2025-03-30 08:56:14,731 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/small/train/, valid_data_dir = dataset/small/valid/, zip_file = MINDsmall_train.zip, valid_zip_file = MINDsmall_dev.zip, user_category_profiles_path = small_user_category_profiles.pkl, user_cluster_df_path = small_user_cluster_df.pkl):
+2025-03-30 08:56:59,067 - INFO - Starting user U13740 in cluster 1 (index 0)
+2025-03-30 08:57:42,960 - INFO - Starting user U73700 in cluster 1 (index 1)
+2025-03-30 08:57:43,032 - INFO - history_titles:[] empty for user: U73700!!!
+2025-03-30 08:57:57,795 - INFO - Starting user U34670 in cluster 1 (index 2)
+2025-03-30 08:57:57,862 - INFO - history_titles:[] empty for user: U34670!!!
+2025-03-30 08:58:12,080 - INFO - Starting user U8125 in cluster 1 (index 3)
+2025-03-30 08:58:12,143 - INFO - history_titles:[] empty for user: U8125!!!
+2025-03-30 08:58:26,312 - INFO - Starting user U19739 in cluster 1 (index 4)
+2025-03-30 08:58:26,382 - INFO - history_titles:[] empty for user: U19739!!!
+2025-03-30 08:58:40,936 - INFO - Starting user U8355 in cluster 1 (index 5)
+2025-03-30 08:58:41,002 - INFO - history_titles:[] empty for user: U8355!!!
+2025-03-30 08:58:55,842 - INFO - Starting user U46596 in cluster 1 (index 6)
+2025-03-30 08:58:55,906 - INFO - history_titles:[] empty for user: U46596!!!
+2025-03-30 08:59:10,130 - INFO - Starting user U79199 in cluster 1 (index 7)
+2025-03-30 08:59:10,197 - INFO - history_titles:[] empty for user: U79199!!!
+2025-03-30 08:59:24,579 - INFO - Starting user U53231 in cluster 1 (index 8)
+2025-03-30 08:59:24,646 - INFO - history_titles:[] empty for user: U53231!!!
+2025-03-30 08:59:38,800 - INFO - Starting user U10045 in cluster 1 (index 9)
+2025-03-30 09:00:05,643 - INFO - Starting user U63162 in cluster 1 (index 10)
+2025-03-30 09:00:05,707 - INFO - history_titles:[] empty for user: U63162!!!
+2025-03-30 09:00:20,343 - INFO - Starting user U17841 in cluster 1 (index 11)
+2025-03-30 09:00:20,410 - INFO - history_titles:[] empty for user: U17841!!!
+2025-03-30 09:00:34,524 - INFO - Starting user U8312 in cluster 1 (index 12)
+2025-03-30 09:00:34,589 - INFO - history_titles:[] empty for user: U8312!!!
+2025-03-30 09:00:48,580 - INFO - Starting user U11306 in cluster 1 (index 13)
+2025-03-30 09:00:48,648 - INFO - history_titles:[] empty for user: U11306!!!
+2025-03-30 09:01:02,686 - INFO - Starting user U38627 in cluster 1 (index 14)
+2025-03-30 09:01:02,754 - INFO - history_titles:[] empty for user: U38627!!!
+2025-03-30 09:01:17,277 - INFO - Starting user U47654 in cluster 1 (index 15)
+2025-03-30 09:01:48,023 - INFO - Starting user U80798 in cluster 1 (index 16)
+2025-03-30 09:01:48,093 - INFO - history_titles:[] empty for user: U80798!!!
+2025-03-30 09:02:02,145 - INFO - Starting user U67119 in cluster 1 (index 17)
+2025-03-30 09:02:02,211 - INFO - history_titles:[] empty for user: U67119!!!
+2025-03-30 09:02:16,155 - INFO - Starting user U91678 in cluster 1 (index 18)
+2025-03-30 09:02:16,224 - INFO - history_titles:[] empty for user: U91678!!!
+2025-03-30 09:02:30,845 - INFO - Starting user U12328 in cluster 1 (index 19)
+2025-03-30 09:02:30,913 - INFO - history_titles:[] empty for user: U12328!!!
+2025-03-30 09:02:44,991 - INFO - Starting user U44808 in cluster 1 (index 20)
+2025-03-30 09:02:45,059 - INFO - history_titles:[] empty for user: U44808!!!
+2025-03-30 09:02:59,242 - INFO - Starting user U33207 in cluster 1 (index 21)
+2025-03-30 09:02:59,310 - INFO - history_titles:[] empty for user: U33207!!!
+2025-03-30 09:03:13,448 - INFO - Starting user U36009 in cluster 1 (index 22)
+2025-03-30 09:03:13,514 - INFO - history_titles:[] empty for user: U36009!!!
+2025-03-30 09:03:27,874 - INFO - Starting user U85394 in cluster 1 (index 23)
+2025-03-30 09:03:27,942 - INFO - history_titles:[] empty for user: U85394!!!
+2025-03-30 09:03:41,986 - INFO - Starting user U6744 in cluster 1 (index 24)
+2025-03-30 09:03:42,048 - INFO - history_titles:[] empty for user: U6744!!!
+2025-03-30 09:03:56,130 - INFO - Starting user U81585 in cluster 1 (index 25)
+2025-03-30 09:03:56,196 - INFO - history_titles:[] empty for user: U81585!!!
+2025-03-30 09:04:10,290 - INFO - Starting user U83994 in cluster 1 (index 26)
+2025-03-30 09:04:37,661 - INFO - Starting user U78244 in cluster 1 (index 27)
+2025-03-30 09:05:02,429 - INFO - Starting user U50695 in cluster 1 (index 28)
+2025-03-30 09:05:02,495 - INFO - history_titles:[] empty for user: U50695!!!
+2025-03-30 09:05:16,273 - INFO - Starting user U80709 in cluster 1 (index 29)
+2025-03-30 09:05:16,341 - INFO - history_titles:[] empty for user: U80709!!!
+2025-03-30 09:05:30,162 - INFO - Starting user U39703 in cluster 1 (index 30)
+2025-03-30 09:05:50,298 - INFO - Starting user U84248 in cluster 1 (index 31)
+2025-03-30 09:05:50,372 - INFO - history_titles:[] empty for user: U84248!!!
+2025-03-30 09:06:04,720 - INFO - Starting user U78954 in cluster 1 (index 32)
+2025-03-30 09:06:25,671 - INFO - Starting user U15141 in cluster 1 (index 33)
+2025-03-30 09:06:46,598 - INFO - Starting user U16402 in cluster 1 (index 34)
+2025-03-30 09:06:46,666 - INFO - history_titles:[] empty for user: U16402!!!
+2025-03-30 09:07:00,827 - INFO - Starting user U9312 in cluster 1 (index 35)
+2025-03-30 09:07:00,890 - INFO - history_titles:[] empty for user: U9312!!!
+2025-03-30 09:07:15,483 - INFO - Starting user U1700 in cluster 1 (index 36)
+2025-03-30 09:07:15,554 - INFO - history_titles:[] empty for user: U1700!!!
+2025-03-30 09:07:29,560 - INFO - Starting user U53159 in cluster 1 (index 37)
+2025-03-30 09:07:29,629 - INFO - history_titles:[] empty for user: U53159!!!
+2025-03-30 09:07:43,826 - INFO - Starting user U40937 in cluster 1 (index 38)
+2025-03-30 09:07:43,893 - INFO - history_titles:[] empty for user: U40937!!!
+2025-03-30 09:07:57,806 - INFO - Starting user U78765 in cluster 1 (index 39)
+2025-03-30 09:07:57,875 - INFO - history_titles:[] empty for user: U78765!!!
+2025-03-30 09:08:12,358 - INFO - Starting user U700 in cluster 1 (index 40)
+2025-03-30 09:08:12,423 - INFO - history_titles:[] empty for user: U700!!!
+2025-03-30 09:08:26,319 - INFO - Starting user U7932 in cluster 1 (index 41)
+2025-03-30 09:08:26,383 - INFO - history_titles:[] empty for user: U7932!!!
+2025-03-30 09:08:40,480 - INFO - Starting user U2579 in cluster 1 (index 42)
+2025-03-30 09:08:40,547 - INFO - history_titles:[] empty for user: U2579!!!
+2025-03-30 09:08:54,423 - INFO - Starting user U45798 in cluster 1 (index 43)
+2025-03-30 09:09:15,155 - INFO - Starting user U92183 in cluster 1 (index 44)
+2025-03-30 09:09:15,222 - INFO - history_titles:[] empty for user: U92183!!!
+2025-03-30 09:09:29,578 - INFO - Starting user U73329 in cluster 1 (index 45)
+2025-03-30 09:09:29,643 - INFO - history_titles:[] empty for user: U73329!!!
+2025-03-30 09:09:43,366 - INFO - Starting user U61875 in cluster 1 (index 46)
+2025-03-30 09:09:43,436 - INFO - history_titles:[] empty for user: U61875!!!
+2025-03-30 09:09:57,294 - INFO - Starting user U39643 in cluster 1 (index 47)
+2025-03-30 09:09:57,361 - INFO - history_titles:[] empty for user: U39643!!!
+2025-03-30 09:10:11,110 - INFO - Starting user U50562 in cluster 1 (index 48)
+2025-03-30 09:10:11,175 - INFO - history_titles:[] empty for user: U50562!!!
+2025-03-30 09:10:25,363 - INFO - Starting user U53276 in cluster 1 (index 49)
+2025-03-30 09:10:25,431 - INFO - history_titles:[] empty for user: U53276!!!
+2025-03-30 09:10:39,238 - INFO - Starting user U47477 in cluster 1 (index 50)
+2025-03-30 09:10:39,306 - INFO - history_titles:[] empty for user: U47477!!!
+2025-03-30 09:10:53,201 - INFO - Starting user U37844 in cluster 1 (index 51)
+2025-03-30 09:11:21,402 - INFO - Starting user U6518 in cluster 1 (index 52)
+2025-03-30 09:11:21,468 - INFO - history_titles:[] empty for user: U6518!!!
+2025-03-30 09:11:35,715 - INFO - Starting user U39868 in cluster 1 (index 53)
+2025-03-30 09:11:35,784 - INFO - history_titles:[] empty for user: U39868!!!
+2025-03-30 09:11:49,544 - INFO - Starting user U23485 in cluster 1 (index 54)
+2025-03-30 09:11:49,611 - INFO - history_titles:[] empty for user: U23485!!!
+2025-03-30 09:12:03,652 - INFO - Starting user U61371 in cluster 1 (index 55)
+2025-03-30 09:12:03,722 - INFO - history_titles:[] empty for user: U61371!!!
+2025-03-30 09:12:17,858 - INFO - Starting user U63808 in cluster 1 (index 56)
+2025-03-30 09:12:17,929 - INFO - history_titles:[] empty for user: U63808!!!
+2025-03-30 09:12:32,463 - INFO - Starting user U2935 in cluster 1 (index 57)
+2025-03-30 09:12:32,527 - INFO - history_titles:[] empty for user: U2935!!!
+2025-03-30 09:12:46,484 - INFO - Starting user U15363 in cluster 1 (index 58)
+2025-03-30 09:12:46,554 - INFO - history_titles:[] empty for user: U15363!!!
+2025-03-30 09:13:00,596 - INFO - Starting user U5627 in cluster 1 (index 59)
+2025-03-30 09:13:00,663 - INFO - history_titles:[] empty for user: U5627!!!
+2025-03-30 09:13:14,745 - INFO - Starting user U7471 in cluster 1 (index 60)
+2025-03-30 09:13:14,810 - INFO - history_titles:[] empty for user: U7471!!!
+2025-03-30 09:13:29,334 - INFO - Starting user U67565 in cluster 1 (index 61)
+2025-03-30 09:13:29,400 - INFO - history_titles:[] empty for user: U67565!!!
+2025-03-30 09:13:43,459 - INFO - Starting user U1376 in cluster 1 (index 62)
+2025-03-30 09:13:43,521 - INFO - history_titles:[] empty for user: U1376!!!
+2025-03-30 09:13:57,625 - INFO - Starting user U11533 in cluster 1 (index 63)
+2025-03-30 09:13:57,693 - INFO - history_titles:[] empty for user: U11533!!!
+2025-03-30 09:14:11,681 - INFO - Starting user U86017 in cluster 1 (index 64)
+2025-03-30 09:14:11,751 - INFO - history_titles:[] empty for user: U86017!!!
+2025-03-30 09:14:25,854 - INFO - Starting user U3616 in cluster 1 (index 65)
+2025-03-30 09:14:52,202 - INFO - Starting user U66486 in cluster 1 (index 66)
+2025-03-30 09:15:12,753 - INFO - Starting user U91389 in cluster 1 (index 67)
+2025-03-30 09:15:12,824 - INFO - history_titles:[] empty for user: U91389!!!
+2025-03-30 09:15:26,508 - INFO - Starting user U37127 in cluster 1 (index 68)
+2025-03-30 09:15:26,571 - INFO - history_titles:[] empty for user: U37127!!!
+2025-03-30 09:15:40,259 - INFO - Starting user U24775 in cluster 1 (index 69)
+2025-03-30 09:16:03,427 - INFO - Starting user U39222 in cluster 1 (index 70)
+2025-03-30 09:16:03,493 - INFO - history_titles:[] empty for user: U39222!!!
+2025-03-30 09:16:17,401 - INFO - Starting user U5286 in cluster 1 (index 71)
+2025-03-30 09:16:17,464 - INFO - history_titles:[] empty for user: U5286!!!
+2025-03-30 09:16:31,372 - INFO - Starting user U69950 in cluster 1 (index 72)
+2025-03-30 09:16:31,445 - INFO - history_titles:[] empty for user: U69950!!!
+2025-03-30 09:16:45,421 - INFO - Starting user U92093 in cluster 1 (index 73)
+2025-03-30 09:16:45,487 - INFO - history_titles:[] empty for user: U92093!!!
+2025-03-30 09:16:59,925 - INFO - Starting user U52005 in cluster 1 (index 74)
+2025-03-30 09:17:18,362 - INFO - Starting user U27804 in cluster 1 (index 75)
+2025-03-30 09:17:18,430 - INFO - history_titles:[] empty for user: U27804!!!
+2025-03-30 09:17:32,763 - INFO - Starting user U52914 in cluster 1 (index 76)
+2025-03-30 09:17:32,832 - INFO - history_titles:[] empty for user: U52914!!!
+2025-03-30 09:17:46,781 - INFO - Starting user U60663 in cluster 1 (index 77)
+2025-03-30 09:17:46,849 - INFO - history_titles:[] empty for user: U60663!!!
+2025-03-30 09:18:01,580 - INFO - Starting user U12957 in cluster 1 (index 78)
+2025-03-30 09:18:01,648 - INFO - history_titles:[] empty for user: U12957!!!
+2025-03-30 09:18:15,817 - INFO - Starting user U85027 in cluster 1 (index 79)
+2025-03-30 09:18:15,886 - INFO - history_titles:[] empty for user: U85027!!!
+2025-03-30 09:18:30,039 - INFO - Starting user U10585 in cluster 1 (index 80)
+2025-03-30 09:18:30,105 - INFO - history_titles:[] empty for user: U10585!!!
+2025-03-30 09:18:44,308 - INFO - Starting user U89839 in cluster 1 (index 81)
+2025-03-30 09:18:44,379 - INFO - history_titles:[] empty for user: U89839!!!
+2025-03-30 09:18:58,967 - INFO - Starting user U47761 in cluster 1 (index 82)
+2025-03-30 09:19:21,083 - INFO - Starting user U70910 in cluster 1 (index 83)
+2025-03-30 09:19:21,155 - INFO - history_titles:[] empty for user: U70910!!!
+2025-03-30 09:19:35,173 - INFO - Starting user U53319 in cluster 1 (index 84)
+2025-03-30 09:19:35,243 - INFO - history_titles:[] empty for user: U53319!!!
+2025-03-30 09:19:49,311 - INFO - Starting user U84084 in cluster 1 (index 85)
+2025-03-30 09:20:13,389 - INFO - Starting user U39670 in cluster 1 (index 86)
+2025-03-30 09:20:34,191 - INFO - Starting user U21482 in cluster 1 (index 87)
+2025-03-30 09:20:34,258 - INFO - history_titles:[] empty for user: U21482!!!
+2025-03-30 09:20:48,113 - INFO - Starting user U5786 in cluster 1 (index 88)
+2025-03-30 09:20:48,176 - INFO - history_titles:[] empty for user: U5786!!!
+2025-03-30 09:21:02,014 - INFO - Starting user U15527 in cluster 1 (index 89)
+2025-03-30 09:21:02,081 - INFO - history_titles:[] empty for user: U15527!!!
+2025-03-30 09:21:15,808 - INFO - Starting user U77213 in cluster 1 (index 90)
+2025-03-30 09:21:15,874 - INFO - history_titles:[] empty for user: U77213!!!
+2025-03-30 09:21:30,358 - INFO - Starting user U51224 in cluster 1 (index 91)
+2025-03-30 09:21:30,424 - INFO - history_titles:[] empty for user: U51224!!!
+2025-03-30 09:21:44,391 - INFO - Starting user U62357 in cluster 1 (index 92)
+2025-03-30 09:22:11,541 - INFO - Starting user U46035 in cluster 1 (index 93)
+2025-03-30 09:22:11,607 - INFO - history_titles:[] empty for user: U46035!!!
+2025-03-30 09:22:26,304 - INFO - Starting user U80525 in cluster 1 (index 94)
+2025-03-30 09:22:26,371 - INFO - history_titles:[] empty for user: U80525!!!
+2025-03-30 09:22:40,746 - INFO - Starting user U81530 in cluster 1 (index 95)
+2025-03-30 09:22:40,815 - INFO - history_titles:[] empty for user: U81530!!!
+2025-03-30 09:22:54,895 - INFO - Starting user U84565 in cluster 1 (index 96)
+2025-03-30 09:22:54,961 - INFO - history_titles:[] empty for user: U84565!!!
+2025-03-30 09:23:08,916 - INFO - Starting user U27609 in cluster 1 (index 97)
+2025-03-30 09:23:08,984 - INFO - history_titles:[] empty for user: U27609!!!
+2025-03-30 09:23:22,966 - INFO - Starting user U59975 in cluster 1 (index 98)
+2025-03-30 09:23:23,033 - INFO - history_titles:[] empty for user: U59975!!!
+2025-03-30 09:23:37,407 - INFO - Starting user U26661 in cluster 1 (index 99)
+2025-03-30 09:23:37,474 - INFO - history_titles:[] empty for user: U26661!!!
+2025-03-30 09:23:51,510 - INFO - Starting user U93283 in cluster 1 (index 100)
+2025-03-30 09:23:51,580 - INFO - history_titles:[] empty for user: U93283!!!
+2025-03-30 09:24:05,726 - INFO - Starting user U27612 in cluster 1 (index 101)
+2025-03-30 09:24:31,466 - INFO - Starting user U33010 in cluster 1 (index 102)
+2025-03-30 09:24:31,532 - INFO - history_titles:[] empty for user: U33010!!!
+2025-03-30 09:24:45,616 - INFO - Starting user U93706 in cluster 1 (index 103)
+2025-03-30 09:24:45,682 - INFO - history_titles:[] empty for user: U93706!!!
+2025-03-30 09:25:00,255 - INFO - Starting user U78130 in cluster 1 (index 104)
+2025-03-30 09:25:00,321 - INFO - history_titles:[] empty for user: U78130!!!
+2025-03-30 09:25:14,333 - INFO - Starting user U1728 in cluster 1 (index 105)
+2025-03-30 09:25:14,396 - INFO - history_titles:[] empty for user: U1728!!!
+2025-03-30 09:25:28,513 - INFO - Starting user U63647 in cluster 1 (index 106)
+2025-03-30 09:25:28,581 - INFO - history_titles:[] empty for user: U63647!!!
+2025-03-30 09:25:42,653 - INFO - Starting user U35419 in cluster 1 (index 107)
+2025-03-30 09:25:42,720 - INFO - history_titles:[] empty for user: U35419!!!
+2025-03-30 09:25:57,116 - INFO - Starting user U11228 in cluster 1 (index 108)
+2025-03-30 09:26:21,945 - INFO - Starting user U41865 in cluster 1 (index 109)
+2025-03-30 09:26:22,013 - INFO - history_titles:[] empty for user: U41865!!!
+2025-03-30 09:26:35,987 - INFO - Starting user U80456 in cluster 1 (index 110)
+2025-03-30 09:26:36,053 - INFO - history_titles:[] empty for user: U80456!!!
+2025-03-30 09:26:49,880 - INFO - Starting user U14421 in cluster 1 (index 111)
+2025-03-30 09:26:49,952 - INFO - history_titles:[] empty for user: U14421!!!
+2025-03-30 09:27:04,332 - INFO - Starting user U69760 in cluster 1 (index 112)
+2025-03-30 09:27:04,401 - INFO - history_titles:[] empty for user: U69760!!!
+2025-03-30 09:27:18,450 - INFO - Starting user U85982 in cluster 1 (index 113)
+2025-03-30 09:27:18,514 - INFO - history_titles:[] empty for user: U85982!!!
+2025-03-30 09:27:32,512 - INFO - Starting user U85516 in cluster 1 (index 114)
+2025-03-30 09:27:32,585 - INFO - history_titles:[] empty for user: U85516!!!
+2025-03-30 09:27:46,682 - INFO - Starting user U21767 in cluster 1 (index 115)
+2025-03-30 09:27:46,750 - INFO - history_titles:[] empty for user: U21767!!!
+2025-03-30 09:28:01,335 - INFO - Starting user U28121 in cluster 1 (index 116)
+2025-03-30 09:28:01,404 - INFO - history_titles:[] empty for user: U28121!!!
+2025-03-30 09:28:15,261 - INFO - Starting user U80142 in cluster 1 (index 117)
+2025-03-30 09:28:15,330 - INFO - history_titles:[] empty for user: U80142!!!
+2025-03-30 09:28:29,191 - INFO - Starting user U496 in cluster 1 (index 118)
+2025-03-30 09:28:29,254 - INFO - history_titles:[] empty for user: U496!!!
+2025-03-30 09:28:43,358 - INFO - Starting user U25283 in cluster 1 (index 119)
+2025-03-30 09:28:43,429 - INFO - history_titles:[] empty for user: U25283!!!
+2025-03-30 09:28:58,485 - INFO - Starting user U40685 in cluster 1 (index 120)
+2025-03-30 09:29:21,357 - INFO - Starting user U74754 in cluster 1 (index 121)
+2025-03-30 09:29:21,422 - INFO - history_titles:[] empty for user: U74754!!!
+2025-03-30 09:29:35,447 - INFO - Starting user U13432 in cluster 1 (index 122)
+2025-03-30 09:30:00,503 - INFO - Starting user U91990 in cluster 1 (index 123)
+2025-03-30 09:30:00,571 - INFO - history_titles:[] empty for user: U91990!!!
+2025-03-30 09:30:15,395 - INFO - Starting user U29542 in cluster 1 (index 124)
+2025-03-30 09:30:15,462 - INFO - history_titles:[] empty for user: U29542!!!
+2025-03-30 09:30:29,361 - INFO - Starting user U88635 in cluster 1 (index 125)
+2025-03-30 09:30:29,428 - INFO - history_titles:[] empty for user: U88635!!!
+2025-03-30 09:30:43,565 - INFO - Starting user U67982 in cluster 1 (index 126)
+2025-03-30 09:30:43,634 - INFO - history_titles:[] empty for user: U67982!!!
+2025-03-30 09:30:57,851 - INFO - Starting user U338 in cluster 1 (index 127)
+2025-03-30 09:30:57,921 - INFO - history_titles:[] empty for user: U338!!!
+2025-03-30 09:31:12,358 - INFO - Starting user U8581 in cluster 1 (index 128)
+2025-03-30 09:31:12,421 - INFO - history_titles:[] empty for user: U8581!!!
+2025-03-30 09:31:26,389 - INFO - Starting user U57919 in cluster 1 (index 129)
+2025-03-30 09:31:26,453 - INFO - history_titles:[] empty for user: U57919!!!
+2025-03-30 09:31:40,884 - INFO - Starting user U67223 in cluster 1 (index 130)
+2025-03-30 09:32:02,690 - INFO - Starting user U2476 in cluster 1 (index 131)
+2025-03-30 09:32:02,752 - INFO - history_titles:[] empty for user: U2476!!!
+2025-03-30 09:32:16,683 - INFO - Starting user U5598 in cluster 1 (index 132)
+2025-03-30 09:32:16,749 - INFO - history_titles:[] empty for user: U5598!!!
+2025-03-30 09:32:31,145 - INFO - Starting user U7635 in cluster 1 (index 133)
+2025-03-30 09:32:31,211 - INFO - history_titles:[] empty for user: U7635!!!
+2025-03-30 09:32:45,327 - INFO - Starting user U39782 in cluster 1 (index 134)
+2025-03-30 09:32:45,398 - INFO - history_titles:[] empty for user: U39782!!!
+2025-03-30 09:32:59,633 - INFO - Starting user U50368 in cluster 1 (index 135)
+2025-03-30 09:32:59,701 - INFO - history_titles:[] empty for user: U50368!!!
+2025-03-30 09:33:13,766 - INFO - Starting user U51668 in cluster 1 (index 136)
+2025-03-30 09:33:13,834 - INFO - history_titles:[] empty for user: U51668!!!
+2025-03-30 09:33:28,263 - INFO - Starting user U70158 in cluster 1 (index 137)
+2025-03-30 09:33:28,330 - INFO - history_titles:[] empty for user: U70158!!!
+2025-03-30 09:33:42,256 - INFO - Starting user U86241 in cluster 1 (index 138)
+2025-03-30 09:33:42,324 - INFO - history_titles:[] empty for user: U86241!!!
+2025-03-30 09:33:56,293 - INFO - Starting user U82105 in cluster 1 (index 139)
+2025-03-30 09:34:19,430 - INFO - Starting user U40451 in cluster 1 (index 140)
+2025-03-30 09:34:19,497 - INFO - history_titles:[] empty for user: U40451!!!
+2025-03-30 09:34:33,965 - INFO - Starting user U38642 in cluster 1 (index 141)
+2025-03-30 09:34:34,029 - INFO - history_titles:[] empty for user: U38642!!!
+2025-03-30 09:34:48,070 - INFO - Starting user U64038 in cluster 1 (index 142)
+2025-03-30 09:34:48,137 - INFO - history_titles:[] empty for user: U64038!!!
+2025-03-30 09:35:02,048 - INFO - Starting user U29035 in cluster 1 (index 143)
+2025-03-30 09:35:02,118 - INFO - history_titles:[] empty for user: U29035!!!
+2025-03-30 09:35:15,990 - INFO - Starting user U8335 in cluster 1 (index 144)
+2025-03-30 09:35:16,052 - INFO - history_titles:[] empty for user: U8335!!!
+2025-03-30 09:35:30,430 - INFO - Starting user U21697 in cluster 1 (index 145)
+2025-03-30 09:35:30,497 - INFO - history_titles:[] empty for user: U21697!!!
+2025-03-30 09:35:44,416 - INFO - Starting user U80190 in cluster 1 (index 146)
+2025-03-30 09:35:44,483 - INFO - history_titles:[] empty for user: U80190!!!
+2025-03-30 09:35:58,634 - INFO - Starting user U26059 in cluster 1 (index 147)
+2025-03-30 09:35:58,698 - INFO - history_titles:[] empty for user: U26059!!!
+2025-03-30 09:36:12,860 - INFO - Starting user U90945 in cluster 1 (index 148)
+2025-03-30 09:36:12,925 - INFO - history_titles:[] empty for user: U90945!!!
+2025-03-30 09:36:27,462 - INFO - Starting user U41828 in cluster 1 (index 149)
+2025-03-30 09:36:27,534 - INFO - history_titles:[] empty for user: U41828!!!
+2025-03-30 09:36:42,590 - INFO - Starting user U21545 in cluster 1 (index 150)
+2025-03-30 09:36:42,661 - INFO - history_titles:[] empty for user: U21545!!!
+2025-03-30 09:36:57,400 - INFO - Starting user U83111 in cluster 1 (index 151)
+2025-03-30 09:36:57,468 - INFO - history_titles:[] empty for user: U83111!!!
+2025-03-30 09:37:12,374 - INFO - Starting user U65061 in cluster 1 (index 152)
+2025-03-30 09:37:41,244 - INFO - Starting user U90887 in cluster 1 (index 153)
+2025-03-30 09:37:41,315 - INFO - history_titles:[] empty for user: U90887!!!
+2025-03-30 09:37:55,055 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/small/train/, valid_data_dir = dataset/small/valid/, zip_file = MINDsmall_train.zip, valid_zip_file = MINDsmall_dev.zip, user_category_profiles_path = small_user_category_profiles.pkl, user_cluster_df_path = small_user_cluster_df.pkl):
+2025-03-30 09:38:42,329 - INFO - Starting user U13740 in cluster 1 (index 0)
+2025-03-30 09:39:53,764 - INFO - Starting user U73700 in cluster 1 (index 1)
+2025-03-30 09:39:53,843 - INFO - history_titles:[] empty for user: U73700!!!
+2025-03-30 09:40:43,674 - INFO - Starting user U34670 in cluster 1 (index 2)
+2025-03-30 09:40:43,748 - INFO - history_titles:[] empty for user: U34670!!!
+2025-03-30 09:41:27,011 - INFO - Starting user U8125 in cluster 1 (index 3)
+2025-03-30 09:41:27,085 - INFO - history_titles:[] empty for user: U8125!!!
+2025-03-30 09:42:10,178 - INFO - Starting user U19739 in cluster 1 (index 4)
+2025-03-30 09:42:10,251 - INFO - history_titles:[] empty for user: U19739!!!
+2025-03-30 09:42:53,312 - INFO - Starting user U8355 in cluster 1 (index 5)
+2025-03-30 09:42:53,387 - INFO - history_titles:[] empty for user: U8355!!!
+2025-03-30 09:43:36,498 - INFO - Starting user U46596 in cluster 1 (index 6)
+2025-03-30 09:43:36,570 - INFO - history_titles:[] empty for user: U46596!!!
+2025-03-30 09:44:19,062 - INFO - Starting user U79199 in cluster 1 (index 7)
+2025-03-30 09:44:19,136 - INFO - history_titles:[] empty for user: U79199!!!
+2025-03-30 09:45:01,456 - INFO - Starting user U53231 in cluster 1 (index 8)
+2025-03-30 09:45:01,526 - INFO - history_titles:[] empty for user: U53231!!!
+2025-03-30 09:45:39,995 - INFO - Starting user U10045 in cluster 1 (index 9)
+2025-03-30 09:46:22,493 - INFO - Starting user U63162 in cluster 1 (index 10)
+2025-03-30 09:46:22,567 - INFO - history_titles:[] empty for user: U63162!!!
+2025-03-30 09:46:59,418 - INFO - Starting user U17841 in cluster 1 (index 11)
+2025-03-30 09:46:59,485 - INFO - history_titles:[] empty for user: U17841!!!
+2025-03-30 09:47:36,548 - INFO - Starting user U8312 in cluster 1 (index 12)
+2025-03-30 09:47:36,619 - INFO - history_titles:[] empty for user: U8312!!!
+2025-03-30 09:48:13,954 - INFO - Starting user U11306 in cluster 1 (index 13)
+2025-03-30 09:48:14,027 - INFO - history_titles:[] empty for user: U11306!!!
+2025-03-30 09:48:51,287 - INFO - Starting user U38627 in cluster 1 (index 14)
+2025-03-30 09:48:51,355 - INFO - history_titles:[] empty for user: U38627!!!
+2025-03-30 09:49:28,288 - INFO - Starting user U47654 in cluster 1 (index 15)
+2025-03-30 09:50:10,203 - INFO - Starting user U80798 in cluster 1 (index 16)
+2025-03-30 09:50:10,271 - INFO - history_titles:[] empty for user: U80798!!!
+2025-03-30 09:50:47,713 - INFO - Starting user U67119 in cluster 1 (index 17)
+2025-03-30 09:50:47,780 - INFO - history_titles:[] empty for user: U67119!!!
+2025-03-30 09:51:24,547 - INFO - Starting user U91678 in cluster 1 (index 18)
+2025-03-30 09:51:24,614 - INFO - history_titles:[] empty for user: U91678!!!
+2025-03-30 09:52:01,704 - INFO - Starting user U12328 in cluster 1 (index 19)
+2025-03-30 09:52:01,771 - INFO - history_titles:[] empty for user: U12328!!!
+2025-03-30 09:52:38,935 - INFO - Starting user U44808 in cluster 1 (index 20)
+2025-03-30 09:52:39,002 - INFO - history_titles:[] empty for user: U44808!!!
+2025-03-30 09:53:16,245 - INFO - Starting user U33207 in cluster 1 (index 21)
+2025-03-30 09:53:16,314 - INFO - history_titles:[] empty for user: U33207!!!
+2025-03-30 09:53:53,551 - INFO - Starting user U36009 in cluster 1 (index 22)
+2025-03-30 09:53:53,621 - INFO - history_titles:[] empty for user: U36009!!!
+2025-03-30 09:54:31,401 - INFO - Starting user U85394 in cluster 1 (index 23)
+2025-03-30 09:54:31,470 - INFO - history_titles:[] empty for user: U85394!!!
+2025-03-30 09:55:08,630 - INFO - Starting user U6744 in cluster 1 (index 24)
+2025-03-30 09:55:08,699 - INFO - history_titles:[] empty for user: U6744!!!
+2025-03-30 09:55:45,847 - INFO - Starting user U81585 in cluster 1 (index 25)
+2025-03-30 09:55:45,918 - INFO - history_titles:[] empty for user: U81585!!!
+2025-03-30 09:56:22,970 - INFO - Starting user U83994 in cluster 1 (index 26)
+2025-03-30 09:57:00,815 - INFO - Starting user U78244 in cluster 1 (index 27)
+2025-03-30 09:57:43,203 - INFO - Starting user U50695 in cluster 1 (index 28)
+2025-03-30 09:57:43,273 - INFO - history_titles:[] empty for user: U50695!!!
+2025-03-30 09:58:20,344 - INFO - Starting user U80709 in cluster 1 (index 29)
+2025-03-30 09:58:20,414 - INFO - history_titles:[] empty for user: U80709!!!
+2025-03-30 09:58:58,270 - INFO - Starting user U39703 in cluster 1 (index 30)
+2025-03-30 09:59:35,349 - INFO - Starting user U84248 in cluster 1 (index 31)
+2025-03-30 09:59:35,421 - INFO - history_titles:[] empty for user: U84248!!!
+2025-03-30 10:00:12,591 - INFO - Starting user U78954 in cluster 1 (index 32)
+2025-03-30 10:00:49,902 - INFO - Starting user U15141 in cluster 1 (index 33)
+2025-03-30 10:01:28,110 - INFO - Starting user U16402 in cluster 1 (index 34)
+2025-03-30 10:01:28,176 - INFO - history_titles:[] empty for user: U16402!!!
+2025-03-30 10:02:05,568 - INFO - Starting user U9312 in cluster 1 (index 35)
+2025-03-30 10:02:05,634 - INFO - history_titles:[] empty for user: U9312!!!
+2025-03-30 10:02:43,077 - INFO - Starting user U1700 in cluster 1 (index 36)
+2025-03-30 10:02:43,146 - INFO - history_titles:[] empty for user: U1700!!!
+2025-03-30 10:03:20,234 - INFO - Starting user U53159 in cluster 1 (index 37)
+2025-03-30 10:03:20,303 - INFO - history_titles:[] empty for user: U53159!!!
+2025-03-30 10:03:58,307 - INFO - Starting user U40937 in cluster 1 (index 38)
+2025-03-30 10:03:58,374 - INFO - history_titles:[] empty for user: U40937!!!
+2025-03-30 10:04:35,916 - INFO - Starting user U78765 in cluster 1 (index 39)
+2025-03-30 10:04:35,985 - INFO - history_titles:[] empty for user: U78765!!!
+2025-03-30 10:05:13,435 - INFO - Starting user U700 in cluster 1 (index 40)
+2025-03-30 10:05:13,513 - INFO - history_titles:[] empty for user: U700!!!
+2025-03-30 10:05:50,684 - INFO - Starting user U7932 in cluster 1 (index 41)
+2025-03-30 10:05:50,750 - INFO - history_titles:[] empty for user: U7932!!!
+2025-03-30 10:06:29,027 - INFO - Starting user U2579 in cluster 1 (index 42)
+2025-03-30 10:06:29,096 - INFO - history_titles:[] empty for user: U2579!!!
+2025-03-30 10:07:06,820 - INFO - Starting user U45798 in cluster 1 (index 43)
+2025-03-30 10:07:45,127 - INFO - Starting user U92183 in cluster 1 (index 44)
+2025-03-30 10:07:45,195 - INFO - history_titles:[] empty for user: U92183!!!
+2025-03-30 10:08:22,604 - INFO - Starting user U73329 in cluster 1 (index 45)
+2025-03-30 10:08:22,674 - INFO - history_titles:[] empty for user: U73329!!!
+2025-03-30 10:09:00,287 - INFO - Starting user U61875 in cluster 1 (index 46)
+2025-03-30 10:09:00,356 - INFO - history_titles:[] empty for user: U61875!!!
+2025-03-30 10:09:38,325 - INFO - Starting user U39643 in cluster 1 (index 47)
+2025-03-30 10:09:38,394 - INFO - history_titles:[] empty for user: U39643!!!
+2025-03-30 10:10:15,642 - INFO - Starting user U50562 in cluster 1 (index 48)
+2025-03-30 10:10:15,712 - INFO - history_titles:[] empty for user: U50562!!!
+2025-03-30 10:10:53,153 - INFO - Starting user U53276 in cluster 1 (index 49)
+2025-03-30 10:10:53,222 - INFO - history_titles:[] empty for user: U53276!!!
+2025-03-30 10:11:30,765 - INFO - Starting user U47477 in cluster 1 (index 50)
+2025-03-30 10:11:30,838 - INFO - history_titles:[] empty for user: U47477!!!
+2025-03-30 10:12:08,718 - INFO - Starting user U37844 in cluster 1 (index 51)
+2025-03-30 10:12:47,392 - INFO - Starting user U6518 in cluster 1 (index 52)
+2025-03-30 10:12:47,459 - INFO - history_titles:[] empty for user: U6518!!!
+2025-03-30 10:13:27,706 - INFO - Starting user U39868 in cluster 1 (index 53)
+2025-03-30 10:13:27,774 - INFO - history_titles:[] empty for user: U39868!!!
+2025-03-30 10:14:05,245 - INFO - Starting user U23485 in cluster 1 (index 54)
+2025-03-30 10:14:05,319 - INFO - history_titles:[] empty for user: U23485!!!
+2025-03-30 10:14:43,347 - INFO - Starting user U61371 in cluster 1 (index 55)
+2025-03-30 10:14:43,416 - INFO - history_titles:[] empty for user: U61371!!!
+2025-03-30 10:15:21,615 - INFO - Starting user U63808 in cluster 1 (index 56)
+2025-03-30 10:15:21,684 - INFO - history_titles:[] empty for user: U63808!!!
+2025-03-30 10:15:59,052 - INFO - Starting user U2935 in cluster 1 (index 57)
+2025-03-30 10:15:59,125 - INFO - history_titles:[] empty for user: U2935!!!
+2025-03-30 10:16:36,588 - INFO - Starting user U15363 in cluster 1 (index 58)
+2025-03-30 10:16:37,207 - INFO - history_titles:[] empty for user: U15363!!!
+2025-03-30 10:17:14,764 - INFO - Starting user U5627 in cluster 1 (index 59)
+2025-03-30 10:17:14,830 - INFO - history_titles:[] empty for user: U5627!!!
+2025-03-30 10:17:52,357 - INFO - Starting user U7471 in cluster 1 (index 60)
+2025-03-30 10:17:52,428 - INFO - history_titles:[] empty for user: U7471!!!
+2025-03-30 10:18:30,255 - INFO - Starting user U67565 in cluster 1 (index 61)
+2025-03-30 10:18:30,324 - INFO - history_titles:[] empty for user: U67565!!!
+2025-03-30 10:19:08,000 - INFO - Starting user U1376 in cluster 1 (index 62)
+2025-03-30 10:19:08,070 - INFO - history_titles:[] empty for user: U1376!!!
+2025-03-30 10:19:45,977 - INFO - Starting user U11533 in cluster 1 (index 63)
+2025-03-30 10:19:46,045 - INFO - history_titles:[] empty for user: U11533!!!
+2025-03-30 10:20:23,319 - INFO - Starting user U86017 in cluster 1 (index 64)
+2025-03-30 10:20:23,388 - INFO - history_titles:[] empty for user: U86017!!!
+2025-03-30 10:21:00,874 - INFO - Starting user U3616 in cluster 1 (index 65)
+2025-03-30 10:21:44,060 - INFO - Starting user U66486 in cluster 1 (index 66)
+2025-03-30 10:22:21,644 - INFO - Starting user U91389 in cluster 1 (index 67)
+2025-03-30 10:22:21,715 - INFO - history_titles:[] empty for user: U91389!!!
+2025-03-30 10:22:59,390 - INFO - Starting user U37127 in cluster 1 (index 68)
+2025-03-30 10:22:59,458 - INFO - history_titles:[] empty for user: U37127!!!
+2025-03-30 10:23:37,009 - INFO - Starting user U24775 in cluster 1 (index 69)
+2025-03-30 10:24:20,430 - INFO - Starting user U39222 in cluster 1 (index 70)
+2025-03-30 10:24:20,504 - INFO - history_titles:[] empty for user: U39222!!!
+2025-03-30 10:24:58,035 - INFO - Starting user U5286 in cluster 1 (index 71)
+2025-03-30 10:24:58,104 - INFO - history_titles:[] empty for user: U5286!!!
+2025-03-30 10:25:35,533 - INFO - Starting user U69950 in cluster 1 (index 72)
+2025-03-30 10:25:35,604 - INFO - history_titles:[] empty for user: U69950!!!
+2025-03-30 10:26:13,093 - INFO - Starting user U92093 in cluster 1 (index 73)
+2025-03-30 10:26:13,162 - INFO - history_titles:[] empty for user: U92093!!!
+2025-03-30 10:26:50,337 - INFO - Starting user U52005 in cluster 1 (index 74)
+2025-03-30 10:27:33,688 - INFO - Starting user U27804 in cluster 1 (index 75)
+2025-03-30 10:27:33,763 - INFO - history_titles:[] empty for user: U27804!!!
+2025-03-30 10:28:10,930 - INFO - Starting user U52914 in cluster 1 (index 76)
+2025-03-30 10:28:11,001 - INFO - history_titles:[] empty for user: U52914!!!
+2025-03-30 10:28:48,237 - INFO - Starting user U60663 in cluster 1 (index 77)
+2025-03-30 10:28:48,304 - INFO - history_titles:[] empty for user: U60663!!!
+2025-03-30 10:29:25,991 - INFO - Starting user U12957 in cluster 1 (index 78)
+2025-03-30 10:29:26,070 - INFO - history_titles:[] empty for user: U12957!!!
+2025-03-30 10:30:04,124 - INFO - Starting user U85027 in cluster 1 (index 79)
+2025-03-30 10:30:04,193 - INFO - history_titles:[] empty for user: U85027!!!
+2025-03-30 10:30:41,157 - INFO - Starting user U10585 in cluster 1 (index 80)
+2025-03-30 10:30:41,232 - INFO - history_titles:[] empty for user: U10585!!!
+2025-03-30 10:31:18,620 - INFO - Starting user U89839 in cluster 1 (index 81)
+2025-03-30 10:31:18,694 - INFO - history_titles:[] empty for user: U89839!!!
+2025-03-30 10:31:55,923 - INFO - Starting user U47761 in cluster 1 (index 82)
+2025-03-30 10:32:34,378 - INFO - Starting user U70910 in cluster 1 (index 83)
+2025-03-30 10:32:34,448 - INFO - history_titles:[] empty for user: U70910!!!
+2025-03-30 10:33:11,792 - INFO - Starting user U53319 in cluster 1 (index 84)
+2025-03-30 10:33:11,860 - INFO - history_titles:[] empty for user: U53319!!!
+2025-03-30 10:33:48,851 - INFO - Starting user U84084 in cluster 1 (index 85)
+2025-03-30 10:34:26,287 - INFO - Starting user U39670 in cluster 1 (index 86)
+2025-03-30 10:35:04,051 - INFO - Starting user U21482 in cluster 1 (index 87)
+2025-03-30 10:35:04,123 - INFO - history_titles:[] empty for user: U21482!!!
+2025-03-30 10:35:41,229 - INFO - Starting user U5786 in cluster 1 (index 88)
+2025-03-30 10:35:41,297 - INFO - history_titles:[] empty for user: U5786!!!
+2025-03-30 10:36:18,135 - INFO - Starting user U15527 in cluster 1 (index 89)
+2025-03-30 10:36:18,203 - INFO - history_titles:[] empty for user: U15527!!!
+2025-03-30 10:36:54,999 - INFO - Starting user U77213 in cluster 1 (index 90)
+2025-03-30 10:36:55,631 - INFO - history_titles:[] empty for user: U77213!!!
+2025-03-30 10:37:33,071 - INFO - Starting user U51224 in cluster 1 (index 91)
+2025-03-30 10:37:33,141 - INFO - history_titles:[] empty for user: U51224!!!
+2025-03-30 10:38:10,197 - INFO - Starting user U62357 in cluster 1 (index 92)
+2025-03-30 10:38:47,588 - INFO - Starting user U46035 in cluster 1 (index 93)
+2025-03-30 10:38:47,657 - INFO - history_titles:[] empty for user: U46035!!!
+2025-03-30 10:39:25,157 - INFO - Starting user U80525 in cluster 1 (index 94)
+2025-03-30 10:39:25,227 - INFO - history_titles:[] empty for user: U80525!!!
+2025-03-30 10:40:02,162 - INFO - Starting user U81530 in cluster 1 (index 95)
+2025-03-30 10:40:02,234 - INFO - history_titles:[] empty for user: U81530!!!
+2025-03-30 10:40:39,471 - INFO - Starting user U84565 in cluster 1 (index 96)
+2025-03-30 10:40:39,541 - INFO - history_titles:[] empty for user: U84565!!!
+2025-03-30 10:41:16,738 - INFO - Starting user U27609 in cluster 1 (index 97)
+2025-03-30 10:41:16,804 - INFO - history_titles:[] empty for user: U27609!!!
+2025-03-30 10:41:54,577 - INFO - Starting user U59975 in cluster 1 (index 98)
+2025-03-30 10:41:54,649 - INFO - history_titles:[] empty for user: U59975!!!
+2025-03-30 10:42:31,939 - INFO - Starting user U26661 in cluster 1 (index 99)
+2025-03-30 10:42:32,010 - INFO - history_titles:[] empty for user: U26661!!!
+2025-03-30 10:43:09,431 - INFO - Starting user U93283 in cluster 1 (index 100)
+2025-03-30 10:43:09,499 - INFO - history_titles:[] empty for user: U93283!!!
+2025-03-30 10:43:46,589 - INFO - Starting user U27612 in cluster 1 (index 101)
+2025-03-30 10:44:24,671 - INFO - Starting user U33010 in cluster 1 (index 102)
+2025-03-30 10:44:24,740 - INFO - history_titles:[] empty for user: U33010!!!
+2025-03-30 10:45:02,283 - INFO - Starting user U93706 in cluster 1 (index 103)
+2025-03-30 10:45:02,351 - INFO - history_titles:[] empty for user: U93706!!!
+2025-03-30 10:45:39,777 - INFO - Starting user U78130 in cluster 1 (index 104)
+2025-03-30 10:45:39,850 - INFO - history_titles:[] empty for user: U78130!!!
+2025-03-30 10:46:17,107 - INFO - Starting user U1728 in cluster 1 (index 105)
+2025-03-30 10:46:17,173 - INFO - history_titles:[] empty for user: U1728!!!
+2025-03-30 10:46:54,496 - INFO - Starting user U63647 in cluster 1 (index 106)
+2025-03-30 10:46:54,568 - INFO - history_titles:[] empty for user: U63647!!!
+2025-03-30 10:47:32,513 - INFO - Starting user U35419 in cluster 1 (index 107)
+2025-03-30 10:47:32,582 - INFO - history_titles:[] empty for user: U35419!!!
+2025-03-30 10:48:10,106 - INFO - Starting user U11228 in cluster 1 (index 108)
+2025-03-30 10:48:48,437 - INFO - Starting user U41865 in cluster 1 (index 109)
+2025-03-30 10:48:48,512 - INFO - history_titles:[] empty for user: U41865!!!
+2025-03-30 10:49:26,429 - INFO - Starting user U80456 in cluster 1 (index 110)
+2025-03-30 10:49:26,500 - INFO - history_titles:[] empty for user: U80456!!!
+2025-03-30 10:50:04,576 - INFO - Starting user U14421 in cluster 1 (index 111)
+2025-03-30 10:50:04,647 - INFO - history_titles:[] empty for user: U14421!!!
+2025-03-30 10:50:43,004 - INFO - Starting user U69760 in cluster 1 (index 112)
+2025-03-30 10:50:43,074 - INFO - history_titles:[] empty for user: U69760!!!
+2025-03-30 10:51:20,683 - INFO - Starting user U85982 in cluster 1 (index 113)
+2025-03-30 10:51:20,759 - INFO - history_titles:[] empty for user: U85982!!!
+2025-03-30 10:51:58,736 - INFO - Starting user U85516 in cluster 1 (index 114)
+2025-03-30 10:51:58,810 - INFO - history_titles:[] empty for user: U85516!!!
+2025-03-30 10:52:37,201 - INFO - Starting user U21767 in cluster 1 (index 115)
+2025-03-30 10:52:37,270 - INFO - history_titles:[] empty for user: U21767!!!
+2025-03-30 10:53:14,540 - INFO - Starting user U28121 in cluster 1 (index 116)
+2025-03-30 10:53:14,611 - INFO - history_titles:[] empty for user: U28121!!!
+2025-03-30 10:53:52,447 - INFO - Starting user U80142 in cluster 1 (index 117)
+2025-03-30 10:53:52,517 - INFO - history_titles:[] empty for user: U80142!!!
+2025-03-30 10:54:30,342 - INFO - Starting user U496 in cluster 1 (index 118)
+2025-03-30 10:54:30,411 - INFO - history_titles:[] empty for user: U496!!!
+2025-03-30 10:55:08,429 - INFO - Starting user U25283 in cluster 1 (index 119)
+2025-03-30 10:55:08,499 - INFO - history_titles:[] empty for user: U25283!!!
+2025-03-30 10:55:46,025 - INFO - Starting user U40685 in cluster 1 (index 120)
+2025-03-30 10:56:23,544 - INFO - Starting user U74754 in cluster 1 (index 121)
+2025-03-30 10:56:23,613 - INFO - history_titles:[] empty for user: U74754!!!
+2025-03-30 10:57:01,797 - INFO - Starting user U13432 in cluster 1 (index 122)
+2025-03-30 10:57:46,970 - INFO - Starting user U91990 in cluster 1 (index 123)
+2025-03-30 10:57:47,040 - INFO - history_titles:[] empty for user: U91990!!!
+2025-03-30 10:58:24,134 - INFO - Starting user U29542 in cluster 1 (index 124)
+2025-03-30 10:58:24,201 - INFO - history_titles:[] empty for user: U29542!!!
+2025-03-30 10:59:01,515 - INFO - Starting user U88635 in cluster 1 (index 125)
+2025-03-30 10:59:01,583 - INFO - history_titles:[] empty for user: U88635!!!
+2025-03-30 10:59:41,133 - INFO - Starting user U67982 in cluster 1 (index 126)
+2025-03-30 10:59:41,755 - INFO - history_titles:[] empty for user: U67982!!!
+2025-03-30 11:00:18,872 - INFO - Starting user U338 in cluster 1 (index 127)
+2025-03-30 11:00:18,937 - INFO - history_titles:[] empty for user: U338!!!
+2025-03-30 11:00:56,382 - INFO - Starting user U8581 in cluster 1 (index 128)
+2025-03-30 11:00:56,447 - INFO - history_titles:[] empty for user: U8581!!!
+2025-03-30 11:01:33,786 - INFO - Starting user U57919 in cluster 1 (index 129)
+2025-03-30 11:01:33,861 - INFO - history_titles:[] empty for user: U57919!!!
+2025-03-30 11:02:11,393 - INFO - Starting user U67223 in cluster 1 (index 130)
+2025-03-30 11:02:49,151 - INFO - Starting user U2476 in cluster 1 (index 131)
+2025-03-30 11:02:49,220 - INFO - history_titles:[] empty for user: U2476!!!
+2025-03-30 11:03:26,292 - INFO - Starting user U5598 in cluster 1 (index 132)
+2025-03-30 11:03:26,359 - INFO - history_titles:[] empty for user: U5598!!!
+2025-03-30 11:04:03,584 - INFO - Starting user U7635 in cluster 1 (index 133)
+2025-03-30 11:04:03,651 - INFO - history_titles:[] empty for user: U7635!!!
+2025-03-30 11:04:41,661 - INFO - Starting user U39782 in cluster 1 (index 134)
+2025-03-30 11:04:41,729 - INFO - history_titles:[] empty for user: U39782!!!
+2025-03-30 11:05:18,600 - INFO - Starting user U50368 in cluster 1 (index 135)
+2025-03-30 11:05:18,669 - INFO - history_titles:[] empty for user: U50368!!!
+2025-03-30 11:05:56,004 - INFO - Starting user U51668 in cluster 1 (index 136)
+2025-03-30 11:05:56,074 - INFO - history_titles:[] empty for user: U51668!!!
+2025-03-30 11:06:33,368 - INFO - Starting user U70158 in cluster 1 (index 137)
+2025-03-30 11:06:33,439 - INFO - history_titles:[] empty for user: U70158!!!
+2025-03-30 11:07:11,434 - INFO - Starting user U86241 in cluster 1 (index 138)
+2025-03-30 11:07:11,501 - INFO - history_titles:[] empty for user: U86241!!!
+2025-03-30 11:07:48,787 - INFO - Starting user U82105 in cluster 1 (index 139)
+2025-03-30 11:08:26,036 - INFO - Starting user U40451 in cluster 1 (index 140)
+2025-03-30 11:08:26,107 - INFO - history_titles:[] empty for user: U40451!!!
+2025-03-30 11:09:03,254 - INFO - Starting user U38642 in cluster 1 (index 141)
+2025-03-30 11:09:03,323 - INFO - history_titles:[] empty for user: U38642!!!
+2025-03-30 11:09:41,150 - INFO - Starting user U64038 in cluster 1 (index 142)
+2025-03-30 11:09:41,218 - INFO - history_titles:[] empty for user: U64038!!!
+2025-03-30 11:10:18,107 - INFO - Starting user U29035 in cluster 1 (index 143)
+2025-03-30 11:10:18,176 - INFO - history_titles:[] empty for user: U29035!!!
+2025-03-30 11:10:55,432 - INFO - Starting user U8335 in cluster 1 (index 144)
+2025-03-30 11:10:55,501 - INFO - history_titles:[] empty for user: U8335!!!
+2025-03-30 11:11:33,170 - INFO - Starting user U21697 in cluster 1 (index 145)
+2025-03-30 11:11:33,240 - INFO - history_titles:[] empty for user: U21697!!!
+2025-03-30 11:12:11,400 - INFO - Starting user U80190 in cluster 1 (index 146)
+2025-03-30 11:12:11,467 - INFO - history_titles:[] empty for user: U80190!!!
+2025-03-30 11:12:48,716 - INFO - Starting user U26059 in cluster 1 (index 147)
+2025-03-30 11:12:48,787 - INFO - history_titles:[] empty for user: U26059!!!
+2025-03-30 11:13:25,893 - INFO - Starting user U90945 in cluster 1 (index 148)
+2025-03-30 11:13:25,967 - INFO - history_titles:[] empty for user: U90945!!!
+2025-03-30 11:14:03,242 - INFO - Starting user U41828 in cluster 1 (index 149)
+2025-03-30 11:14:03,311 - INFO - history_titles:[] empty for user: U41828!!!
+2025-03-30 11:14:41,077 - INFO - Starting user U21545 in cluster 1 (index 150)
+2025-03-30 11:14:41,146 - INFO - history_titles:[] empty for user: U21545!!!
+2025-03-30 11:15:18,062 - INFO - Starting user U83111 in cluster 1 (index 151)
+2025-03-30 11:15:18,142 - INFO - history_titles:[] empty for user: U83111!!!
+2025-03-30 11:15:55,119 - INFO - Starting user U65061 in cluster 1 (index 152)
+2025-03-30 11:16:32,499 - INFO - Starting user U90887 in cluster 1 (index 153)
+2025-03-30 11:16:32,571 - INFO - history_titles:[] empty for user: U90887!!!
+2025-03-30 11:17:10,322 - INFO - Starting user U65795 in cluster 1 (index 154)
+2025-03-30 11:17:10,392 - INFO - history_titles:[] empty for user: U65795!!!
+2025-03-30 11:17:47,517 - INFO - Starting user U41223 in cluster 1 (index 155)
+2025-03-30 11:18:24,945 - INFO - Starting user U22999 in cluster 1 (index 156)
+2025-03-30 11:18:25,014 - INFO - history_titles:[] empty for user: U22999!!!
+2025-03-30 11:19:02,572 - INFO - Starting user U52270 in cluster 1 (index 157)
+2025-03-30 11:19:02,641 - INFO - history_titles:[] empty for user: U52270!!!
+2025-03-30 11:19:39,970 - INFO - Starting user U5065 in cluster 1 (index 158)
+2025-03-30 11:19:40,040 - INFO - history_titles:[] empty for user: U5065!!!
+2025-03-30 11:20:17,827 - INFO - Starting user U71558 in cluster 1 (index 159)
+2025-03-30 11:20:17,900 - INFO - history_titles:[] empty for user: U71558!!!
+2025-03-30 11:20:54,961 - INFO - Starting user U57266 in cluster 1 (index 160)
+2025-03-30 11:21:32,903 - INFO - Starting user U58552 in cluster 1 (index 161)
+2025-03-30 11:21:32,972 - INFO - history_titles:[] empty for user: U58552!!!
+2025-03-30 11:22:10,216 - INFO - Starting user U44940 in cluster 1 (index 162)
+2025-03-30 11:22:10,288 - INFO - history_titles:[] empty for user: U44940!!!
+2025-03-30 11:22:48,146 - INFO - Starting user U15686 in cluster 1 (index 163)
+2025-03-30 11:22:48,214 - INFO - history_titles:[] empty for user: U15686!!!
+2025-03-30 11:23:25,597 - INFO - Starting user U19208 in cluster 1 (index 164)
+2025-03-30 11:23:25,671 - INFO - history_titles:[] empty for user: U19208!!!
+2025-03-30 11:24:03,029 - INFO - Starting user U57069 in cluster 1 (index 165)
+2025-03-30 11:24:03,098 - INFO - history_titles:[] empty for user: U57069!!!
+2025-03-30 11:24:40,593 - INFO - Starting user U57589 in cluster 1 (index 166)
+2025-03-30 11:25:26,662 - INFO - Starting user U16225 in cluster 1 (index 167)
+2025-03-30 11:25:26,732 - INFO - history_titles:[] empty for user: U16225!!!
+2025-03-30 11:26:04,135 - INFO - Starting user U24856 in cluster 1 (index 168)
+2025-03-30 11:26:04,210 - INFO - history_titles:[] empty for user: U24856!!!
+2025-03-30 11:26:41,534 - INFO - Starting user U51750 in cluster 1 (index 169)
+2025-03-30 11:26:41,603 - INFO - history_titles:[] empty for user: U51750!!!
+2025-03-30 11:27:18,740 - INFO - Starting user U35231 in cluster 1 (index 170)
+2025-03-30 11:27:19,393 - INFO - history_titles:[] empty for user: U35231!!!
+2025-03-30 11:27:56,685 - INFO - Starting user U13165 in cluster 1 (index 171)
+2025-03-30 11:27:56,759 - INFO - history_titles:[] empty for user: U13165!!!
+2025-03-30 11:28:33,946 - INFO - Starting user U27603 in cluster 1 (index 172)
+2025-03-30 11:28:34,013 - INFO - history_titles:[] empty for user: U27603!!!
+2025-03-30 11:29:11,446 - INFO - Starting user U48708 in cluster 1 (index 173)
+2025-03-30 11:29:11,521 - INFO - history_titles:[] empty for user: U48708!!!
+2025-03-30 11:29:49,093 - INFO - Starting user U32154 in cluster 1 (index 174)
+2025-03-30 11:30:26,414 - INFO - Starting user U71336 in cluster 1 (index 175)
+2025-03-30 11:30:26,486 - INFO - history_titles:[] empty for user: U71336!!!
+2025-03-30 11:31:03,986 - INFO - Starting user U5362 in cluster 1 (index 176)
+2025-03-30 11:31:04,057 - INFO - history_titles:[] empty for user: U5362!!!
+2025-03-30 11:31:41,584 - INFO - Starting user U55142 in cluster 1 (index 177)
+2025-03-30 11:31:41,656 - INFO - history_titles:[] empty for user: U55142!!!
+2025-03-30 11:32:19,723 - INFO - Starting user U23879 in cluster 1 (index 178)
+2025-03-30 11:32:19,788 - INFO - history_titles:[] empty for user: U23879!!!
+2025-03-30 11:32:57,116 - INFO - Starting user U88754 in cluster 1 (index 179)
+2025-03-30 11:32:57,185 - INFO - history_titles:[] empty for user: U88754!!!
+2025-03-30 11:33:34,289 - INFO - Starting user U76500 in cluster 1 (index 180)
+2025-03-30 11:33:34,361 - INFO - history_titles:[] empty for user: U76500!!!
+2025-03-30 11:34:11,573 - INFO - Starting user U68330 in cluster 1 (index 181)
+2025-03-30 11:34:11,644 - INFO - history_titles:[] empty for user: U68330!!!
+2025-03-30 11:34:49,001 - INFO - Starting user U58864 in cluster 1 (index 182)
+2025-03-30 11:34:49,070 - INFO - history_titles:[] empty for user: U58864!!!
+2025-03-30 11:35:26,561 - INFO - Starting user U19958 in cluster 1 (index 183)
+2025-03-30 11:35:26,632 - INFO - history_titles:[] empty for user: U19958!!!
+2025-03-30 11:36:03,950 - INFO - Starting user U48368 in cluster 1 (index 184)
+2025-03-30 11:36:04,018 - INFO - history_titles:[] empty for user: U48368!!!
+2025-03-30 11:36:41,605 - INFO - Starting user U56234 in cluster 1 (index 185)
+2025-03-30 11:36:41,678 - INFO - history_titles:[] empty for user: U56234!!!
+2025-03-30 11:37:19,274 - INFO - Starting user U82126 in cluster 1 (index 186)
+2025-03-30 11:37:19,342 - INFO - history_titles:[] empty for user: U82126!!!
+2025-03-30 11:37:56,684 - INFO - Starting user U14014 in cluster 1 (index 187)
+2025-03-30 11:37:56,752 - INFO - history_titles:[] empty for user: U14014!!!
+2025-03-30 11:38:33,890 - INFO - Starting user U45814 in cluster 1 (index 188)
+2025-03-30 11:38:33,958 - INFO - history_titles:[] empty for user: U45814!!!
+2025-03-30 11:39:11,526 - INFO - Starting user U87873 in cluster 1 (index 189)
+2025-03-30 11:39:11,594 - INFO - history_titles:[] empty for user: U87873!!!
+2025-03-30 11:39:49,038 - INFO - Starting user U69940 in cluster 1 (index 190)
+2025-03-30 11:39:49,107 - INFO - history_titles:[] empty for user: U69940!!!
+2025-03-30 11:40:27,211 - INFO - Starting user U73090 in cluster 1 (index 191)
+2025-03-30 11:41:04,966 - INFO - Starting user U42208 in cluster 1 (index 192)
+2025-03-30 11:41:05,036 - INFO - history_titles:[] empty for user: U42208!!!
+2025-03-30 11:41:42,403 - INFO - Starting user U55109 in cluster 1 (index 193)
+2025-03-30 11:41:42,475 - INFO - history_titles:[] empty for user: U55109!!!
+2025-03-30 11:42:19,811 - INFO - Starting user U32915 in cluster 1 (index 194)
+2025-03-30 11:42:58,253 - INFO - Starting user U45170 in cluster 1 (index 195)
+2025-03-30 11:42:58,324 - INFO - history_titles:[] empty for user: U45170!!!
+2025-03-30 11:43:35,805 - INFO - Starting user U21621 in cluster 1 (index 196)
+2025-03-30 11:43:35,873 - INFO - history_titles:[] empty for user: U21621!!!
+2025-03-30 11:44:13,589 - INFO - Starting user U75281 in cluster 1 (index 197)
+2025-03-30 11:44:51,437 - INFO - Starting user U35110 in cluster 1 (index 198)
+2025-03-30 11:44:51,506 - INFO - history_titles:[] empty for user: U35110!!!
+2025-03-30 11:45:29,791 - INFO - Starting user U47019 in cluster 1 (index 199)
+2025-03-30 11:45:29,860 - INFO - history_titles:[] empty for user: U47019!!!
+2025-03-30 11:46:07,236 - INFO - Starting user U12302 in cluster 1 (index 200)
+2025-03-30 11:46:07,304 - INFO - history_titles:[] empty for user: U12302!!!
+2025-03-30 11:46:44,620 - INFO - Starting user U55727 in cluster 1 (index 201)
+2025-03-30 11:46:44,693 - INFO - history_titles:[] empty for user: U55727!!!
+2025-03-30 11:47:22,648 - INFO - Starting user U41731 in cluster 1 (index 202)
+2025-03-30 11:47:23,281 - INFO - history_titles:[] empty for user: U41731!!!
+2025-03-30 11:48:01,002 - INFO - Starting user U61958 in cluster 1 (index 203)
+2025-03-30 11:48:01,072 - INFO - history_titles:[] empty for user: U61958!!!
+2025-03-30 11:48:38,712 - INFO - Starting user U60011 in cluster 1 (index 204)
+2025-03-30 11:49:16,435 - INFO - Starting user U38989 in cluster 1 (index 205)
+2025-03-30 11:49:16,504 - INFO - history_titles:[] empty for user: U38989!!!
+2025-03-30 11:49:53,638 - INFO - Starting user U81600 in cluster 1 (index 206)
+2025-03-30 11:49:54,281 - INFO - history_titles:[] empty for user: U81600!!!
+2025-03-30 11:50:31,785 - INFO - Starting user U25574 in cluster 1 (index 207)
+2025-03-30 11:50:31,855 - INFO - history_titles:[] empty for user: U25574!!!
+2025-03-30 11:51:09,233 - INFO - Starting user U20563 in cluster 1 (index 208)
+2025-03-30 11:51:09,303 - INFO - history_titles:[] empty for user: U20563!!!
+2025-03-30 11:51:46,678 - INFO - Starting user U37909 in cluster 1 (index 209)
+2025-03-30 11:52:24,855 - INFO - Starting user U5285 in cluster 1 (index 210)
+2025-03-30 11:52:24,921 - INFO - history_titles:[] empty for user: U5285!!!
+2025-03-30 11:53:02,605 - INFO - Starting user U75593 in cluster 1 (index 211)
+2025-03-30 11:53:02,674 - INFO - history_titles:[] empty for user: U75593!!!
+2025-03-30 11:53:40,161 - INFO - Starting user U31178 in cluster 1 (index 212)
+2025-03-30 11:54:18,108 - INFO - Starting user U83056 in cluster 1 (index 213)
+2025-03-30 11:54:18,177 - INFO - history_titles:[] empty for user: U83056!!!
+2025-03-30 11:54:55,472 - INFO - Starting user U65749 in cluster 1 (index 214)
+2025-03-30 11:54:55,542 - INFO - history_titles:[] empty for user: U65749!!!
+2025-03-30 11:55:33,589 - INFO - Starting user U6879 in cluster 1 (index 215)
+2025-03-30 11:55:33,657 - INFO - history_titles:[] empty for user: U6879!!!
+2025-03-30 11:56:11,594 - INFO - Starting user U29589 in cluster 1 (index 216)
+2025-03-30 11:56:11,665 - INFO - history_titles:[] empty for user: U29589!!!
+2025-03-30 11:56:48,972 - INFO - Starting user U37608 in cluster 1 (index 217)
+2025-03-30 11:56:49,043 - INFO - history_titles:[] empty for user: U37608!!!
+2025-03-30 11:57:26,367 - INFO - Starting user U56732 in cluster 1 (index 218)
+2025-03-30 11:57:26,439 - INFO - history_titles:[] empty for user: U56732!!!
+2025-03-30 11:58:04,617 - INFO - Starting user U19598 in cluster 1 (index 219)
+2025-03-30 11:58:04,685 - INFO - history_titles:[] empty for user: U19598!!!
+2025-03-30 11:58:41,996 - INFO - Starting user U51225 in cluster 1 (index 220)
+2025-03-30 11:58:42,065 - INFO - history_titles:[] empty for user: U51225!!!
+2025-03-30 11:59:19,279 - INFO - Starting user U90591 in cluster 1 (index 221)
+2025-03-30 11:59:19,349 - INFO - history_titles:[] empty for user: U90591!!!
+2025-03-30 11:59:56,996 - INFO - Starting user U17699 in cluster 1 (index 222)
+2025-03-30 11:59:57,067 - INFO - history_titles:[] empty for user: U17699!!!
+2025-03-30 12:00:35,092 - INFO - Starting user U28931 in cluster 1 (index 223)
+2025-03-30 12:00:35,164 - INFO - history_titles:[] empty for user: U28931!!!
+2025-03-30 12:01:12,992 - INFO - Starting user U34175 in cluster 1 (index 224)
+2025-03-30 12:01:13,064 - INFO - history_titles:[] empty for user: U34175!!!
+2025-03-30 12:01:50,151 - INFO - Starting user U47164 in cluster 1 (index 225)
+2025-03-30 12:01:50,225 - INFO - history_titles:[] empty for user: U47164!!!
+2025-03-30 12:02:28,144 - INFO - Starting user U73550 in cluster 1 (index 226)
+2025-03-30 12:02:28,214 - INFO - history_titles:[] empty for user: U73550!!!
+2025-03-30 12:03:06,266 - INFO - Starting user U37316 in cluster 1 (index 227)
+2025-03-30 12:03:06,338 - INFO - history_titles:[] empty for user: U37316!!!
+2025-03-30 12:03:43,576 - INFO - Starting user U89120 in cluster 1 (index 228)
+2025-03-30 12:03:43,646 - INFO - history_titles:[] empty for user: U89120!!!
+2025-03-30 12:04:20,675 - INFO - Starting user U16899 in cluster 1 (index 229)
+2025-03-30 12:04:20,746 - INFO - history_titles:[] empty for user: U16899!!!
+2025-03-30 12:04:58,168 - INFO - Starting user U23637 in cluster 1 (index 230)
+2025-03-30 12:04:58,245 - INFO - history_titles:[] empty for user: U23637!!!
+2025-03-30 12:05:36,762 - INFO - Starting user U43527 in cluster 1 (index 231)
+2025-03-30 12:05:36,830 - INFO - history_titles:[] empty for user: U43527!!!
+2025-03-30 12:06:14,192 - INFO - Starting user U31288 in cluster 1 (index 232)
+2025-03-30 12:06:51,767 - INFO - Starting user U19467 in cluster 1 (index 233)
+2025-03-30 12:06:51,838 - INFO - history_titles:[] empty for user: U19467!!!
+2025-03-30 12:07:29,735 - INFO - Starting user U50999 in cluster 1 (index 234)
+2025-03-30 12:08:07,890 - INFO - Starting user U43256 in cluster 1 (index 235)
+2025-03-30 12:08:07,965 - INFO - history_titles:[] empty for user: U43256!!!
+2025-03-30 12:08:45,299 - INFO - Starting user U10932 in cluster 1 (index 236)
+2025-03-30 12:08:45,374 - INFO - history_titles:[] empty for user: U10932!!!
+2025-03-30 12:09:24,687 - INFO - Starting user U91652 in cluster 1 (index 237)
+2025-03-30 12:09:24,761 - INFO - history_titles:[] empty for user: U91652!!!
+2025-03-30 12:10:04,568 - INFO - Starting user U14239 in cluster 1 (index 238)
+2025-03-30 12:10:44,720 - INFO - Starting user U60761 in cluster 1 (index 239)
+2025-03-30 12:10:44,791 - INFO - history_titles:[] empty for user: U60761!!!
+2025-03-30 12:11:23,556 - INFO - Starting user U87590 in cluster 1 (index 240)
+2025-03-30 12:11:23,632 - INFO - history_titles:[] empty for user: U87590!!!
+2025-03-30 12:12:01,953 - INFO - Starting user U17403 in cluster 1 (index 241)
+2025-03-30 12:12:02,023 - INFO - history_titles:[] empty for user: U17403!!!
+2025-03-30 12:12:41,564 - INFO - Starting user U1448 in cluster 1 (index 242)
+2025-03-30 12:12:42,219 - INFO - history_titles:[] empty for user: U1448!!!
+2025-03-30 12:13:21,903 - INFO - Starting user U70107 in cluster 1 (index 243)
+2025-03-30 12:13:21,977 - INFO - history_titles:[] empty for user: U70107!!!
+2025-03-30 12:14:01,349 - INFO - Starting user U25264 in cluster 1 (index 244)
+2025-03-30 12:14:01,419 - INFO - history_titles:[] empty for user: U25264!!!
+2025-03-30 12:14:38,921 - INFO - Starting user U48223 in cluster 1 (index 245)
+2025-03-30 12:14:38,991 - INFO - history_titles:[] empty for user: U48223!!!
+2025-03-30 12:15:15,507 - INFO - Starting user U11858 in cluster 1 (index 246)
+2025-03-30 12:15:15,576 - INFO - history_titles:[] empty for user: U11858!!!
+2025-03-30 12:15:52,469 - INFO - Starting user U62140 in cluster 1 (index 247)
+2025-03-30 12:15:52,538 - INFO - history_titles:[] empty for user: U62140!!!
+2025-03-30 12:16:29,465 - INFO - Starting user U14623 in cluster 1 (index 248)
+2025-03-30 12:16:29,535 - INFO - history_titles:[] empty for user: U14623!!!
+2025-03-30 12:17:06,988 - INFO - Starting user U84681 in cluster 1 (index 249)
+2025-03-30 12:17:07,054 - INFO - history_titles:[] empty for user: U84681!!!
+2025-03-30 12:17:44,957 - INFO - Starting user U60994 in cluster 1 (index 250)
+2025-03-30 12:17:45,025 - INFO - history_titles:[] empty for user: U60994!!!
+2025-03-30 12:18:22,238 - INFO - Starting user U61114 in cluster 1 (index 251)
+2025-03-30 12:18:22,313 - INFO - history_titles:[] empty for user: U61114!!!
+2025-03-30 12:18:59,831 - INFO - Starting user U48853 in cluster 1 (index 252)
+2025-03-30 12:18:59,902 - INFO - history_titles:[] empty for user: U48853!!!
+2025-03-30 12:19:37,220 - INFO - Starting user U62371 in cluster 1 (index 253)
+2025-03-30 12:19:37,288 - INFO - history_titles:[] empty for user: U62371!!!
+2025-03-30 12:20:14,726 - INFO - Starting user U30800 in cluster 1 (index 254)
+2025-03-30 12:20:15,334 - INFO - history_titles:[] empty for user: U30800!!!
+2025-03-30 12:20:52,559 - INFO - Starting user U88965 in cluster 1 (index 255)
+2025-03-30 12:20:52,629 - INFO - history_titles:[] empty for user: U88965!!!
+2025-03-30 12:21:29,897 - INFO - Starting user U44264 in cluster 1 (index 256)
+2025-03-30 12:21:29,964 - INFO - history_titles:[] empty for user: U44264!!!
+2025-03-30 12:22:07,343 - INFO - Starting user U81193 in cluster 1 (index 257)
+2025-03-30 12:22:07,413 - INFO - history_titles:[] empty for user: U81193!!!
+2025-03-30 12:22:45,571 - INFO - Starting user U5831 in cluster 1 (index 258)
+2025-03-30 12:22:45,634 - INFO - history_titles:[] empty for user: U5831!!!
+2025-03-30 12:23:22,701 - INFO - Starting user U77872 in cluster 1 (index 259)
+2025-03-30 12:24:00,083 - INFO - Starting user U93464 in cluster 1 (index 260)
+2025-03-30 12:24:37,883 - INFO - Starting user U67659 in cluster 1 (index 261)
+2025-03-30 12:24:37,952 - INFO - history_titles:[] empty for user: U67659!!!
+2025-03-30 12:25:15,904 - INFO - Starting user U81754 in cluster 1 (index 262)
+2025-03-30 12:25:15,973 - INFO - history_titles:[] empty for user: U81754!!!
+2025-03-30 12:25:52,795 - INFO - Starting user U78328 in cluster 1 (index 263)
+2025-03-30 12:25:52,863 - INFO - history_titles:[] empty for user: U78328!!!
+2025-03-30 12:26:29,980 - INFO - Starting user U46023 in cluster 1 (index 264)
+2025-03-30 12:27:15,134 - INFO - Starting user U942 in cluster 1 (index 265)
+2025-03-30 12:27:53,277 - INFO - Starting user U74667 in cluster 1 (index 266)
+2025-03-30 12:27:53,362 - INFO - history_titles:[] empty for user: U74667!!!
+2025-03-30 12:28:33,301 - INFO - Starting user U17501 in cluster 1 (index 267)
+2025-03-30 12:28:33,372 - INFO - history_titles:[] empty for user: U17501!!!
+2025-03-30 12:29:10,634 - INFO - Starting user U19975 in cluster 1 (index 268)
+2025-03-30 12:29:10,703 - INFO - history_titles:[] empty for user: U19975!!!
+2025-03-30 12:29:47,456 - INFO - Starting user U36991 in cluster 1 (index 269)
+2025-03-30 12:29:47,524 - INFO - history_titles:[] empty for user: U36991!!!
+2025-03-30 12:30:24,931 - INFO - Starting user U50399 in cluster 1 (index 270)
+2025-03-30 12:30:25,000 - INFO - history_titles:[] empty for user: U50399!!!
+2025-03-30 12:31:02,478 - INFO - Starting user U35764 in cluster 1 (index 271)
+2025-03-30 12:31:43,171 - INFO - Starting user U54138 in cluster 1 (index 272)
+2025-03-30 12:31:43,245 - INFO - history_titles:[] empty for user: U54138!!!
+2025-03-30 12:32:21,342 - INFO - Starting user U35435 in cluster 1 (index 273)
+2025-03-30 12:32:21,419 - INFO - history_titles:[] empty for user: U35435!!!
+2025-03-30 12:33:01,766 - INFO - Starting user U83825 in cluster 1 (index 274)
+2025-03-30 12:33:01,832 - INFO - history_titles:[] empty for user: U83825!!!
+2025-03-30 12:33:41,240 - INFO - Starting user U93438 in cluster 1 (index 275)
+2025-03-30 12:33:41,315 - INFO - history_titles:[] empty for user: U93438!!!
+2025-03-30 12:34:20,430 - INFO - Starting user U48747 in cluster 1 (index 276)
+2025-03-30 12:34:20,504 - INFO - history_titles:[] empty for user: U48747!!!
+2025-03-30 12:34:56,477 - INFO - Starting user U57639 in cluster 1 (index 277)
+2025-03-30 12:34:56,547 - INFO - history_titles:[] empty for user: U57639!!!
+2025-03-30 12:35:32,298 - INFO - Starting user U50153 in cluster 1 (index 278)
+2025-03-30 12:35:32,367 - INFO - history_titles:[] empty for user: U50153!!!
+2025-03-30 12:36:08,842 - INFO - Starting user U8740 in cluster 1 (index 279)
+2025-03-30 12:36:08,908 - INFO - history_titles:[] empty for user: U8740!!!
+2025-03-30 12:36:46,371 - INFO - Starting user U54512 in cluster 1 (index 280)
+2025-03-30 12:36:46,449 - INFO - history_titles:[] empty for user: U54512!!!
+2025-03-30 12:37:22,740 - INFO - Starting user U6071 in cluster 1 (index 281)
+2025-03-30 12:37:22,810 - INFO - history_titles:[] empty for user: U6071!!!
+2025-03-30 12:37:59,031 - INFO - Starting user U44207 in cluster 1 (index 282)
+2025-03-30 12:37:59,104 - INFO - history_titles:[] empty for user: U44207!!!
+2025-03-30 12:38:37,525 - INFO - Starting user U53600 in cluster 1 (index 283)
+2025-03-30 12:38:37,593 - INFO - history_titles:[] empty for user: U53600!!!
+2025-03-30 12:39:17,106 - INFO - Starting user U81319 in cluster 1 (index 284)
+2025-03-30 12:39:17,178 - INFO - history_titles:[] empty for user: U81319!!!
+2025-03-30 12:39:54,543 - INFO - Starting user U48781 in cluster 1 (index 285)
+2025-03-30 12:39:54,613 - INFO - history_titles:[] empty for user: U48781!!!
+2025-03-30 12:40:32,271 - INFO - Starting user U28551 in cluster 1 (index 286)
+2025-03-30 12:40:32,348 - INFO - history_titles:[] empty for user: U28551!!!
+2025-03-30 12:41:10,720 - INFO - Starting user U28788 in cluster 1 (index 287)
+2025-03-30 12:41:10,787 - INFO - history_titles:[] empty for user: U28788!!!
+2025-03-30 12:41:48,103 - INFO - Starting user U32775 in cluster 1 (index 288)
+2025-03-30 12:42:25,806 - INFO - Starting user U78325 in cluster 1 (index 289)
+2025-03-30 12:42:25,877 - INFO - history_titles:[] empty for user: U78325!!!
+2025-03-30 12:43:03,878 - INFO - Starting user U69377 in cluster 1 (index 290)
+2025-03-30 12:43:03,947 - INFO - history_titles:[] empty for user: U69377!!!
+2025-03-30 12:43:41,034 - INFO - Starting user U70630 in cluster 1 (index 291)
+2025-03-30 12:44:17,413 - INFO - Starting user U9331 in cluster 1 (index 292)
+2025-03-30 12:44:17,479 - INFO - history_titles:[] empty for user: U9331!!!
+2025-03-30 12:44:53,482 - INFO - Starting user U6124 in cluster 1 (index 293)
+2025-03-30 12:44:53,549 - INFO - history_titles:[] empty for user: U6124!!!
+2025-03-30 12:45:29,451 - INFO - Starting user U66361 in cluster 1 (index 294)
+2025-03-30 12:45:29,521 - INFO - history_titles:[] empty for user: U66361!!!
+2025-03-30 12:46:08,086 - INFO - Starting user U27978 in cluster 1 (index 295)
+2025-03-30 12:46:46,591 - INFO - Starting user U75724 in cluster 1 (index 296)
+2025-03-30 12:46:46,662 - INFO - history_titles:[] empty for user: U75724!!!
+2025-03-30 12:47:25,000 - INFO - Starting user U52186 in cluster 1 (index 297)
+2025-03-30 12:48:04,438 - INFO - Starting user U12282 in cluster 1 (index 298)
+2025-03-30 12:48:04,507 - INFO - history_titles:[] empty for user: U12282!!!
+2025-03-30 12:48:42,700 - INFO - Starting user U25398 in cluster 1 (index 299)
+2025-03-30 12:48:42,768 - INFO - history_titles:[] empty for user: U25398!!!
+2025-03-30 12:49:18,401 - INFO - Starting user U79903 in cluster 1 (index 300)
+2025-03-30 12:49:18,469 - INFO - history_titles:[] empty for user: U79903!!!
+2025-03-30 12:49:54,096 - INFO - Starting user U87611 in cluster 1 (index 301)
+2025-03-30 12:49:54,163 - INFO - history_titles:[] empty for user: U87611!!!
+2025-03-30 12:50:30,020 - INFO - Starting user U79047 in cluster 1 (index 302)
+2025-03-30 12:50:30,092 - INFO - history_titles:[] empty for user: U79047!!!
+2025-03-30 12:51:06,469 - INFO - Starting user U62724 in cluster 1 (index 303)
+2025-03-30 12:51:06,538 - INFO - history_titles:[] empty for user: U62724!!!
+2025-03-30 12:51:41,973 - INFO - Starting user U25291 in cluster 1 (index 304)
+2025-03-30 12:51:42,043 - INFO - history_titles:[] empty for user: U25291!!!
+2025-03-30 12:52:18,077 - INFO - Starting user U35837 in cluster 1 (index 305)
+2025-03-30 12:52:18,146 - INFO - history_titles:[] empty for user: U35837!!!
+2025-03-30 12:52:55,936 - INFO - Starting user U1306 in cluster 1 (index 306)
+2025-03-30 12:53:31,956 - INFO - Starting user U12933 in cluster 1 (index 307)
+2025-03-30 12:53:32,023 - INFO - history_titles:[] empty for user: U12933!!!
+2025-03-30 12:54:07,535 - INFO - Starting user U45314 in cluster 1 (index 308)
+2025-03-30 12:54:07,603 - INFO - history_titles:[] empty for user: U45314!!!
+2025-03-30 12:54:42,964 - INFO - Starting user U33845 in cluster 1 (index 309)
+2025-03-30 12:54:43,030 - INFO - history_titles:[] empty for user: U33845!!!
+2025-03-30 12:55:18,139 - INFO - Starting user U8229 in cluster 1 (index 310)
+2025-03-30 12:55:18,202 - INFO - history_titles:[] empty for user: U8229!!!
+2025-03-30 12:55:53,798 - INFO - Starting user U66789 in cluster 1 (index 311)
+2025-03-30 12:56:29,064 - INFO - Starting user U52915 in cluster 1 (index 312)
+2025-03-30 12:56:29,130 - INFO - history_titles:[] empty for user: U52915!!!
+2025-03-30 12:57:04,560 - INFO - Starting user U51047 in cluster 1 (index 313)
+2025-03-30 12:57:04,627 - INFO - history_titles:[] empty for user: U51047!!!
+2025-03-30 12:57:39,883 - INFO - Starting user U11010 in cluster 1 (index 314)
+2025-03-30 12:57:39,951 - INFO - history_titles:[] empty for user: U11010!!!
+2025-03-30 12:58:15,872 - INFO - Starting user U72456 in cluster 1 (index 315)
+2025-03-30 12:58:15,939 - INFO - history_titles:[] empty for user: U72456!!!
+2025-03-30 12:58:51,518 - INFO - Starting user U60743 in cluster 1 (index 316)
+2025-03-30 12:58:51,585 - INFO - history_titles:[] empty for user: U60743!!!
+2025-03-30 12:59:27,068 - INFO - Starting user U54370 in cluster 1 (index 317)
+2025-03-30 13:00:02,696 - INFO - Starting user U85062 in cluster 1 (index 318)
+2025-03-30 13:00:38,919 - INFO - Starting user U60035 in cluster 1 (index 319)
+2025-03-30 13:00:38,987 - INFO - history_titles:[] empty for user: U60035!!!
+2025-03-30 13:01:14,458 - INFO - Starting user U32531 in cluster 1 (index 320)
+2025-03-30 13:01:14,525 - INFO - history_titles:[] empty for user: U32531!!!
+2025-03-30 13:01:49,908 - INFO - Starting user U58780 in cluster 1 (index 321)
+2025-03-30 13:01:49,976 - INFO - history_titles:[] empty for user: U58780!!!
+2025-03-30 13:02:25,855 - INFO - Starting user U14201 in cluster 1 (index 322)
+2025-03-30 13:02:25,922 - INFO - history_titles:[] empty for user: U14201!!!
+2025-03-30 13:03:02,029 - INFO - Starting user U28216 in cluster 1 (index 323)
+2025-03-30 13:03:37,263 - INFO - Starting user U35396 in cluster 1 (index 324)
+2025-03-30 13:03:37,328 - INFO - history_titles:[] empty for user: U35396!!!
+2025-03-30 13:04:12,497 - INFO - Starting user U11334 in cluster 1 (index 325)
+2025-03-30 13:04:12,568 - INFO - history_titles:[] empty for user: U11334!!!
+2025-03-30 13:04:48,066 - INFO - Starting user U87639 in cluster 1 (index 326)
+2025-03-30 13:04:48,134 - INFO - history_titles:[] empty for user: U87639!!!
+2025-03-30 13:05:23,897 - INFO - Starting user U64483 in cluster 1 (index 327)
+2025-03-30 13:05:23,964 - INFO - history_titles:[] empty for user: U64483!!!
+2025-03-30 13:05:59,013 - INFO - Starting user U91939 in cluster 1 (index 328)
+2025-03-30 13:05:59,084 - INFO - history_titles:[] empty for user: U91939!!!
+2025-03-30 13:06:34,462 - INFO - Starting user U18262 in cluster 1 (index 329)
+2025-03-30 13:07:09,926 - INFO - Starting user U43261 in cluster 1 (index 330)
+2025-03-30 13:07:45,713 - INFO - Starting user U40471 in cluster 1 (index 331)
+2025-03-30 13:08:24,445 - INFO - Starting user U83964 in cluster 1 (index 332)
+2025-03-30 13:08:24,513 - INFO - history_titles:[] empty for user: U83964!!!
+2025-03-30 13:08:59,682 - INFO - Starting user U24814 in cluster 1 (index 333)
+2025-03-30 13:08:59,750 - INFO - history_titles:[] empty for user: U24814!!!
+2025-03-30 13:09:34,966 - INFO - Starting user U8598 in cluster 1 (index 334)
+2025-03-30 13:09:35,538 - INFO - history_titles:[] empty for user: U8598!!!
+2025-03-30 13:10:14,962 - INFO - Starting user U94037 in cluster 1 (index 335)
+2025-03-30 13:10:15,045 - INFO - history_titles:[] empty for user: U94037!!!
+2025-03-30 13:10:52,086 - INFO - Starting user U16252 in cluster 1 (index 336)
+2025-03-30 13:10:52,164 - INFO - history_titles:[] empty for user: U16252!!!
+2025-03-30 13:11:28,787 - INFO - Starting user U34310 in cluster 1 (index 337)
+2025-03-30 13:11:28,859 - INFO - history_titles:[] empty for user: U34310!!!
+2025-03-30 13:12:06,609 - INFO - Starting user U31791 in cluster 1 (index 338)
+2025-03-30 13:12:06,682 - INFO - history_titles:[] empty for user: U31791!!!
+2025-03-30 13:12:44,368 - INFO - Starting user U16317 in cluster 1 (index 339)
+2025-03-30 13:12:44,433 - INFO - history_titles:[] empty for user: U16317!!!
+2025-03-30 13:13:20,034 - INFO - Starting user U53278 in cluster 1 (index 340)
+2025-03-30 13:13:20,105 - INFO - history_titles:[] empty for user: U53278!!!
+2025-03-30 13:13:55,777 - INFO - Starting user U79461 in cluster 1 (index 341)
+2025-03-30 13:13:55,846 - INFO - history_titles:[] empty for user: U79461!!!
+2025-03-30 13:14:32,681 - INFO - Starting user U92744 in cluster 1 (index 342)
+2025-03-30 13:14:32,745 - INFO - history_titles:[] empty for user: U92744!!!
+2025-03-30 13:15:10,704 - INFO - Starting user U78379 in cluster 1 (index 343)
+2025-03-30 13:15:10,775 - INFO - history_titles:[] empty for user: U78379!!!
+2025-03-30 13:15:47,339 - INFO - Starting user U79420 in cluster 1 (index 344)
+2025-03-30 13:15:47,409 - INFO - history_titles:[] empty for user: U79420!!!
+2025-03-30 13:16:23,942 - INFO - Starting user U82544 in cluster 1 (index 345)
+2025-03-30 13:16:24,013 - INFO - history_titles:[] empty for user: U82544!!!
+2025-03-30 13:17:01,272 - INFO - Starting user U13674 in cluster 1 (index 346)
+2025-03-30 13:17:01,337 - INFO - history_titles:[] empty for user: U13674!!!
+2025-03-30 13:17:37,855 - INFO - Starting user U66957 in cluster 1 (index 347)
+2025-03-30 13:18:23,577 - INFO - Starting user U51678 in cluster 1 (index 348)
+2025-03-30 13:18:23,644 - INFO - history_titles:[] empty for user: U51678!!!
+2025-03-30 13:19:00,061 - INFO - Starting user U89703 in cluster 1 (index 349)
+2025-03-30 13:19:00,130 - INFO - history_titles:[] empty for user: U89703!!!
+2025-03-30 13:19:37,376 - INFO - Starting user U21488 in cluster 1 (index 350)
+2025-03-30 13:19:37,443 - INFO - history_titles:[] empty for user: U21488!!!
+2025-03-30 13:20:13,964 - INFO - Starting user U76446 in cluster 1 (index 351)
+2025-03-30 13:20:14,033 - INFO - history_titles:[] empty for user: U76446!!!
+2025-03-30 13:20:50,634 - INFO - Starting user U12456 in cluster 1 (index 352)
+2025-03-30 13:20:50,711 - INFO - history_titles:[] empty for user: U12456!!!
+2025-03-30 13:21:27,467 - INFO - Starting user U72744 in cluster 1 (index 353)
+2025-03-30 13:21:27,535 - INFO - history_titles:[] empty for user: U72744!!!
+2025-03-30 13:22:04,535 - INFO - Starting user U41463 in cluster 1 (index 354)
+2025-03-30 13:22:04,608 - INFO - history_titles:[] empty for user: U41463!!!
+2025-03-30 13:22:41,083 - INFO - Starting user U84699 in cluster 1 (index 355)
+2025-03-30 13:22:41,151 - INFO - history_titles:[] empty for user: U84699!!!
+2025-03-30 13:23:17,904 - INFO - Starting user U17594 in cluster 1 (index 356)
+2025-03-30 13:23:17,977 - INFO - history_titles:[] empty for user: U17594!!!
+2025-03-30 13:23:54,581 - INFO - Starting user U12273 in cluster 1 (index 357)
+2025-03-30 13:24:32,038 - INFO - Starting user U55308 in cluster 1 (index 358)
+2025-03-30 13:24:32,110 - INFO - history_titles:[] empty for user: U55308!!!
+2025-03-30 13:25:08,762 - INFO - Starting user U4993 in cluster 1 (index 359)
+2025-03-30 13:25:08,829 - INFO - history_titles:[] empty for user: U4993!!!
+2025-03-30 13:25:45,269 - INFO - Starting user U8468 in cluster 1 (index 360)
+2025-03-30 13:25:45,337 - INFO - history_titles:[] empty for user: U8468!!!
+2025-03-30 13:26:21,869 - INFO - Starting user U3457 in cluster 1 (index 361)
+2025-03-30 13:26:21,937 - INFO - history_titles:[] empty for user: U3457!!!
+2025-03-30 13:26:58,636 - INFO - Starting user U93861 in cluster 1 (index 362)
+2025-03-30 13:27:35,800 - INFO - Starting user U25080 in cluster 1 (index 363)
+2025-03-30 13:27:35,869 - INFO - history_titles:[] empty for user: U25080!!!
+2025-03-30 13:28:13,521 - INFO - Starting user U92339 in cluster 1 (index 364)
+2025-03-30 13:28:54,417 - INFO - Starting user U59869 in cluster 1 (index 365)
+2025-03-30 13:28:54,506 - INFO - history_titles:[] empty for user: U59869!!!
+2025-03-30 13:29:35,054 - INFO - Starting user U46315 in cluster 1 (index 366)
+2025-03-30 13:29:35,132 - INFO - history_titles:[] empty for user: U46315!!!
+2025-03-30 13:30:12,831 - INFO - Starting user U37789 in cluster 1 (index 367)
+2025-03-30 13:30:12,899 - INFO - history_titles:[] empty for user: U37789!!!
+2025-03-30 13:30:50,553 - INFO - Starting user U14157 in cluster 1 (index 368)
+2025-03-30 13:30:50,622 - INFO - history_titles:[] empty for user: U14157!!!
+2025-03-30 13:31:27,673 - INFO - Starting user U35766 in cluster 1 (index 369)
+2025-03-30 13:31:27,749 - INFO - history_titles:[] empty for user: U35766!!!
+2025-03-30 13:32:04,700 - INFO - Starting user U23051 in cluster 1 (index 370)
+2025-03-30 13:32:04,768 - INFO - history_titles:[] empty for user: U23051!!!
+2025-03-30 13:32:42,308 - INFO - Starting user U65427 in cluster 1 (index 371)
+2025-03-30 13:32:42,386 - INFO - history_titles:[] empty for user: U65427!!!
+2025-03-30 13:33:19,163 - INFO - Starting user U1573 in cluster 1 (index 372)
+2025-03-30 13:33:56,957 - INFO - Starting user U58079 in cluster 1 (index 373)
+2025-03-30 13:33:57,034 - INFO - history_titles:[] empty for user: U58079!!!
+2025-03-30 13:34:34,178 - INFO - Starting user U19216 in cluster 1 (index 374)
+2025-03-30 13:34:34,247 - INFO - history_titles:[] empty for user: U19216!!!
+2025-03-30 13:35:11,822 - INFO - Starting user U69262 in cluster 1 (index 375)
+2025-03-30 13:35:11,890 - INFO - history_titles:[] empty for user: U69262!!!
+2025-03-30 13:35:49,937 - INFO - Starting user U1287 in cluster 1 (index 376)
+2025-03-30 13:36:29,138 - INFO - Starting user U47558 in cluster 1 (index 377)
+2025-03-30 13:36:29,209 - INFO - history_titles:[] empty for user: U47558!!!
+2025-03-30 13:37:11,975 - INFO - Starting user U57979 in cluster 1 (index 378)
+2025-03-30 14:41:48,388 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/small/train/, valid_data_dir = dataset/small/valid/, zip_file = MINDsmall_train.zip, valid_zip_file = MINDsmall_dev.zip, user_category_profiles_path = small_user_category_profiles.pkl, user_cluster_df_path = small_user_cluster_df.pkl):
+2025-03-30 14:42:30,182 - INFO - Starting user U13740 in cluster 1 (index 0)
+2025-03-30 14:45:01,695 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/train/, valid_data_dir = dataset/valid/, zip_file = MINDlarge_train.zip, valid_zip_file = MINDlarge_dev.zip, user_category_profiles_path = large_user_category_profiles.pkl, user_cluster_df_path = large_user_cluster_df.pkl):
+2025-03-30 14:47:37,856 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/train/, valid_data_dir = dataset/valid/, zip_file = MINDlarge_train.zip, valid_zip_file = MINDlarge_dev.zip, user_category_profiles_path = user_category_profiles.pkl, user_cluster_df_path = user_cluster_df.pkl):
+2025-03-30 14:48:43,600 - INFO - Starting user U87243 in cluster 2 (index 0)
+2025-03-30 14:49:45,564 - INFO - Starting user U598644 in cluster 2 (index 1)
+2025-03-30 14:50:27,226 - INFO - Starting user U532401 in cluster 2 (index 2)
+2025-03-30 14:50:27,295 - INFO - history_titles:[] empty for user: U532401!!!
+2025-03-30 14:51:08,233 - INFO - Starting user U593596 in cluster 2 (index 3)
+2025-03-30 14:51:48,405 - INFO - Starting user U521853 in cluster 2 (index 4)
+2025-03-30 14:51:48,475 - INFO - history_titles:[] empty for user: U521853!!!
+2025-03-30 14:52:24,196 - INFO - Starting user U687515 in cluster 2 (index 5)
+2025-03-30 14:52:24,269 - INFO - history_titles:[] empty for user: U687515!!!
+2025-03-30 14:53:00,629 - INFO - Starting user U192112 in cluster 2 (index 6)
+2025-03-30 14:53:00,704 - INFO - history_titles:[] empty for user: U192112!!!
+2025-03-30 14:53:36,430 - INFO - Starting user U530668 in cluster 2 (index 7)
+2025-03-30 14:54:12,447 - INFO - Starting user U290933 in cluster 2 (index 8)
+2025-03-30 14:54:12,522 - INFO - history_titles:[] empty for user: U290933!!!
+2025-03-30 14:54:48,411 - INFO - Starting user U108656 in cluster 2 (index 9)
+2025-03-30 14:54:48,488 - INFO - history_titles:[] empty for user: U108656!!!
+2025-03-30 14:55:24,694 - INFO - Starting user U178651 in cluster 2 (index 10)
+2025-03-30 14:55:24,764 - INFO - history_titles:[] empty for user: U178651!!!
+2025-03-30 14:56:00,903 - INFO - Starting user U86679 in cluster 2 (index 11)
+2025-03-30 14:56:00,974 - INFO - history_titles:[] empty for user: U86679!!!
+2025-03-30 14:56:37,168 - INFO - Starting user U95671 in cluster 2 (index 12)
+2025-03-30 14:56:37,238 - INFO - history_titles:[] empty for user: U95671!!!
+2025-03-30 14:57:12,898 - INFO - Starting user U656379 in cluster 2 (index 13)
+2025-03-30 14:57:55,475 - INFO - Starting user U52262 in cluster 2 (index 14)
+2025-03-30 14:57:55,540 - INFO - history_titles:[] empty for user: U52262!!!
+2025-03-30 14:58:31,775 - INFO - Starting user U629430 in cluster 2 (index 15)
+2025-03-30 14:58:31,848 - INFO - history_titles:[] empty for user: U629430!!!
+2025-03-30 14:59:07,368 - INFO - Starting user U419371 in cluster 2 (index 16)
+2025-03-30 14:59:07,441 - INFO - history_titles:[] empty for user: U419371!!!
+2025-03-30 14:59:43,100 - INFO - Starting user U594274 in cluster 2 (index 17)
+2025-03-30 15:00:23,795 - INFO - Starting user U6325 in cluster 2 (index 18)
+2025-03-30 15:00:24,381 - INFO - history_titles:[] empty for user: U6325!!!
+2025-03-30 15:00:59,853 - INFO - Starting user U597276 in cluster 2 (index 19)
+2025-03-30 15:01:35,528 - INFO - Starting user U200033 in cluster 2 (index 20)
+2025-03-30 15:01:35,602 - INFO - history_titles:[] empty for user: U200033!!!
+2025-03-30 15:02:11,439 - INFO - Starting user U260964 in cluster 2 (index 21)
+2025-03-30 15:02:11,511 - INFO - history_titles:[] empty for user: U260964!!!
+2025-03-30 15:02:47,504 - INFO - Starting user U90382 in cluster 2 (index 22)
+2025-03-30 15:02:47,572 - INFO - history_titles:[] empty for user: U90382!!!
+2025-03-30 15:03:23,020 - INFO - Starting user U640108 in cluster 2 (index 23)
+2025-03-30 15:04:03,329 - INFO - Starting user U552980 in cluster 2 (index 24)
+2025-03-30 15:04:03,408 - INFO - history_titles:[] empty for user: U552980!!!
+2025-03-30 15:04:39,995 - INFO - Starting user U428315 in cluster 2 (index 25)
+2025-03-30 15:04:40,086 - INFO - history_titles:[] empty for user: U428315!!!
+2025-03-30 15:05:16,380 - INFO - Starting user U449564 in cluster 2 (index 26)
+2025-03-30 15:05:16,456 - INFO - history_titles:[] empty for user: U449564!!!
+2025-03-30 15:05:51,875 - INFO - Starting user U163476 in cluster 2 (index 27)
+2025-03-30 15:05:51,944 - INFO - history_titles:[] empty for user: U163476!!!
+2025-03-30 15:06:27,842 - INFO - Starting user U641845 in cluster 2 (index 28)
+2025-03-30 15:06:27,923 - INFO - history_titles:[] empty for user: U641845!!!
+2025-03-30 15:07:03,673 - INFO - Starting user U3280 in cluster 2 (index 29)
+2025-03-30 15:07:39,808 - INFO - Starting user U401352 in cluster 2 (index 30)
+2025-03-30 15:07:39,878 - INFO - history_titles:[] empty for user: U401352!!!
+2025-03-30 15:08:16,125 - INFO - Starting user U115754 in cluster 2 (index 31)
+2025-03-30 15:08:16,194 - INFO - history_titles:[] empty for user: U115754!!!
+2025-03-30 15:08:51,813 - INFO - Starting user U569010 in cluster 2 (index 32)
+2025-03-30 15:08:51,881 - INFO - history_titles:[] empty for user: U569010!!!
+2025-03-30 15:09:27,581 - INFO - Starting user U159295 in cluster 2 (index 33)
+2025-03-30 15:09:27,656 - INFO - history_titles:[] empty for user: U159295!!!
+2025-03-30 15:10:03,106 - INFO - Starting user U171052 in cluster 2 (index 34)
+2025-03-30 15:10:03,174 - INFO - history_titles:[] empty for user: U171052!!!
+2025-03-30 15:10:39,067 - INFO - Starting user U73915 in cluster 2 (index 35)
+2025-03-30 15:10:39,142 - INFO - history_titles:[] empty for user: U73915!!!
+2025-03-30 15:11:14,574 - INFO - Starting user U515908 in cluster 2 (index 36)
+2025-03-30 15:11:14,646 - INFO - history_titles:[] empty for user: U515908!!!
+2025-03-30 15:11:53,636 - INFO - Starting user U520221 in cluster 2 (index 37)
+2025-03-30 15:12:34,406 - INFO - Starting user U24161 in cluster 2 (index 38)
+2025-03-30 15:12:35,019 - INFO - history_titles:[] empty for user: U24161!!!
+2025-03-30 15:13:10,689 - INFO - Starting user U208520 in cluster 2 (index 39)
+2025-03-30 15:13:10,761 - INFO - history_titles:[] empty for user: U208520!!!
+2025-03-30 15:13:46,380 - INFO - Starting user U79744 in cluster 2 (index 40)
+2025-03-30 15:13:46,456 - INFO - history_titles:[] empty for user: U79744!!!
+2025-03-30 15:14:22,556 - INFO - Starting user U595088 in cluster 2 (index 41)
+2025-03-30 15:14:22,628 - INFO - history_titles:[] empty for user: U595088!!!
+2025-03-30 15:14:59,174 - INFO - Starting user U219005 in cluster 2 (index 42)
+2025-03-30 15:14:59,253 - INFO - history_titles:[] empty for user: U219005!!!
+2025-03-30 15:15:34,576 - INFO - Starting user U146290 in cluster 2 (index 43)
+2025-03-30 15:15:34,649 - INFO - history_titles:[] empty for user: U146290!!!
+2025-03-30 15:16:10,110 - INFO - Starting user U691255 in cluster 2 (index 44)
+2025-03-30 15:16:45,779 - INFO - Starting user U624340 in cluster 2 (index 45)
+2025-03-30 15:17:28,469 - INFO - Starting user U185733 in cluster 2 (index 46)
+2025-03-30 15:18:08,654 - INFO - Starting user U621293 in cluster 2 (index 47)
+2025-03-30 15:18:08,732 - INFO - history_titles:[] empty for user: U621293!!!
+2025-03-30 15:18:44,249 - INFO - Starting user U5224 in cluster 2 (index 48)
+2025-03-30 15:19:25,659 - INFO - Starting user U71675 in cluster 2 (index 49)
+2025-03-30 15:19:25,735 - INFO - history_titles:[] empty for user: U71675!!!
+2025-03-30 15:20:01,999 - INFO - Starting user U184159 in cluster 2 (index 50)
+2025-03-30 15:20:02,071 - INFO - history_titles:[] empty for user: U184159!!!
+2025-03-30 15:20:38,911 - INFO - Starting user U604790 in cluster 2 (index 51)
+2025-03-30 15:21:20,648 - INFO - Starting user U330859 in cluster 2 (index 52)
+2025-03-30 15:21:20,723 - INFO - history_titles:[] empty for user: U330859!!!
+2025-03-30 15:21:56,506 - INFO - Starting user U49579 in cluster 2 (index 53)
+2025-03-30 15:22:32,244 - INFO - Starting user U317352 in cluster 2 (index 54)
+2025-03-30 15:22:32,868 - INFO - history_titles:[] empty for user: U317352!!!
+2025-03-30 15:23:08,454 - INFO - Starting user U202591 in cluster 2 (index 55)
+2025-03-30 15:23:08,524 - INFO - history_titles:[] empty for user: U202591!!!
+2025-03-30 15:23:43,926 - INFO - Starting user U562005 in cluster 2 (index 56)
+2025-03-30 15:24:19,529 - INFO - Starting user U665033 in cluster 2 (index 57)
+2025-03-30 15:24:19,601 - INFO - history_titles:[] empty for user: U665033!!!
+2025-03-30 15:24:55,784 - INFO - Starting user U683198 in cluster 2 (index 58)
+2025-03-30 15:24:55,854 - INFO - history_titles:[] empty for user: U683198!!!
+2025-03-30 15:25:31,735 - INFO - Starting user U158238 in cluster 2 (index 59)
+2025-03-30 15:26:07,896 - INFO - Starting user U28155 in cluster 2 (index 60)
+2025-03-30 15:26:07,969 - INFO - history_titles:[] empty for user: U28155!!!
+2025-03-30 15:26:43,410 - INFO - Starting user U165938 in cluster 2 (index 61)
+2025-03-30 15:26:43,485 - INFO - history_titles:[] empty for user: U165938!!!
+2025-03-30 15:27:19,535 - INFO - Starting user U285096 in cluster 2 (index 62)
+2025-03-30 15:27:19,607 - INFO - history_titles:[] empty for user: U285096!!!
+2025-03-30 15:27:55,196 - INFO - Starting user U383569 in cluster 2 (index 63)
+2025-03-30 15:27:55,265 - INFO - history_titles:[] empty for user: U383569!!!
+2025-03-30 15:28:32,300 - INFO - Starting user U649058 in cluster 2 (index 64)
+2025-03-30 15:28:32,373 - INFO - history_titles:[] empty for user: U649058!!!
+2025-03-30 15:29:08,024 - INFO - Starting user U415551 in cluster 2 (index 65)
+2025-03-30 15:29:08,095 - INFO - history_titles:[] empty for user: U415551!!!
+2025-03-30 15:29:43,568 - INFO - Starting user U614277 in cluster 2 (index 66)
+2025-03-30 15:29:43,637 - INFO - history_titles:[] empty for user: U614277!!!
+2025-03-30 15:30:19,491 - INFO - Starting user U343264 in cluster 2 (index 67)
+2025-03-30 15:30:19,561 - INFO - history_titles:[] empty for user: U343264!!!
+2025-03-30 15:30:54,922 - INFO - Starting user U26169 in cluster 2 (index 68)
+2025-03-30 15:30:54,990 - INFO - history_titles:[] empty for user: U26169!!!
+2025-03-30 15:31:30,684 - INFO - Starting user U369158 in cluster 2 (index 69)
+2025-03-30 15:31:30,757 - INFO - history_titles:[] empty for user: U369158!!!
+2025-03-30 15:32:06,358 - INFO - Starting user U415460 in cluster 2 (index 70)
+2025-03-30 15:32:06,429 - INFO - history_titles:[] empty for user: U415460!!!
+2025-03-30 15:32:45,772 - INFO - Starting user U559720 in cluster 2 (index 71)
+2025-03-30 15:33:21,651 - INFO - Starting user U558663 in cluster 2 (index 72)
+2025-03-30 15:33:21,723 - INFO - history_titles:[] empty for user: U558663!!!
+2025-03-30 15:33:57,550 - INFO - Starting user U201390 in cluster 2 (index 73)
+2025-03-30 15:34:33,857 - INFO - Starting user U158842 in cluster 2 (index 74)
+2025-03-30 15:34:34,444 - INFO - history_titles:[] empty for user: U158842!!!
+2025-03-30 15:35:13,167 - INFO - Starting user U503349 in cluster 2 (index 75)
+2025-03-30 15:35:13,235 - INFO - history_titles:[] empty for user: U503349!!!
+2025-03-30 15:35:48,589 - INFO - Starting user U250016 in cluster 2 (index 76)
+2025-03-30 15:36:30,605 - INFO - Starting user U43685 in cluster 2 (index 77)
+2025-03-30 15:37:07,175 - INFO - Starting user U655647 in cluster 2 (index 78)
+2025-03-30 15:37:07,253 - INFO - history_titles:[] empty for user: U655647!!!
+2025-03-30 15:37:42,878 - INFO - Starting user U292984 in cluster 2 (index 79)
+2025-03-30 15:37:42,952 - INFO - history_titles:[] empty for user: U292984!!!
+2025-03-30 15:38:18,303 - INFO - Starting user U626729 in cluster 2 (index 80)
+2025-03-30 15:38:18,373 - INFO - history_titles:[] empty for user: U626729!!!
+2025-03-30 15:38:54,023 - INFO - Starting user U353674 in cluster 2 (index 81)
+2025-03-30 15:38:54,091 - INFO - history_titles:[] empty for user: U353674!!!
+2025-03-30 15:39:30,120 - INFO - Starting user U110904 in cluster 2 (index 82)
+2025-03-30 15:39:30,192 - INFO - history_titles:[] empty for user: U110904!!!
+2025-03-30 15:40:06,121 - INFO - Starting user U344648 in cluster 2 (index 83)
+2025-03-30 15:40:06,194 - INFO - history_titles:[] empty for user: U344648!!!
+2025-03-30 15:40:41,949 - INFO - Starting user U642982 in cluster 2 (index 84)
+2025-03-30 15:40:42,025 - INFO - history_titles:[] empty for user: U642982!!!
+2025-03-30 15:41:17,595 - INFO - Starting user U479071 in cluster 2 (index 85)
+2025-03-30 15:41:17,664 - INFO - history_titles:[] empty for user: U479071!!!
+2025-03-30 15:41:53,369 - INFO - Starting user U36940 in cluster 2 (index 86)
+2025-03-30 15:42:29,870 - INFO - Starting user U355171 in cluster 2 (index 87)
+2025-03-30 15:42:29,943 - INFO - history_titles:[] empty for user: U355171!!!
+2025-03-30 15:43:05,708 - INFO - Starting user U654088 in cluster 2 (index 88)
+2025-03-30 15:43:05,781 - INFO - history_titles:[] empty for user: U654088!!!
+2025-03-30 15:43:41,395 - INFO - Starting user U581465 in cluster 2 (index 89)
+2025-03-30 15:43:41,469 - INFO - history_titles:[] empty for user: U581465!!!
+2025-03-30 15:44:17,428 - INFO - Starting user U331512 in cluster 2 (index 90)
+2025-03-30 15:44:17,501 - INFO - history_titles:[] empty for user: U331512!!!
+2025-03-30 15:44:53,642 - INFO - Starting user U187226 in cluster 2 (index 91)
+2025-03-30 15:44:53,711 - INFO - history_titles:[] empty for user: U187226!!!
+2025-03-30 15:45:29,123 - INFO - Starting user U286542 in cluster 2 (index 92)
+2025-03-30 15:45:29,194 - INFO - history_titles:[] empty for user: U286542!!!
+2025-03-30 15:46:04,667 - INFO - Starting user U417378 in cluster 2 (index 93)
+2025-03-30 15:46:04,738 - INFO - history_titles:[] empty for user: U417378!!!
+2025-03-30 15:46:40,283 - INFO - Starting user U413939 in cluster 2 (index 94)
+2025-03-30 15:46:40,353 - INFO - history_titles:[] empty for user: U413939!!!
+2025-03-30 15:47:16,339 - INFO - Starting user U142571 in cluster 2 (index 95)
+2025-03-30 15:47:16,415 - INFO - history_titles:[] empty for user: U142571!!!
+2025-03-30 15:47:51,845 - INFO - Starting user U704615 in cluster 2 (index 96)
+2025-03-30 15:47:51,920 - INFO - history_titles:[] empty for user: U704615!!!
+2025-03-30 15:48:28,437 - INFO - Starting user U611828 in cluster 2 (index 97)
+2025-03-30 15:48:28,505 - INFO - history_titles:[] empty for user: U611828!!!
+2025-03-30 15:49:04,328 - INFO - Starting user U100015 in cluster 2 (index 98)
+2025-03-30 15:49:04,401 - INFO - history_titles:[] empty for user: U100015!!!
+2025-03-30 15:49:40,325 - INFO - Starting user U519106 in cluster 2 (index 99)
+2025-03-30 15:49:40,398 - INFO - history_titles:[] empty for user: U519106!!!
+2025-03-30 15:50:16,329 - INFO - Starting user U620890 in cluster 2 (index 100)
+2025-03-30 15:50:16,403 - INFO - history_titles:[] empty for user: U620890!!!
+2025-03-30 15:50:52,135 - INFO - Starting user U357664 in cluster 2 (index 101)
+2025-03-30 15:51:28,358 - INFO - Starting user U182348 in cluster 2 (index 102)
+2025-03-30 15:52:04,483 - INFO - Starting user U159920 in cluster 2 (index 103)
+2025-03-30 15:52:40,172 - INFO - Starting user U674301 in cluster 2 (index 104)
+2025-03-30 15:53:15,951 - INFO - Starting user U469857 in cluster 2 (index 105)
+2025-03-30 15:53:16,030 - INFO - history_titles:[] empty for user: U469857!!!
+2025-03-30 15:53:51,750 - INFO - Starting user U601773 in cluster 2 (index 106)
+2025-03-30 15:53:52,342 - INFO - history_titles:[] empty for user: U601773!!!
+2025-03-30 15:54:27,936 - INFO - Starting user U203922 in cluster 2 (index 107)
+2025-03-30 15:54:28,010 - INFO - history_titles:[] empty for user: U203922!!!
+2025-03-30 15:55:03,537 - INFO - Starting user U443540 in cluster 2 (index 108)
+2025-03-30 15:55:03,611 - INFO - history_titles:[] empty for user: U443540!!!
+2025-03-30 15:55:39,496 - INFO - Starting user U63207 in cluster 2 (index 109)
+2025-03-30 15:55:39,564 - INFO - history_titles:[] empty for user: U63207!!!
+2025-03-30 15:56:15,713 - INFO - Starting user U607368 in cluster 2 (index 110)
+2025-03-30 15:56:15,784 - INFO - history_titles:[] empty for user: U607368!!!
+2025-03-30 15:56:51,211 - INFO - Starting user U310458 in cluster 2 (index 111)
+2025-03-30 15:56:51,281 - INFO - history_titles:[] empty for user: U310458!!!
+2025-03-30 15:57:26,811 - INFO - Starting user U417199 in cluster 2 (index 112)
+2025-03-30 15:58:02,739 - INFO - Starting user U318822 in cluster 2 (index 113)
+2025-03-30 15:58:02,818 - INFO - history_titles:[] empty for user: U318822!!!
+2025-03-30 15:58:38,913 - INFO - Starting user U454102 in cluster 2 (index 114)
+2025-03-30 15:58:38,987 - INFO - history_titles:[] empty for user: U454102!!!
+2025-03-30 15:59:14,622 - INFO - Starting user U653934 in cluster 2 (index 115)
+2025-03-30 15:59:14,694 - INFO - history_titles:[] empty for user: U653934!!!
+2025-03-30 15:59:49,250 - INFO - Starting user U204203 in cluster 2 (index 116)
+2025-03-30 15:59:49,322 - INFO - history_titles:[] empty for user: U204203!!!
+2025-03-30 16:00:23,340 - INFO - Starting user U201138 in cluster 2 (index 117)
+2025-03-30 16:00:23,410 - INFO - history_titles:[] empty for user: U201138!!!
+2025-03-30 16:00:58,355 - INFO - Starting user U92337 in cluster 2 (index 118)
+2025-03-30 16:00:58,423 - INFO - history_titles:[] empty for user: U92337!!!
+2025-03-30 16:01:32,762 - INFO - Starting user U521638 in cluster 2 (index 119)
+2025-03-30 16:01:32,834 - INFO - history_titles:[] empty for user: U521638!!!
+2025-03-30 16:02:07,422 - INFO - Starting user U509707 in cluster 2 (index 120)
+2025-03-30 16:02:07,494 - INFO - history_titles:[] empty for user: U509707!!!
+2025-03-30 16:02:41,899 - INFO - Starting user U327484 in cluster 2 (index 121)
+2025-03-30 16:03:16,709 - INFO - Starting user U225469 in cluster 2 (index 122)
+2025-03-30 16:03:16,785 - INFO - history_titles:[] empty for user: U225469!!!
+2025-03-30 16:03:51,722 - INFO - Starting user U468570 in cluster 2 (index 123)
+2025-03-30 16:03:51,794 - INFO - history_titles:[] empty for user: U468570!!!
+2025-03-30 16:04:25,922 - INFO - Starting user U366024 in cluster 2 (index 124)
+2025-03-30 16:04:25,993 - INFO - history_titles:[] empty for user: U366024!!!
+2025-03-30 16:05:00,636 - INFO - Starting user U688601 in cluster 2 (index 125)
+2025-03-30 16:05:00,704 - INFO - history_titles:[] empty for user: U688601!!!
+2025-03-30 16:05:38,773 - INFO - Starting user U249089 in cluster 2 (index 126)
+2025-03-30 16:05:39,375 - INFO - history_titles:[] empty for user: U249089!!!
+2025-03-30 16:06:14,414 - INFO - Starting user U425844 in cluster 2 (index 127)
+2025-03-30 16:06:14,482 - INFO - history_titles:[] empty for user: U425844!!!
+2025-03-30 16:06:49,338 - INFO - Starting user U606840 in cluster 2 (index 128)
+2025-03-30 16:06:49,409 - INFO - history_titles:[] empty for user: U606840!!!
+2025-03-30 16:07:24,640 - INFO - Starting user U118212 in cluster 2 (index 129)
+2025-03-30 16:07:24,709 - INFO - history_titles:[] empty for user: U118212!!!
+2025-03-30 16:08:00,145 - INFO - Starting user U83962 in cluster 2 (index 130)
+2025-03-30 16:08:00,725 - INFO - history_titles:[] empty for user: U83962!!!
+2025-03-30 16:08:35,412 - INFO - Starting user U89128 in cluster 2 (index 131)
+2025-03-30 16:08:35,485 - INFO - history_titles:[] empty for user: U89128!!!
+2025-03-30 16:09:10,535 - INFO - Starting user U639282 in cluster 2 (index 132)
+2025-03-30 16:09:10,610 - INFO - history_titles:[] empty for user: U639282!!!
+2025-03-30 16:09:44,960 - INFO - Starting user U348890 in cluster 2 (index 133)
+2025-03-30 16:09:45,030 - INFO - history_titles:[] empty for user: U348890!!!
+2025-03-30 16:10:20,173 - INFO - Starting user U640287 in cluster 2 (index 134)
+2025-03-30 16:10:20,242 - INFO - history_titles:[] empty for user: U640287!!!
+2025-03-30 16:10:54,756 - INFO - Starting user U444660 in cluster 2 (index 135)
+2025-03-30 16:10:54,825 - INFO - history_titles:[] empty for user: U444660!!!
+2025-03-30 16:11:29,447 - INFO - Starting user U462807 in cluster 2 (index 136)
+2025-03-30 16:12:04,927 - INFO - Starting user U382556 in cluster 2 (index 137)
+2025-03-30 16:12:40,184 - INFO - Starting user U537300 in cluster 2 (index 138)
+2025-03-30 16:12:40,253 - INFO - history_titles:[] empty for user: U537300!!!
+2025-03-30 16:13:14,554 - INFO - Starting user U679825 in cluster 2 (index 139)
+2025-03-30 16:13:49,641 - INFO - Starting user U152256 in cluster 2 (index 140)
+2025-03-30 16:13:49,718 - INFO - history_titles:[] empty for user: U152256!!!
+2025-03-30 16:14:24,195 - INFO - Starting user U405992 in cluster 2 (index 141)
+2025-03-30 16:14:24,268 - INFO - history_titles:[] empty for user: U405992!!!
+2025-03-30 16:14:59,439 - INFO - Starting user U411944 in cluster 2 (index 142)
+2025-03-30 16:14:59,509 - INFO - history_titles:[] empty for user: U411944!!!
+2025-03-30 16:15:33,850 - INFO - Starting user U314454 in cluster 2 (index 143)
+2025-03-30 16:15:33,922 - INFO - history_titles:[] empty for user: U314454!!!
+2025-03-30 16:16:08,600 - INFO - Starting user U360436 in cluster 2 (index 144)
+2025-03-30 16:16:08,669 - INFO - history_titles:[] empty for user: U360436!!!
+2025-03-30 16:16:43,308 - INFO - Starting user U349354 in cluster 2 (index 145)
+2025-03-30 16:16:43,380 - INFO - history_titles:[] empty for user: U349354!!!
+2025-03-30 16:17:18,238 - INFO - Starting user U493622 in cluster 2 (index 146)
+2025-03-30 16:17:52,744 - INFO - Starting user U480852 in cluster 2 (index 147)
+2025-03-30 16:17:52,814 - INFO - history_titles:[] empty for user: U480852!!!
+2025-03-30 16:18:27,032 - INFO - Starting user U103412 in cluster 2 (index 148)
+2025-03-30 16:18:27,106 - INFO - history_titles:[] empty for user: U103412!!!
+2025-03-30 16:19:01,798 - INFO - Starting user U307287 in cluster 2 (index 149)
+2025-03-30 16:19:01,875 - INFO - history_titles:[] empty for user: U307287!!!
+2025-03-30 16:19:36,390 - INFO - Starting user U689848 in cluster 2 (index 150)
+2025-03-30 16:19:36,460 - INFO - history_titles:[] empty for user: U689848!!!
+2025-03-30 16:20:11,145 - INFO - Starting user U570874 in cluster 2 (index 151)
+2025-03-30 16:20:11,218 - INFO - history_titles:[] empty for user: U570874!!!
+2025-03-30 16:20:45,461 - INFO - Starting user U394370 in cluster 2 (index 152)
+2025-03-30 16:21:19,931 - INFO - Starting user U548312 in cluster 2 (index 153)
+2025-03-30 16:21:20,002 - INFO - history_titles:[] empty for user: U548312!!!
+2025-03-30 16:21:54,409 - INFO - Starting user U213052 in cluster 2 (index 154)
+2025-03-30 16:21:54,479 - INFO - history_titles:[] empty for user: U213052!!!
+2025-03-30 16:22:28,863 - INFO - Starting user U610238 in cluster 2 (index 155)
+2025-03-30 16:22:28,935 - INFO - history_titles:[] empty for user: U610238!!!
+2025-03-30 16:23:03,270 - INFO - Starting user U649325 in cluster 2 (index 156)
+2025-03-30 16:23:03,340 - INFO - history_titles:[] empty for user: U649325!!!
+2025-03-30 16:23:37,533 - INFO - Starting user U365036 in cluster 2 (index 157)
+2025-03-30 16:24:12,127 - INFO - Starting user U648357 in cluster 2 (index 158)
+2025-03-30 16:24:12,705 - INFO - history_titles:[] empty for user: U648357!!!
+2025-03-30 16:24:47,121 - INFO - Starting user U66246 in cluster 2 (index 159)
+2025-03-30 16:25:21,295 - INFO - Starting user U187601 in cluster 2 (index 160)
+2025-03-30 16:25:21,367 - INFO - history_titles:[] empty for user: U187601!!!
+2025-03-30 16:25:55,559 - INFO - Starting user U19040 in cluster 2 (index 161)
+2025-03-30 16:25:55,635 - INFO - history_titles:[] empty for user: U19040!!!
+2025-03-30 16:26:29,616 - INFO - Starting user U417772 in cluster 2 (index 162)
+2025-03-30 16:26:30,208 - INFO - history_titles:[] empty for user: U417772!!!
+2025-03-30 16:27:05,113 - INFO - Starting user U329649 in cluster 2 (index 163)
+2025-03-30 16:27:39,499 - INFO - Starting user U666459 in cluster 2 (index 164)
+2025-03-30 16:27:39,575 - INFO - history_titles:[] empty for user: U666459!!!
+2025-03-30 16:28:13,599 - INFO - Starting user U26685 in cluster 2 (index 165)
+2025-03-30 16:28:48,931 - INFO - Starting user U690012 in cluster 2 (index 166)
+2025-03-30 16:28:49,001 - INFO - history_titles:[] empty for user: U690012!!!
+2025-03-30 16:29:23,326 - INFO - Starting user U340818 in cluster 2 (index 167)
+2025-03-30 16:29:23,401 - INFO - history_titles:[] empty for user: U340818!!!
+2025-03-30 16:29:57,885 - INFO - Starting user U442800 in cluster 2 (index 168)
+2025-03-30 16:29:57,956 - INFO - history_titles:[] empty for user: U442800!!!
+2025-03-30 16:30:32,130 - INFO - Starting user U40368 in cluster 2 (index 169)
+2025-03-30 16:30:32,200 - INFO - history_titles:[] empty for user: U40368!!!
+2025-03-30 16:31:10,743 - INFO - Starting user U166183 in cluster 2 (index 170)
+2025-03-30 16:31:10,812 - INFO - history_titles:[] empty for user: U166183!!!
+2025-03-30 16:31:45,157 - INFO - Starting user U299716 in cluster 2 (index 171)
+2025-03-30 16:32:19,542 - INFO - Starting user U115855 in cluster 2 (index 172)
+2025-03-30 16:32:19,612 - INFO - history_titles:[] empty for user: U115855!!!
+2025-03-30 16:32:54,188 - INFO - Starting user U9207 in cluster 2 (index 173)
+2025-03-30 16:32:54,254 - INFO - history_titles:[] empty for user: U9207!!!
+2025-03-30 16:33:29,020 - INFO - Starting user U89228 in cluster 2 (index 174)
+2025-03-30 16:34:03,538 - INFO - Starting user U139582 in cluster 2 (index 175)
+2025-03-30 16:34:03,610 - INFO - history_titles:[] empty for user: U139582!!!
+2025-03-30 16:34:37,696 - INFO - Starting user U331434 in cluster 2 (index 176)
+2025-03-30 16:34:37,771 - INFO - history_titles:[] empty for user: U331434!!!
+2025-03-30 16:35:11,952 - INFO - Starting user U536846 in cluster 2 (index 177)
+2025-03-30 16:35:12,023 - INFO - history_titles:[] empty for user: U536846!!!
+2025-03-30 16:35:46,340 - INFO - Starting user U437273 in cluster 2 (index 178)
+2025-03-30 16:35:46,408 - INFO - history_titles:[] empty for user: U437273!!!
+2025-03-30 16:36:20,694 - INFO - Starting user U314579 in cluster 2 (index 179)
+2025-03-30 16:36:20,765 - INFO - history_titles:[] empty for user: U314579!!!
+2025-03-30 16:36:54,906 - INFO - Starting user U135387 in cluster 2 (index 180)
+2025-03-30 16:36:54,978 - INFO - history_titles:[] empty for user: U135387!!!
+2025-03-30 16:37:29,134 - INFO - Starting user U352669 in cluster 2 (index 181)
+2025-03-30 16:38:04,159 - INFO - Starting user U623790 in cluster 2 (index 182)
+2025-03-30 16:38:04,743 - INFO - history_titles:[] empty for user: U623790!!!
+2025-03-30 16:38:38,716 - INFO - Starting user U435874 in cluster 2 (index 183)
+2025-03-30 16:39:13,093 - INFO - Starting user U254859 in cluster 2 (index 184)
+2025-03-30 16:39:13,161 - INFO - history_titles:[] empty for user: U254859!!!
+2025-03-30 16:39:47,451 - INFO - Starting user U234536 in cluster 2 (index 185)
+2025-03-30 16:39:47,524 - INFO - history_titles:[] empty for user: U234536!!!
+2025-03-30 16:40:22,147 - INFO - Starting user U592983 in cluster 2 (index 186)
+2025-03-30 16:40:22,216 - INFO - history_titles:[] empty for user: U592983!!!
+2025-03-30 16:40:56,586 - INFO - Starting user U49834 in cluster 2 (index 187)
+2025-03-30 16:40:56,654 - INFO - history_titles:[] empty for user: U49834!!!
+2025-03-30 16:41:30,946 - INFO - Starting user U506133 in cluster 2 (index 188)
+2025-03-30 16:41:31,015 - INFO - history_titles:[] empty for user: U506133!!!
+2025-03-30 16:42:05,579 - INFO - Starting user U169821 in cluster 2 (index 189)
+2025-03-30 16:42:05,649 - INFO - history_titles:[] empty for user: U169821!!!
+2025-03-30 16:42:40,217 - INFO - Starting user U385752 in cluster 2 (index 190)
+2025-03-30 16:42:40,289 - INFO - history_titles:[] empty for user: U385752!!!
+2025-03-30 16:43:14,478 - INFO - Starting user U321603 in cluster 2 (index 191)
+2025-03-30 16:43:14,548 - INFO - history_titles:[] empty for user: U321603!!!
+2025-03-30 16:43:49,107 - INFO - Starting user U237594 in cluster 2 (index 192)
+2025-03-30 16:43:49,180 - INFO - history_titles:[] empty for user: U237594!!!
+2025-03-30 16:44:23,198 - INFO - Starting user U100898 in cluster 2 (index 193)
+2025-03-30 16:44:23,270 - INFO - history_titles:[] empty for user: U100898!!!
+2025-03-30 16:44:58,030 - INFO - Starting user U215435 in cluster 2 (index 194)
+2025-03-30 16:45:33,226 - INFO - Starting user U214519 in cluster 2 (index 195)
+2025-03-30 16:45:33,295 - INFO - history_titles:[] empty for user: U214519!!!
+2025-03-30 16:46:07,519 - INFO - Starting user U66184 in cluster 2 (index 196)
+2025-03-30 16:46:07,584 - INFO - history_titles:[] empty for user: U66184!!!
+2025-03-30 16:46:41,806 - INFO - Starting user U708782 in cluster 2 (index 197)
+2025-03-30 16:46:41,878 - INFO - history_titles:[] empty for user: U708782!!!
+2025-03-30 16:47:19,868 - INFO - Starting user U96628 in cluster 2 (index 198)
+2025-03-30 16:47:19,935 - INFO - history_titles:[] empty for user: U96628!!!
+2025-03-30 16:47:54,522 - INFO - Starting user U600045 in cluster 2 (index 199)
+2025-03-30 16:47:54,589 - INFO - history_titles:[] empty for user: U600045!!!
+2025-03-30 16:48:28,427 - INFO - Starting user U709210 in cluster 2 (index 200)
+2025-03-30 16:49:03,465 - INFO - Starting user U433421 in cluster 2 (index 201)
+2025-03-30 16:49:03,533 - INFO - history_titles:[] empty for user: U433421!!!
+2025-03-30 16:49:37,758 - INFO - Starting user U183527 in cluster 2 (index 202)
+2025-03-30 16:49:38,355 - INFO - history_titles:[] empty for user: U183527!!!
+2025-03-30 16:50:16,157 - INFO - Starting user U110230 in cluster 2 (index 203)
+2025-03-30 16:50:16,229 - INFO - history_titles:[] empty for user: U110230!!!
+2025-03-30 16:50:50,577 - INFO - Starting user U598618 in cluster 2 (index 204)
+2025-03-30 16:50:50,644 - INFO - history_titles:[] empty for user: U598618!!!
+2025-03-30 16:51:24,965 - INFO - Starting user U209593 in cluster 2 (index 205)
+2025-03-30 16:51:25,036 - INFO - history_titles:[] empty for user: U209593!!!
+2025-03-30 16:51:59,640 - INFO - Starting user U587096 in cluster 2 (index 206)
+2025-03-30 16:51:59,712 - INFO - history_titles:[] empty for user: U587096!!!
+2025-03-30 16:52:34,470 - INFO - Starting user U613723 in cluster 2 (index 207)
+2025-03-30 16:52:34,542 - INFO - history_titles:[] empty for user: U613723!!!
+2025-03-30 16:53:08,825 - INFO - Starting user U160802 in cluster 2 (index 208)
+2025-03-30 16:53:08,894 - INFO - history_titles:[] empty for user: U160802!!!
+2025-03-30 16:53:43,250 - INFO - Starting user U209103 in cluster 2 (index 209)
+2025-03-30 16:54:18,193 - INFO - Starting user U295822 in cluster 2 (index 210)
+2025-03-30 16:54:18,266 - INFO - history_titles:[] empty for user: U295822!!!
+2025-03-30 16:54:52,535 - INFO - Starting user U579568 in cluster 2 (index 211)
+2025-03-30 16:54:52,603 - INFO - history_titles:[] empty for user: U579568!!!
+2025-03-30 16:55:26,879 - INFO - Starting user U302484 in cluster 2 (index 212)
+2025-03-30 16:55:26,956 - INFO - history_titles:[] empty for user: U302484!!!
+2025-03-30 16:56:01,392 - INFO - Starting user U571800 in cluster 2 (index 213)
+2025-03-30 16:56:01,464 - INFO - history_titles:[] empty for user: U571800!!!
+2025-03-30 16:56:36,322 - INFO - Starting user U326347 in cluster 2 (index 214)
+2025-03-30 16:56:36,394 - INFO - history_titles:[] empty for user: U326347!!!
+2025-03-30 16:57:10,617 - INFO - Starting user U265792 in cluster 2 (index 215)
+2025-03-30 16:57:44,855 - INFO - Starting user U26530 in cluster 2 (index 216)
+2025-03-30 16:57:44,923 - INFO - history_titles:[] empty for user: U26530!!!
+2025-03-30 16:58:19,158 - INFO - Starting user U667488 in cluster 2 (index 217)
+2025-03-30 16:58:19,228 - INFO - history_titles:[] empty for user: U667488!!!
+2025-03-30 16:58:54,177 - INFO - Starting user U535002 in cluster 2 (index 218)
+2025-03-30 16:58:54,248 - INFO - history_titles:[] empty for user: U535002!!!
+2025-03-30 16:59:28,570 - INFO - Starting user U517139 in cluster 2 (index 219)
+2025-03-30 16:59:28,644 - INFO - history_titles:[] empty for user: U517139!!!
+2025-03-30 17:00:02,913 - INFO - Starting user U310029 in cluster 2 (index 220)
+2025-03-30 17:00:02,982 - INFO - history_titles:[] empty for user: U310029!!!
+2025-03-30 17:00:37,191 - INFO - Starting user U555991 in cluster 2 (index 221)
+2025-03-30 17:01:12,300 - INFO - Starting user U142224 in cluster 2 (index 222)
+2025-03-30 17:01:12,371 - INFO - history_titles:[] empty for user: U142224!!!
+2025-03-30 17:01:46,598 - INFO - Starting user U575673 in cluster 2 (index 223)
+2025-03-30 17:02:20,830 - INFO - Starting user U130963 in cluster 2 (index 224)
+2025-03-30 17:02:55,517 - INFO - Starting user U533647 in cluster 2 (index 225)
+2025-03-30 17:03:30,573 - INFO - Starting user U680579 in cluster 2 (index 226)
+2025-03-30 17:03:30,643 - INFO - history_titles:[] empty for user: U680579!!!
+2025-03-30 17:04:04,957 - INFO - Starting user U691521 in cluster 2 (index 227)
+2025-03-30 17:04:05,027 - INFO - history_titles:[] empty for user: U691521!!!
+2025-03-30 17:04:39,163 - INFO - Starting user U476983 in cluster 2 (index 228)
+2025-03-30 17:04:39,233 - INFO - history_titles:[] empty for user: U476983!!!
+2025-03-30 17:05:13,725 - INFO - Starting user U185732 in cluster 2 (index 229)
+2025-03-30 17:05:13,794 - INFO - history_titles:[] empty for user: U185732!!!
+2025-03-30 17:05:48,283 - INFO - Starting user U481573 in cluster 2 (index 230)
+2025-03-30 17:05:48,355 - INFO - history_titles:[] empty for user: U481573!!!
+2025-03-30 17:06:22,739 - INFO - Starting user U99586 in cluster 2 (index 231)
+2025-03-30 17:06:22,806 - INFO - history_titles:[] empty for user: U99586!!!
+2025-03-30 17:06:57,116 - INFO - Starting user U496122 in cluster 2 (index 232)
+2025-03-30 17:06:57,184 - INFO - history_titles:[] empty for user: U496122!!!
+2025-03-30 17:07:31,300 - INFO - Starting user U20822 in cluster 2 (index 233)
+2025-03-30 17:07:31,368 - INFO - history_titles:[] empty for user: U20822!!!
+2025-03-30 17:08:06,386 - INFO - Starting user U528072 in cluster 2 (index 234)
+2025-03-30 17:08:06,459 - INFO - history_titles:[] empty for user: U528072!!!
+2025-03-30 17:08:40,991 - INFO - Starting user U601272 in cluster 2 (index 235)
+2025-03-30 17:08:41,065 - INFO - history_titles:[] empty for user: U601272!!!
+2025-03-30 17:09:15,050 - INFO - Starting user U293078 in cluster 2 (index 236)
+2025-03-30 17:09:49,522 - INFO - Starting user U679117 in cluster 2 (index 237)
+2025-03-30 17:09:49,592 - INFO - history_titles:[] empty for user: U679117!!!
+2025-03-30 17:10:23,808 - INFO - Starting user U700851 in cluster 2 (index 238)
+2025-03-30 17:10:23,883 - INFO - history_titles:[] empty for user: U700851!!!
+2025-03-30 17:10:58,927 - INFO - Starting user U298691 in cluster 2 (index 239)
+2025-03-30 17:10:58,999 - INFO - history_titles:[] empty for user: U298691!!!
+2025-03-30 17:11:33,403 - INFO - Starting user U116976 in cluster 2 (index 240)
+2025-03-30 17:11:33,471 - INFO - history_titles:[] empty for user: U116976!!!
+2025-03-30 17:12:07,698 - INFO - Starting user U281884 in cluster 2 (index 241)
+2025-03-30 17:12:07,769 - INFO - history_titles:[] empty for user: U281884!!!
+2025-03-30 17:12:41,872 - INFO - Starting user U127074 in cluster 2 (index 242)
+2025-03-30 17:13:17,109 - INFO - Starting user U552061 in cluster 2 (index 243)
+2025-03-30 17:13:17,179 - INFO - history_titles:[] empty for user: U552061!!!
+2025-03-30 17:13:51,355 - INFO - Starting user U179968 in cluster 2 (index 244)
+2025-03-30 17:14:25,769 - INFO - Starting user U295157 in cluster 2 (index 245)
+2025-03-30 17:14:25,840 - INFO - history_titles:[] empty for user: U295157!!!
+2025-03-30 17:15:00,394 - INFO - Starting user U211818 in cluster 2 (index 246)
+2025-03-30 17:15:01,001 - INFO - history_titles:[] empty for user: U211818!!!
+2025-03-30 17:15:35,206 - INFO - Starting user U548066 in cluster 2 (index 247)
+2025-03-30 17:16:09,717 - INFO - Starting user U203596 in cluster 2 (index 248)
+2025-03-30 17:16:09,792 - INFO - history_titles:[] empty for user: U203596!!!
+2025-03-30 17:16:43,995 - INFO - Starting user U149612 in cluster 2 (index 249)
+2025-03-30 17:16:44,067 - INFO - history_titles:[] empty for user: U149612!!!
+2025-03-30 17:17:19,039 - INFO - Starting user U446031 in cluster 2 (index 250)
+2025-03-30 17:17:53,618 - INFO - Starting user U32908 in cluster 2 (index 251)
+2025-03-30 17:17:53,685 - INFO - history_titles:[] empty for user: U32908!!!
+2025-03-30 17:18:27,691 - INFO - Starting user U333455 in cluster 2 (index 252)
+2025-03-30 17:18:27,760 - INFO - history_titles:[] empty for user: U333455!!!
+2025-03-30 17:19:02,150 - INFO - Starting user U93648 in cluster 2 (index 253)
+2025-03-30 17:19:36,931 - INFO - Starting user U634948 in cluster 2 (index 254)
+2025-03-30 17:19:37,000 - INFO - history_titles:[] empty for user: U634948!!!
+2025-03-30 17:20:11,540 - INFO - Starting user U409091 in cluster 2 (index 255)
+2025-03-30 17:20:46,418 - INFO - Starting user U257387 in cluster 2 (index 256)
+2025-03-30 17:20:46,491 - INFO - history_titles:[] empty for user: U257387!!!
+2025-03-30 17:21:21,064 - INFO - Starting user U695488 in cluster 2 (index 257)
+2025-03-30 17:21:56,340 - INFO - Starting user U358046 in cluster 2 (index 258)
+2025-03-30 17:21:56,411 - INFO - history_titles:[] empty for user: U358046!!!
+2025-03-30 17:22:30,652 - INFO - Starting user U175023 in cluster 2 (index 259)
+2025-03-30 17:22:30,721 - INFO - history_titles:[] empty for user: U175023!!!
+2025-03-30 17:23:05,309 - INFO - Starting user U340957 in cluster 2 (index 260)
+2025-03-30 17:23:05,378 - INFO - history_titles:[] empty for user: U340957!!!
+2025-03-30 17:23:39,982 - INFO - Starting user U190640 in cluster 2 (index 261)
+2025-03-30 17:23:40,060 - INFO - history_titles:[] empty for user: U190640!!!
+2025-03-30 17:24:14,142 - INFO - Starting user U236337 in cluster 2 (index 262)
+2025-03-30 17:24:14,210 - INFO - history_titles:[] empty for user: U236337!!!
+2025-03-30 17:24:49,020 - INFO - Starting user U185844 in cluster 2 (index 263)
+2025-03-30 17:24:49,090 - INFO - history_titles:[] empty for user: U185844!!!
+2025-03-30 17:25:23,182 - INFO - Starting user U577819 in cluster 2 (index 264)
+2025-03-30 17:25:23,252 - INFO - history_titles:[] empty for user: U577819!!!
+2025-03-30 17:25:57,512 - INFO - Starting user U565977 in cluster 2 (index 265)
+2025-03-30 17:25:57,584 - INFO - history_titles:[] empty for user: U565977!!!
+2025-03-30 17:26:31,872 - INFO - Starting user U236658 in cluster 2 (index 266)
+2025-03-30 17:26:31,947 - INFO - history_titles:[] empty for user: U236658!!!
+2025-03-30 17:27:07,113 - INFO - Starting user U52622 in cluster 2 (index 267)
+2025-03-30 17:27:07,184 - INFO - history_titles:[] empty for user: U52622!!!
+2025-03-30 17:27:41,430 - INFO - Starting user U292533 in cluster 2 (index 268)
+2025-03-30 17:27:41,500 - INFO - history_titles:[] empty for user: U292533!!!
+2025-03-30 17:28:15,908 - INFO - Starting user U16360 in cluster 2 (index 269)
+2025-03-30 17:28:50,613 - INFO - Starting user U21649 in cluster 2 (index 270)
+2025-03-30 17:28:50,681 - INFO - history_titles:[] empty for user: U21649!!!
+2025-03-30 17:29:25,545 - INFO - Starting user U78662 in cluster 2 (index 271)
+2025-03-30 17:29:25,612 - INFO - history_titles:[] empty for user: U78662!!!
+2025-03-30 17:29:59,716 - INFO - Starting user U232080 in cluster 2 (index 272)
+2025-03-30 17:30:33,719 - INFO - Starting user U623182 in cluster 2 (index 273)
+2025-03-30 17:30:33,788 - INFO - history_titles:[] empty for user: U623182!!!
+2025-03-30 17:31:08,171 - INFO - Starting user U373916 in cluster 2 (index 274)
+2025-03-30 17:31:08,763 - INFO - history_titles:[] empty for user: U373916!!!
+2025-03-30 17:31:42,905 - INFO - Starting user U83843 in cluster 2 (index 275)
+2025-03-30 17:31:42,977 - INFO - history_titles:[] empty for user: U83843!!!
+2025-03-30 17:32:17,041 - INFO - Starting user U289673 in cluster 2 (index 276)
+2025-03-30 17:32:51,629 - INFO - Starting user U705188 in cluster 2 (index 277)
+2025-03-30 17:33:26,896 - INFO - Starting user U419352 in cluster 2 (index 278)
+2025-03-30 17:34:04,906 - INFO - Starting user U582559 in cluster 2 (index 279)
+2025-03-30 17:34:04,977 - INFO - history_titles:[] empty for user: U582559!!!
+2025-03-30 17:34:40,817 - INFO - Starting user U65224 in cluster 2 (index 280)
+2025-03-30 17:34:40,894 - INFO - history_titles:[] empty for user: U65224!!!
+2025-03-30 17:35:18,296 - INFO - Starting user U30186 in cluster 2 (index 281)
+2025-03-30 17:35:55,549 - INFO - Starting user U318607 in cluster 2 (index 282)
+2025-03-30 17:35:55,616 - INFO - history_titles:[] empty for user: U318607!!!
+2025-03-30 17:36:32,541 - INFO - Starting user U138813 in cluster 2 (index 283)
+2025-03-30 17:36:32,612 - INFO - history_titles:[] empty for user: U138813!!!
+2025-03-30 17:37:09,678 - INFO - Starting user U508102 in cluster 2 (index 284)
+2025-03-30 17:37:09,751 - INFO - history_titles:[] empty for user: U508102!!!
+2025-03-30 17:37:46,255 - INFO - Starting user U648482 in cluster 2 (index 285)
+2025-03-30 17:38:24,041 - INFO - Starting user U14718 in cluster 2 (index 286)
+2025-03-30 17:39:00,932 - INFO - Starting user U564373 in cluster 2 (index 287)
+2025-03-30 17:39:01,008 - INFO - history_titles:[] empty for user: U564373!!!
+2025-03-30 17:39:38,930 - INFO - Starting user U411922 in cluster 2 (index 288)
+2025-03-30 17:39:39,003 - INFO - history_titles:[] empty for user: U411922!!!
+2025-03-30 17:40:17,779 - INFO - Starting user U212457 in cluster 2 (index 289)
+2025-03-30 17:40:17,854 - INFO - history_titles:[] empty for user: U212457!!!
+2025-03-30 17:40:56,499 - INFO - Starting user U708895 in cluster 2 (index 290)
+2025-03-30 17:40:56,572 - INFO - history_titles:[] empty for user: U708895!!!
+2025-03-30 17:41:35,686 - INFO - Starting user U466712 in cluster 2 (index 291)
+2025-03-30 17:41:35,764 - INFO - history_titles:[] empty for user: U466712!!!
+2025-03-30 17:42:12,625 - INFO - Starting user U16840 in cluster 2 (index 292)
+2025-03-30 17:42:12,694 - INFO - history_titles:[] empty for user: U16840!!!
+2025-03-30 17:42:49,908 - INFO - Starting user U584363 in cluster 2 (index 293)
+2025-03-30 17:42:49,983 - INFO - history_titles:[] empty for user: U584363!!!
+2025-03-30 17:43:27,293 - INFO - Starting user U628509 in cluster 2 (index 294)
+2025-03-30 17:43:27,369 - INFO - history_titles:[] empty for user: U628509!!!
+2025-03-30 17:44:05,672 - INFO - Starting user U615280 in cluster 2 (index 295)
+2025-03-30 17:44:05,746 - INFO - history_titles:[] empty for user: U615280!!!
+2025-03-30 17:44:42,588 - INFO - Starting user U565429 in cluster 2 (index 296)
+2025-03-30 17:45:20,078 - INFO - Starting user U494748 in cluster 2 (index 297)
+2025-03-30 17:45:20,152 - INFO - history_titles:[] empty for user: U494748!!!
+2025-03-30 17:45:57,038 - INFO - Starting user U31118 in cluster 2 (index 298)
+2025-03-30 17:46:34,653 - INFO - Starting user U428705 in cluster 2 (index 299)
+2025-03-30 17:46:34,724 - INFO - history_titles:[] empty for user: U428705!!!
+2025-03-30 17:47:11,630 - INFO - Starting user U496793 in cluster 2 (index 300)
+2025-03-30 17:47:11,701 - INFO - history_titles:[] empty for user: U496793!!!
+2025-03-30 17:47:48,507 - INFO - Starting user U441580 in cluster 2 (index 301)
+2025-03-30 17:47:48,578 - INFO - history_titles:[] empty for user: U441580!!!
+2025-03-30 17:48:25,459 - INFO - Starting user U707363 in cluster 2 (index 302)
+2025-03-30 17:49:03,451 - INFO - Starting user U627481 in cluster 2 (index 303)
+2025-03-30 17:49:42,574 - INFO - Starting user U450661 in cluster 2 (index 304)
+2025-03-30 17:49:42,655 - INFO - history_titles:[] empty for user: U450661!!!
+2025-03-30 17:50:23,002 - INFO - Starting user U469234 in cluster 2 (index 305)
+2025-03-30 17:51:04,329 - INFO - Starting user U283472 in cluster 2 (index 306)
+2025-03-30 17:51:04,412 - INFO - history_titles:[] empty for user: U283472!!!
+2025-03-30 17:51:43,276 - INFO - Starting user U656737 in cluster 2 (index 307)
+2025-03-30 17:51:43,347 - INFO - history_titles:[] empty for user: U656737!!!
+2025-03-30 17:52:22,508 - INFO - Starting user U321057 in cluster 2 (index 308)
+2025-03-30 17:52:22,583 - INFO - history_titles:[] empty for user: U321057!!!
+2025-03-30 17:53:00,456 - INFO - Starting user U65975 in cluster 2 (index 309)
+2025-03-30 17:53:00,527 - INFO - history_titles:[] empty for user: U65975!!!
+2025-03-30 17:53:38,362 - INFO - Starting user U533695 in cluster 2 (index 310)
+2025-03-30 17:53:38,434 - INFO - history_titles:[] empty for user: U533695!!!
+2025-03-30 17:54:16,924 - INFO - Starting user U629893 in cluster 2 (index 311)
+2025-03-30 17:55:01,273 - INFO - Starting user U228699 in cluster 2 (index 312)
+2025-03-30 17:55:01,344 - INFO - history_titles:[] empty for user: U228699!!!
+2025-03-30 17:55:40,490 - INFO - Starting user U72890 in cluster 2 (index 313)
+2025-03-30 17:56:24,765 - INFO - Starting user U445910 in cluster 2 (index 314)
+2025-03-30 17:56:24,838 - INFO - history_titles:[] empty for user: U445910!!!
+2025-03-30 17:57:03,075 - INFO - Starting user U675607 in cluster 2 (index 315)
+2025-03-30 17:57:03,146 - INFO - history_titles:[] empty for user: U675607!!!
+2025-03-30 17:57:43,545 - INFO - Starting user U479167 in cluster 2 (index 316)
+2025-03-30 17:57:43,617 - INFO - history_titles:[] empty for user: U479167!!!
+2025-03-30 17:58:23,586 - INFO - Starting user U653483 in cluster 2 (index 317)
+2025-03-30 17:58:23,664 - INFO - history_titles:[] empty for user: U653483!!!
+2025-03-30 17:59:04,218 - INFO - Starting user U305522 in cluster 2 (index 318)
+2025-03-30 17:59:04,301 - INFO - history_titles:[] empty for user: U305522!!!
+2025-03-30 17:59:41,890 - INFO - Starting user U22043 in cluster 2 (index 319)
+2025-03-30 17:59:41,958 - INFO - history_titles:[] empty for user: U22043!!!
+2025-03-30 18:00:21,793 - INFO - Starting user U658148 in cluster 2 (index 320)
+2025-03-30 18:00:21,865 - INFO - history_titles:[] empty for user: U658148!!!
+2025-03-30 18:01:00,111 - INFO - Starting user U498433 in cluster 2 (index 321)
+2025-03-30 18:01:39,367 - INFO - Starting user U383286 in cluster 2 (index 322)
+2025-03-30 18:01:39,439 - INFO - history_titles:[] empty for user: U383286!!!
+2025-03-30 18:02:18,648 - INFO - Starting user U469862 in cluster 2 (index 323)
+2025-03-30 18:02:18,726 - INFO - history_titles:[] empty for user: U469862!!!
+2025-03-30 18:02:56,989 - INFO - Starting user U122578 in cluster 2 (index 324)
+2025-03-30 18:02:57,065 - INFO - history_titles:[] empty for user: U122578!!!
+2025-03-30 18:03:35,146 - INFO - Starting user U262378 in cluster 2 (index 325)
+2025-03-30 18:03:35,223 - INFO - history_titles:[] empty for user: U262378!!!
+2025-03-30 18:04:13,096 - INFO - Starting user U376617 in cluster 2 (index 326)
+2025-03-30 18:04:13,167 - INFO - history_titles:[] empty for user: U376617!!!
+2025-03-30 18:04:51,198 - INFO - Starting user U200357 in cluster 2 (index 327)
+2025-03-30 18:05:30,110 - INFO - Starting user U497494 in cluster 2 (index 328)
+2025-03-30 18:05:30,184 - INFO - history_titles:[] empty for user: U497494!!!
+2025-03-30 18:06:08,445 - INFO - Starting user U255304 in cluster 2 (index 329)
+2025-03-30 18:06:08,518 - INFO - history_titles:[] empty for user: U255304!!!
+2025-03-30 18:06:47,087 - INFO - Starting user U155703 in cluster 2 (index 330)
+2025-03-30 18:07:26,814 - INFO - Starting user U270756 in cluster 2 (index 331)
+2025-03-30 18:07:26,891 - INFO - history_titles:[] empty for user: U270756!!!
+2025-03-30 18:08:05,665 - INFO - Starting user U72896 in cluster 2 (index 332)
+2025-03-30 18:08:05,736 - INFO - history_titles:[] empty for user: U72896!!!
+2025-03-30 18:08:43,045 - INFO - Starting user U273504 in cluster 2 (index 333)
+2025-03-30 18:08:43,115 - INFO - history_titles:[] empty for user: U273504!!!
+2025-03-30 18:09:20,550 - INFO - Starting user U281727 in cluster 2 (index 334)
+2025-03-30 18:09:20,621 - INFO - history_titles:[] empty for user: U281727!!!
+2025-03-30 18:09:59,115 - INFO - Starting user U704123 in cluster 2 (index 335)
+2025-03-30 18:10:39,160 - INFO - Starting user U458626 in cluster 2 (index 336)
+2025-03-30 18:10:39,233 - INFO - history_titles:[] empty for user: U458626!!!
+2025-03-30 18:11:19,148 - INFO - Starting user U420557 in cluster 2 (index 337)
+2025-03-30 18:11:19,222 - INFO - history_titles:[] empty for user: U420557!!!
+2025-03-30 18:11:56,253 - INFO - Starting user U555732 in cluster 2 (index 338)
+2025-03-30 18:11:56,328 - INFO - history_titles:[] empty for user: U555732!!!
+2025-03-30 18:12:33,792 - INFO - Starting user U16911 in cluster 2 (index 339)
+2025-03-30 18:12:33,861 - INFO - history_titles:[] empty for user: U16911!!!
+2025-03-30 18:13:10,555 - INFO - Starting user U710596 in cluster 2 (index 340)
+2025-03-30 18:13:10,628 - INFO - history_titles:[] empty for user: U710596!!!
+2025-03-30 18:13:47,688 - INFO - Starting user U415350 in cluster 2 (index 341)
+2025-03-30 18:13:47,758 - INFO - history_titles:[] empty for user: U415350!!!
+2025-03-30 18:14:24,475 - INFO - Starting user U401155 in cluster 2 (index 342)
+2025-03-30 18:14:24,545 - INFO - history_titles:[] empty for user: U401155!!!
+2025-03-30 18:15:01,779 - INFO - Starting user U180538 in cluster 2 (index 343)
+2025-03-30 18:15:01,851 - INFO - history_titles:[] empty for user: U180538!!!
+2025-03-30 18:15:38,873 - INFO - Starting user U377024 in cluster 2 (index 344)
+2025-03-30 18:15:38,942 - INFO - history_titles:[] empty for user: U377024!!!
+2025-03-30 18:16:15,656 - INFO - Starting user U167612 in cluster 2 (index 345)
+2025-03-30 18:16:15,729 - INFO - history_titles:[] empty for user: U167612!!!
+2025-03-30 18:16:52,542 - INFO - Starting user U415497 in cluster 2 (index 346)
+2025-03-30 18:16:52,618 - INFO - history_titles:[] empty for user: U415497!!!
+2025-03-30 18:17:29,850 - INFO - Starting user U244783 in cluster 2 (index 347)
+2025-03-30 18:17:29,921 - INFO - history_titles:[] empty for user: U244783!!!
+2025-03-30 18:18:06,762 - INFO - Starting user U100103 in cluster 2 (index 348)
+2025-03-30 18:18:06,836 - INFO - history_titles:[] empty for user: U100103!!!
+2025-03-30 18:18:43,851 - INFO - Starting user U345783 in cluster 2 (index 349)
+2025-03-30 18:18:43,927 - INFO - history_titles:[] empty for user: U345783!!!
+2025-03-30 18:19:20,781 - INFO - Starting user U440231 in cluster 2 (index 350)
+2025-03-30 18:19:21,431 - INFO - history_titles:[] empty for user: U440231!!!
+2025-03-30 18:19:58,323 - INFO - Starting user U477020 in cluster 2 (index 351)
+2025-03-30 18:19:58,396 - INFO - history_titles:[] empty for user: U477020!!!
+2025-03-30 18:20:35,356 - INFO - Starting user U125902 in cluster 2 (index 352)
+2025-03-30 18:20:35,444 - INFO - history_titles:[] empty for user: U125902!!!
+2025-03-30 18:21:12,406 - INFO - Starting user U475964 in cluster 2 (index 353)
+2025-03-30 18:21:12,481 - INFO - history_titles:[] empty for user: U475964!!!
+2025-03-30 18:21:49,294 - INFO - Starting user U652653 in cluster 2 (index 354)
+2025-03-30 18:21:49,366 - INFO - history_titles:[] empty for user: U652653!!!
+2025-03-30 18:22:26,755 - INFO - Starting user U58940 in cluster 2 (index 355)
+2025-03-30 18:22:26,829 - INFO - history_titles:[] empty for user: U58940!!!
+2025-03-30 18:23:03,830 - INFO - Starting user U314055 in cluster 2 (index 356)
+2025-03-30 18:23:03,899 - INFO - history_titles:[] empty for user: U314055!!!
+2025-03-30 18:23:40,734 - INFO - Starting user U297765 in cluster 2 (index 357)
+2025-03-30 18:23:40,805 - INFO - history_titles:[] empty for user: U297765!!!
+2025-03-30 18:24:18,266 - INFO - Starting user U611884 in cluster 2 (index 358)
+2025-03-30 18:24:18,337 - INFO - history_titles:[] empty for user: U611884!!!
+2025-03-30 18:24:55,059 - INFO - Starting user U47255 in cluster 2 (index 359)
+2025-03-30 18:24:55,130 - INFO - history_titles:[] empty for user: U47255!!!
+2025-03-30 18:25:32,032 - INFO - Starting user U216060 in cluster 2 (index 360)
+2025-03-30 18:26:09,517 - INFO - Starting user U304002 in cluster 2 (index 361)
+2025-03-30 18:26:09,590 - INFO - history_titles:[] empty for user: U304002!!!
+2025-03-30 18:26:46,989 - INFO - Starting user U40924 in cluster 2 (index 362)
+2025-03-30 18:27:23,767 - INFO - Starting user U709334 in cluster 2 (index 363)
+2025-03-30 18:27:23,839 - INFO - history_titles:[] empty for user: U709334!!!
+2025-03-30 18:28:00,571 - INFO - Starting user U608652 in cluster 2 (index 364)
+2025-03-30 18:28:00,645 - INFO - history_titles:[] empty for user: U608652!!!
+2025-03-30 18:28:39,682 - INFO - Starting user U2587 in cluster 2 (index 365)
+2025-03-30 18:28:39,750 - INFO - history_titles:[] empty for user: U2587!!!
+2025-03-30 18:29:18,930 - INFO - Starting user U104735 in cluster 2 (index 366)
+2025-03-30 18:29:19,000 - INFO - history_titles:[] empty for user: U104735!!!
+2025-03-30 18:29:58,098 - INFO - Starting user U303428 in cluster 2 (index 367)
+2025-03-30 18:29:58,166 - INFO - history_titles:[] empty for user: U303428!!!
+2025-03-30 18:30:33,061 - INFO - Starting user U23930 in cluster 2 (index 368)
+2025-03-30 18:30:33,129 - INFO - history_titles:[] empty for user: U23930!!!
+2025-03-30 18:31:09,972 - INFO - Starting user U364839 in cluster 2 (index 369)
+2025-03-30 18:31:50,400 - INFO - Starting user U553520 in cluster 2 (index 370)
+2025-03-30 18:32:30,717 - INFO - Starting user U476133 in cluster 2 (index 371)
+2025-03-30 18:32:30,789 - INFO - history_titles:[] empty for user: U476133!!!
+2025-03-30 18:33:08,674 - INFO - Starting user U368610 in cluster 2 (index 372)
+2025-03-30 18:33:08,744 - INFO - history_titles:[] empty for user: U368610!!!
+2025-03-30 18:33:45,165 - INFO - Starting user U623612 in cluster 2 (index 373)
+2025-03-30 18:33:45,236 - INFO - history_titles:[] empty for user: U623612!!!
+2025-03-30 18:34:21,643 - INFO - Starting user U445194 in cluster 2 (index 374)
+2025-03-30 18:34:21,713 - INFO - history_titles:[] empty for user: U445194!!!
+2025-03-30 18:34:58,947 - INFO - Starting user U609208 in cluster 2 (index 375)
+2025-03-30 18:34:59,018 - INFO - history_titles:[] empty for user: U609208!!!
+2025-03-30 18:35:35,118 - INFO - Starting user U241365 in cluster 2 (index 376)
+2025-03-30 18:36:11,795 - INFO - Starting user U48955 in cluster 2 (index 377)
+2025-03-30 18:36:11,868 - INFO - history_titles:[] empty for user: U48955!!!
+2025-03-30 18:36:49,270 - INFO - Starting user U457034 in cluster 2 (index 378)
+2025-03-30 18:36:49,343 - INFO - history_titles:[] empty for user: U457034!!!
+2025-03-30 18:37:26,251 - INFO - Starting user U177577 in cluster 2 (index 379)
+2025-03-30 18:37:26,324 - INFO - history_titles:[] empty for user: U177577!!!
+2025-03-30 18:38:03,208 - INFO - Starting user U565821 in cluster 2 (index 380)
+2025-03-30 18:38:40,884 - INFO - Starting user U28021 in cluster 2 (index 381)
+2025-03-30 18:38:40,954 - INFO - history_titles:[] empty for user: U28021!!!
+2025-03-30 18:39:16,896 - INFO - Starting user U35218 in cluster 2 (index 382)
+2025-03-30 18:39:54,448 - INFO - Starting user U367100 in cluster 2 (index 383)
+2025-03-30 18:40:30,856 - INFO - Starting user U192185 in cluster 2 (index 384)
+2025-03-30 18:41:09,068 - INFO - Starting user U48372 in cluster 2 (index 385)
+2025-03-30 18:41:09,139 - INFO - history_titles:[] empty for user: U48372!!!
+2025-03-30 18:41:45,968 - INFO - Starting user U346481 in cluster 2 (index 386)
+2025-03-30 18:42:23,116 - INFO - Starting user U254432 in cluster 2 (index 387)
+2025-03-30 18:43:01,574 - INFO - Starting user U344115 in cluster 2 (index 388)
+2025-03-30 18:43:01,649 - INFO - history_titles:[] empty for user: U344115!!!
+2025-03-30 18:43:38,177 - INFO - Starting user U249042 in cluster 2 (index 389)
+2025-03-30 18:43:38,252 - INFO - history_titles:[] empty for user: U249042!!!
+2025-03-30 18:44:14,710 - INFO - Starting user U276609 in cluster 2 (index 390)
+2025-03-30 18:44:14,783 - INFO - history_titles:[] empty for user: U276609!!!
+2025-03-30 18:44:51,621 - INFO - Starting user U59901 in cluster 2 (index 391)
+2025-03-30 18:45:28,113 - INFO - Starting user U20035 in cluster 2 (index 392)
+2025-03-30 18:46:07,655 - INFO - Starting user U43466 in cluster 2 (index 393)
+2025-03-30 18:46:07,727 - INFO - history_titles:[] empty for user: U43466!!!
+2025-03-30 18:46:43,821 - INFO - Starting user U26100 in cluster 2 (index 394)
+2025-03-30 18:46:43,889 - INFO - history_titles:[] empty for user: U26100!!!
+2025-03-30 18:47:23,749 - INFO - Starting user U706934 in cluster 2 (index 395)
+2025-03-30 18:47:23,820 - INFO - history_titles:[] empty for user: U706934!!!
+2025-03-30 18:47:59,964 - INFO - Starting user U352977 in cluster 2 (index 396)
+2025-03-30 18:48:00,038 - INFO - history_titles:[] empty for user: U352977!!!
+2025-03-30 18:48:36,302 - INFO - Starting user U396717 in cluster 2 (index 397)
+2025-03-30 18:48:36,377 - INFO - history_titles:[] empty for user: U396717!!!
+2025-03-30 18:49:12,836 - INFO - Starting user U87669 in cluster 2 (index 398)
+2025-03-30 18:49:12,906 - INFO - history_titles:[] empty for user: U87669!!!
+2025-03-30 18:49:49,829 - INFO - Starting user U8626 in cluster 2 (index 399)
+2025-03-30 18:49:49,901 - INFO - history_titles:[] empty for user: U8626!!!
+2025-03-30 18:50:26,280 - INFO - Starting user U259661 in cluster 2 (index 400)
+2025-03-30 18:50:26,361 - INFO - history_titles:[] empty for user: U259661!!!
+2025-03-30 18:51:04,324 - INFO - Starting user U657190 in cluster 2 (index 401)
+2025-03-30 18:51:04,399 - INFO - history_titles:[] empty for user: U657190!!!
+2025-03-30 18:51:40,983 - INFO - Starting user U310583 in cluster 2 (index 402)
+2025-03-30 18:51:41,636 - INFO - history_titles:[] empty for user: U310583!!!
+2025-03-30 18:52:18,369 - INFO - Starting user U70328 in cluster 2 (index 403)
+2025-03-30 18:52:54,876 - INFO - Starting user U276240 in cluster 2 (index 404)
+2025-03-30 18:52:54,988 - INFO - history_titles:[] empty for user: U276240!!!
+2025-03-30 18:53:31,535 - INFO - Starting user U379516 in cluster 2 (index 405)
+2025-03-30 18:53:31,607 - INFO - history_titles:[] empty for user: U379516!!!
+2025-03-30 18:54:08,810 - INFO - Starting user U502642 in cluster 2 (index 406)
+2025-03-30 18:54:08,882 - INFO - history_titles:[] empty for user: U502642!!!
+2025-03-30 18:54:47,946 - INFO - Starting user U219778 in cluster 2 (index 407)
+2025-03-30 18:54:48,026 - INFO - history_titles:[] empty for user: U219778!!!
+2025-03-30 18:55:23,771 - INFO - Starting user U194742 in cluster 2 (index 408)
+2025-03-30 18:56:00,041 - INFO - Starting user U226984 in cluster 2 (index 409)
+2025-03-30 18:56:00,114 - INFO - history_titles:[] empty for user: U226984!!!
+2025-03-30 18:56:38,885 - INFO - Starting user U406007 in cluster 2 (index 410)
+2025-03-30 18:56:38,962 - INFO - history_titles:[] empty for user: U406007!!!
+2025-03-30 18:57:16,938 - INFO - Starting user U174609 in cluster 2 (index 411)
+2025-03-30 18:57:17,011 - INFO - history_titles:[] empty for user: U174609!!!
+2025-03-30 18:57:54,160 - INFO - Starting user U94268 in cluster 2 (index 412)
+2025-03-30 18:57:54,230 - INFO - history_titles:[] empty for user: U94268!!!
+2025-03-30 18:58:31,505 - INFO - Starting user U81295 in cluster 2 (index 413)
+2025-03-30 18:58:31,575 - INFO - history_titles:[] empty for user: U81295!!!
+2025-03-30 18:59:08,443 - INFO - Starting user U375247 in cluster 2 (index 414)
+2025-03-30 18:59:08,514 - INFO - history_titles:[] empty for user: U375247!!!
+2025-03-30 18:59:44,184 - INFO - Starting user U671216 in cluster 2 (index 415)
+2025-03-30 18:59:44,255 - INFO - history_titles:[] empty for user: U671216!!!
+2025-03-30 19:00:20,759 - INFO - Starting user U120824 in cluster 2 (index 416)
+2025-03-30 19:00:20,834 - INFO - history_titles:[] empty for user: U120824!!!
+2025-03-30 19:00:57,932 - INFO - Starting user U561996 in cluster 2 (index 417)
+2025-03-30 19:01:35,374 - INFO - Starting user U648671 in cluster 2 (index 418)
+2025-03-30 19:02:13,654 - INFO - Starting user U614198 in cluster 2 (index 419)
+2025-03-30 19:02:13,727 - INFO - history_titles:[] empty for user: U614198!!!
+2025-03-30 19:02:50,624 - INFO - Starting user U507923 in cluster 2 (index 420)
+2025-03-30 19:02:50,695 - INFO - history_titles:[] empty for user: U507923!!!
+2025-03-30 19:03:26,685 - INFO - Starting user U139659 in cluster 2 (index 421)
+2025-03-30 19:03:26,756 - INFO - history_titles:[] empty for user: U139659!!!
+2025-03-30 19:04:02,216 - INFO - Starting user U459766 in cluster 2 (index 422)
+2025-03-30 19:04:02,286 - INFO - history_titles:[] empty for user: U459766!!!
+2025-03-30 19:04:39,988 - INFO - Starting user U155380 in cluster 2 (index 423)
+2025-03-30 19:04:40,058 - INFO - history_titles:[] empty for user: U155380!!!
+2025-03-30 19:05:16,822 - INFO - Starting user U487341 in cluster 2 (index 424)
+2025-03-30 19:05:16,894 - INFO - history_titles:[] empty for user: U487341!!!
+2025-03-30 19:05:53,628 - INFO - Starting user U237295 in cluster 2 (index 425)
+2025-03-30 19:06:30,521 - INFO - Starting user U365143 in cluster 2 (index 426)
+2025-03-30 19:06:30,595 - INFO - history_titles:[] empty for user: U365143!!!
+2025-03-30 19:07:08,108 - INFO - Starting user U205451 in cluster 2 (index 427)
+2025-03-30 19:07:45,052 - INFO - Starting user U481545 in cluster 2 (index 428)
+2025-03-30 19:07:45,123 - INFO - history_titles:[] empty for user: U481545!!!
+2025-03-30 19:08:21,601 - INFO - Starting user U709373 in cluster 2 (index 429)
+2025-03-30 19:08:21,672 - INFO - history_titles:[] empty for user: U709373!!!
+2025-03-30 19:08:58,246 - INFO - Starting user U192718 in cluster 2 (index 430)
+2025-03-30 19:08:58,887 - INFO - history_titles:[] empty for user: U192718!!!
+2025-03-30 19:09:34,549 - INFO - Starting user U529890 in cluster 2 (index 431)
+2025-03-30 19:09:34,620 - INFO - history_titles:[] empty for user: U529890!!!
+2025-03-30 19:10:10,244 - INFO - Starting user U617373 in cluster 2 (index 432)
+2025-03-30 19:10:10,314 - INFO - history_titles:[] empty for user: U617373!!!
+2025-03-30 19:10:46,063 - INFO - Starting user U99732 in cluster 2 (index 433)
+2025-03-30 19:11:23,009 - INFO - Starting user U950 in cluster 2 (index 434)
+2025-03-30 19:11:23,661 - INFO - history_titles:[] empty for user: U950!!!
+2025-03-30 19:12:00,496 - INFO - Starting user U325348 in cluster 2 (index 435)
+2025-03-30 19:12:00,565 - INFO - history_titles:[] empty for user: U325348!!!
+2025-03-30 19:12:37,681 - INFO - Starting user U354732 in cluster 2 (index 436)
+2025-03-30 19:12:37,753 - INFO - history_titles:[] empty for user: U354732!!!
+2025-03-30 19:13:14,638 - INFO - Starting user U242746 in cluster 2 (index 437)
+2025-03-30 19:13:14,710 - INFO - history_titles:[] empty for user: U242746!!!
+2025-03-30 19:13:54,202 - INFO - Starting user U159688 in cluster 2 (index 438)
+2025-03-30 19:14:32,669 - INFO - Starting user U452203 in cluster 2 (index 439)
+2025-03-30 19:15:11,853 - INFO - Starting user U465911 in cluster 2 (index 440)
+2025-03-30 19:15:49,727 - INFO - Starting user U352987 in cluster 2 (index 441)
+2025-03-30 19:15:49,799 - INFO - history_titles:[] empty for user: U352987!!!
+2025-03-30 19:16:28,427 - INFO - Starting user U225166 in cluster 2 (index 442)
+2025-03-30 19:16:28,500 - INFO - history_titles:[] empty for user: U225166!!!
+2025-03-30 19:17:06,321 - INFO - Starting user U619789 in cluster 2 (index 443)
+2025-03-30 19:17:43,923 - INFO - Starting user U406891 in cluster 2 (index 444)
+2025-03-30 19:17:43,996 - INFO - history_titles:[] empty for user: U406891!!!
+2025-03-30 19:18:21,676 - INFO - Starting user U305834 in cluster 2 (index 445)
+2025-03-30 19:18:21,754 - INFO - history_titles:[] empty for user: U305834!!!
+2025-03-30 19:19:00,713 - INFO - Starting user U703429 in cluster 2 (index 446)
+2025-03-30 19:19:00,790 - INFO - history_titles:[] empty for user: U703429!!!
+2025-03-30 19:19:42,935 - INFO - Starting user U127858 in cluster 2 (index 447)
+2025-03-30 19:19:43,014 - INFO - history_titles:[] empty for user: U127858!!!
+2025-03-30 19:20:22,482 - INFO - Starting user U668755 in cluster 2 (index 448)
+2025-03-30 19:20:22,555 - INFO - history_titles:[] empty for user: U668755!!!
+2025-03-30 19:21:00,771 - INFO - Starting user U516615 in cluster 2 (index 449)
+2025-03-30 19:21:00,846 - INFO - history_titles:[] empty for user: U516615!!!
+2025-03-30 19:21:39,318 - INFO - Starting user U515234 in cluster 2 (index 450)
+2025-03-30 19:21:39,391 - INFO - history_titles:[] empty for user: U515234!!!
+2025-03-30 19:22:17,631 - INFO - Starting user U115910 in cluster 2 (index 451)
+2025-03-30 19:22:17,703 - INFO - history_titles:[] empty for user: U115910!!!
+2025-03-30 19:22:55,182 - INFO - Starting user U306347 in cluster 2 (index 452)
+2025-03-30 19:22:55,258 - INFO - history_titles:[] empty for user: U306347!!!
+2025-03-30 19:23:31,138 - INFO - Starting user U125093 in cluster 2 (index 453)
+2025-03-30 19:24:06,968 - INFO - Starting user U603109 in cluster 2 (index 454)
+2025-03-30 19:24:07,045 - INFO - history_titles:[] empty for user: U603109!!!
+2025-03-30 19:24:43,595 - INFO - Starting user U322538 in cluster 2 (index 455)
+2025-03-30 19:24:43,669 - INFO - history_titles:[] empty for user: U322538!!!
+2025-03-30 19:25:19,572 - INFO - Starting user U356454 in cluster 2 (index 456)
+2025-03-30 19:25:19,643 - INFO - history_titles:[] empty for user: U356454!!!
+2025-03-30 19:25:55,563 - INFO - Starting user U477429 in cluster 2 (index 457)
+2025-03-30 19:25:55,636 - INFO - history_titles:[] empty for user: U477429!!!
+2025-03-30 19:26:31,818 - INFO - Starting user U94786 in cluster 2 (index 458)
+2025-03-30 19:27:11,808 - INFO - Starting user U316533 in cluster 2 (index 459)
+2025-03-30 19:27:11,878 - INFO - history_titles:[] empty for user: U316533!!!
+2025-03-30 19:27:51,348 - INFO - Starting user U128869 in cluster 2 (index 460)
+2025-03-30 19:27:51,420 - INFO - history_titles:[] empty for user: U128869!!!
+2025-03-30 19:28:27,857 - INFO - Starting user U234719 in cluster 2 (index 461)
+2025-03-30 19:28:27,927 - INFO - history_titles:[] empty for user: U234719!!!
+2025-03-30 19:29:04,227 - INFO - Starting user U553797 in cluster 2 (index 462)
+2025-03-30 19:29:42,528 - INFO - Starting user U612608 in cluster 2 (index 463)
+2025-03-30 19:29:42,599 - INFO - history_titles:[] empty for user: U612608!!!
+2025-03-30 19:30:19,852 - INFO - Starting user U586332 in cluster 2 (index 464)
+2025-03-30 19:30:19,921 - INFO - history_titles:[] empty for user: U586332!!!
+2025-03-30 19:30:57,749 - INFO - Starting user U141274 in cluster 2 (index 465)
+2025-03-30 19:30:57,819 - INFO - history_titles:[] empty for user: U141274!!!
+2025-03-30 19:31:24,135 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/train/, valid_data_dir = dataset/valid/, zip_file = MINDlarge_train.zip, valid_zip_file = MINDlarge_dev.zip, user_category_profiles_path = user_category_profiles.pkl, user_cluster_df_path = user_cluster_df.pkl):
+2025-03-30 19:32:30,571 - INFO - News data shape: (101527, 13)
+2025-03-30 19:32:30,572 - INFO - Behaviors data shape: (2232748, 6)
+2025-03-30 19:32:37,931 - INFO - Starting user U87243 in cluster 2 (index 0)
+2025-03-30 19:33:46,151 - INFO - Starting user U598644 in cluster 2 (index 1)
+2025-03-30 19:34:32,170 - INFO - Starting user U532401 in cluster 2 (index 2)
+2025-03-30 19:34:32,240 - INFO - history_titles:[] empty for user: U532401!!!
+2025-03-30 19:35:15,010 - INFO - Starting user U593596 in cluster 2 (index 3)
+2025-03-30 19:35:54,016 - INFO - Starting user U521853 in cluster 2 (index 4)
+2025-03-30 19:35:54,086 - INFO - history_titles:[] empty for user: U521853!!!
+2025-03-30 19:36:28,188 - INFO - Starting user U687515 in cluster 2 (index 5)
+2025-03-30 19:36:28,257 - INFO - history_titles:[] empty for user: U687515!!!
+2025-03-30 19:37:03,308 - INFO - Starting user U192112 in cluster 2 (index 6)
+2025-03-30 19:37:03,441 - INFO - history_titles:[] empty for user: U192112!!!
+2025-03-30 19:37:38,749 - INFO - Starting user U530668 in cluster 2 (index 7)
+2025-03-30 19:38:15,735 - INFO - Starting user U290933 in cluster 2 (index 8)
+2025-03-30 19:38:15,806 - INFO - history_titles:[] empty for user: U290933!!!
+2025-03-30 19:38:51,225 - INFO - Starting user U108656 in cluster 2 (index 9)
+2025-03-30 19:38:51,294 - INFO - history_titles:[] empty for user: U108656!!!
+2025-03-30 19:39:27,284 - INFO - Starting user U178651 in cluster 2 (index 10)
+2025-03-30 19:39:27,361 - INFO - history_titles:[] empty for user: U178651!!!
+2025-03-30 19:40:02,529 - INFO - Starting user U86679 in cluster 2 (index 11)
+2025-03-30 19:40:02,595 - INFO - history_titles:[] empty for user: U86679!!!
+2025-03-30 19:40:38,243 - INFO - Starting user U95671 in cluster 2 (index 12)
+2025-03-30 19:40:38,311 - INFO - history_titles:[] empty for user: U95671!!!
+2025-03-30 19:41:15,087 - INFO - Starting user U656379 in cluster 2 (index 13)
+2025-03-30 19:41:57,828 - INFO - Starting user U52262 in cluster 2 (index 14)
+2025-03-30 19:41:57,897 - INFO - history_titles:[] empty for user: U52262!!!
+2025-03-30 19:42:33,465 - INFO - Starting user U629430 in cluster 2 (index 15)
+2025-03-30 19:42:33,539 - INFO - history_titles:[] empty for user: U629430!!!
+2025-03-30 19:43:08,677 - INFO - Starting user U419371 in cluster 2 (index 16)
+2025-03-30 19:43:08,747 - INFO - history_titles:[] empty for user: U419371!!!
+2025-03-30 19:43:44,195 - INFO - Starting user U594274 in cluster 2 (index 17)
+2025-03-30 19:44:24,753 - INFO - Starting user U6325 in cluster 2 (index 18)
+2025-03-30 19:44:25,395 - INFO - history_titles:[] empty for user: U6325!!!
+2025-03-30 19:45:01,076 - INFO - Starting user U597276 in cluster 2 (index 19)
+2025-03-30 19:45:35,689 - INFO - Starting user U200033 in cluster 2 (index 20)
+2025-03-30 19:45:35,763 - INFO - history_titles:[] empty for user: U200033!!!
+2025-03-30 19:46:10,169 - INFO - Starting user U260964 in cluster 2 (index 21)
+2025-03-30 19:46:10,240 - INFO - history_titles:[] empty for user: U260964!!!
+2025-03-30 19:46:45,420 - INFO - Starting user U90382 in cluster 2 (index 22)
+2025-03-30 19:46:45,487 - INFO - history_titles:[] empty for user: U90382!!!
+2025-03-30 19:47:19,514 - INFO - Starting user U640108 in cluster 2 (index 23)
+2025-03-30 19:47:59,375 - INFO - Starting user U552980 in cluster 2 (index 24)
+2025-03-30 19:47:59,452 - INFO - history_titles:[] empty for user: U552980!!!
+2025-03-30 19:48:34,207 - INFO - Starting user U428315 in cluster 2 (index 25)
+2025-03-30 19:48:34,281 - INFO - history_titles:[] empty for user: U428315!!!
+2025-03-30 19:49:09,566 - INFO - Starting user U449564 in cluster 2 (index 26)
+2025-03-30 19:49:09,639 - INFO - history_titles:[] empty for user: U449564!!!
+2025-03-30 19:49:46,407 - INFO - Starting user U163476 in cluster 2 (index 27)
+2025-03-30 19:49:46,494 - INFO - history_titles:[] empty for user: U163476!!!
+2025-03-30 19:50:21,087 - INFO - Starting user U641845 in cluster 2 (index 28)
+2025-03-30 19:50:21,161 - INFO - history_titles:[] empty for user: U641845!!!
+2025-03-30 19:50:57,145 - INFO - Starting user U3280 in cluster 2 (index 29)
+2025-03-30 19:51:32,139 - INFO - Starting user U401352 in cluster 2 (index 30)
+2025-03-30 19:51:32,211 - INFO - history_titles:[] empty for user: U401352!!!
+2025-03-30 19:52:07,894 - INFO - Starting user U115754 in cluster 2 (index 31)
+2025-03-30 19:52:07,965 - INFO - history_titles:[] empty for user: U115754!!!
+2025-03-30 19:52:43,240 - INFO - Starting user U569010 in cluster 2 (index 32)
+2025-03-30 19:52:43,308 - INFO - history_titles:[] empty for user: U569010!!!
+2025-03-30 19:53:19,703 - INFO - Starting user U159295 in cluster 2 (index 33)
+2025-03-30 19:53:19,777 - INFO - history_titles:[] empty for user: U159295!!!
+2025-03-30 19:53:54,804 - INFO - Starting user U171052 in cluster 2 (index 34)
+2025-03-30 19:53:54,876 - INFO - history_titles:[] empty for user: U171052!!!
+2025-03-30 19:54:31,052 - INFO - Starting user U73915 in cluster 2 (index 35)
+2025-03-30 19:54:31,129 - INFO - history_titles:[] empty for user: U73915!!!
+2025-03-30 19:55:09,613 - INFO - Starting user U515908 in cluster 2 (index 36)
+2025-03-30 19:55:09,683 - INFO - history_titles:[] empty for user: U515908!!!
+2025-03-30 19:55:44,524 - INFO - Starting user U520221 in cluster 2 (index 37)
+2025-03-30 19:56:28,124 - INFO - Starting user U24161 in cluster 2 (index 38)
+2025-03-30 19:56:28,882 - INFO - history_titles:[] empty for user: U24161!!!
+2025-03-30 19:57:05,644 - INFO - Starting user U208520 in cluster 2 (index 39)
+2025-03-30 19:57:05,725 - INFO - history_titles:[] empty for user: U208520!!!
+2025-03-30 19:57:42,344 - INFO - Starting user U79744 in cluster 2 (index 40)
+2025-03-30 19:57:42,413 - INFO - history_titles:[] empty for user: U79744!!!
+2025-03-30 19:58:21,047 - INFO - Starting user U595088 in cluster 2 (index 41)
+2025-03-30 19:58:21,120 - INFO - history_titles:[] empty for user: U595088!!!
+2025-03-30 19:59:02,277 - INFO - Starting user U219005 in cluster 2 (index 42)
+2025-03-30 19:59:02,360 - INFO - history_titles:[] empty for user: U219005!!!
+2025-03-30 19:59:41,429 - INFO - Starting user U146290 in cluster 2 (index 43)
+2025-03-30 19:59:41,509 - INFO - history_titles:[] empty for user: U146290!!!
+2025-03-30 20:00:18,533 - INFO - Starting user U691255 in cluster 2 (index 44)
+2025-03-30 20:00:54,552 - INFO - Starting user U624340 in cluster 2 (index 45)
+2025-03-30 20:01:40,951 - INFO - Starting user U185733 in cluster 2 (index 46)
+2025-03-30 20:02:24,225 - INFO - Starting user U621293 in cluster 2 (index 47)
+2025-03-30 20:02:24,304 - INFO - history_titles:[] empty for user: U621293!!!
+2025-03-30 20:03:01,149 - INFO - Starting user U5224 in cluster 2 (index 48)
+2025-03-30 20:03:43,349 - INFO - Starting user U71675 in cluster 2 (index 49)
+2025-03-30 20:03:43,420 - INFO - history_titles:[] empty for user: U71675!!!
+2025-03-30 20:04:20,408 - INFO - Starting user U184159 in cluster 2 (index 50)
+2025-03-30 20:04:20,479 - INFO - history_titles:[] empty for user: U184159!!!
+2025-03-30 20:04:56,612 - INFO - Starting user U604790 in cluster 2 (index 51)
+2025-03-30 20:05:38,597 - INFO - Starting user U330859 in cluster 2 (index 52)
+2025-03-30 20:05:38,672 - INFO - history_titles:[] empty for user: U330859!!!
+2025-03-30 20:06:14,881 - INFO - Starting user U49579 in cluster 2 (index 53)
+2025-03-30 20:06:51,419 - INFO - Starting user U317352 in cluster 2 (index 54)
+2025-03-30 20:06:52,096 - INFO - history_titles:[] empty for user: U317352!!!
+2025-03-30 20:07:31,143 - INFO - Starting user U202591 in cluster 2 (index 55)
+2025-03-30 20:07:31,217 - INFO - history_titles:[] empty for user: U202591!!!
+2025-03-30 20:08:07,600 - INFO - Starting user U562005 in cluster 2 (index 56)
+2025-03-30 20:08:43,796 - INFO - Starting user U665033 in cluster 2 (index 57)
+2025-03-30 20:08:43,871 - INFO - history_titles:[] empty for user: U665033!!!
+2025-03-30 20:09:20,711 - INFO - Starting user U683198 in cluster 2 (index 58)
+2025-03-30 20:09:20,781 - INFO - history_titles:[] empty for user: U683198!!!
+2025-03-30 20:09:56,898 - INFO - Starting user U158238 in cluster 2 (index 59)
+2025-03-30 20:10:33,233 - INFO - Starting user U28155 in cluster 2 (index 60)
+2025-03-30 20:10:33,306 - INFO - history_titles:[] empty for user: U28155!!!
+2025-03-30 20:11:09,557 - INFO - Starting user U165938 in cluster 2 (index 61)
+2025-03-30 20:11:09,635 - INFO - history_titles:[] empty for user: U165938!!!
+2025-03-30 20:11:46,581 - INFO - Starting user U285096 in cluster 2 (index 62)
+2025-03-30 20:11:46,654 - INFO - history_titles:[] empty for user: U285096!!!
+2025-03-30 20:12:23,014 - INFO - Starting user U383569 in cluster 2 (index 63)
+2025-03-30 20:12:23,098 - INFO - history_titles:[] empty for user: U383569!!!
+2025-03-30 20:12:59,660 - INFO - Starting user U649058 in cluster 2 (index 64)
+2025-03-30 20:12:59,732 - INFO - history_titles:[] empty for user: U649058!!!
+2025-03-30 20:13:36,015 - INFO - Starting user U415551 in cluster 2 (index 65)
+2025-03-30 20:13:36,083 - INFO - history_titles:[] empty for user: U415551!!!
+2025-03-30 20:14:12,253 - INFO - Starting user U614277 in cluster 2 (index 66)
+2025-03-30 20:14:12,323 - INFO - history_titles:[] empty for user: U614277!!!
+2025-03-30 20:14:48,973 - INFO - Starting user U343264 in cluster 2 (index 67)
+2025-03-30 20:14:49,045 - INFO - history_titles:[] empty for user: U343264!!!
+2025-03-30 20:15:25,204 - INFO - Starting user U26169 in cluster 2 (index 68)
+2025-03-30 20:15:25,279 - INFO - history_titles:[] empty for user: U26169!!!
+2025-03-30 20:16:01,187 - INFO - Starting user U369158 in cluster 2 (index 69)
+2025-03-30 20:16:01,264 - INFO - history_titles:[] empty for user: U369158!!!
+2025-03-30 20:16:37,275 - INFO - Starting user U415460 in cluster 2 (index 70)
+2025-03-30 20:16:37,346 - INFO - history_titles:[] empty for user: U415460!!!
+2025-03-30 20:17:13,971 - INFO - Starting user U559720 in cluster 2 (index 71)
+2025-03-30 20:17:50,120 - INFO - Starting user U558663 in cluster 2 (index 72)
+2025-03-30 20:17:50,197 - INFO - history_titles:[] empty for user: U558663!!!
+2025-03-30 20:18:26,188 - INFO - Starting user U201390 in cluster 2 (index 73)
+2025-03-30 20:19:03,339 - INFO - Starting user U158842 in cluster 2 (index 74)
+2025-03-30 20:19:03,411 - INFO - history_titles:[] empty for user: U158842!!!
+2025-03-30 20:19:39,486 - INFO - Starting user U503349 in cluster 2 (index 75)
+2025-03-30 20:19:39,566 - INFO - history_titles:[] empty for user: U503349!!!
+2025-03-30 20:20:15,698 - INFO - Starting user U250016 in cluster 2 (index 76)
+2025-03-30 20:20:58,727 - INFO - Starting user U43685 in cluster 2 (index 77)
+2025-03-30 20:21:36,285 - INFO - Starting user U655647 in cluster 2 (index 78)
+2025-03-30 20:21:36,361 - INFO - history_titles:[] empty for user: U655647!!!
+2025-03-30 20:22:12,489 - INFO - Starting user U292984 in cluster 2 (index 79)
+2025-03-30 20:22:12,560 - INFO - history_titles:[] empty for user: U292984!!!
+2025-03-30 20:22:48,298 - INFO - Starting user U626729 in cluster 2 (index 80)
+2025-03-30 20:22:48,370 - INFO - history_titles:[] empty for user: U626729!!!
+2025-03-30 20:23:25,385 - INFO - Starting user U353674 in cluster 2 (index 81)
+2025-03-30 20:23:25,461 - INFO - history_titles:[] empty for user: U353674!!!
+2025-03-30 20:24:03,334 - INFO - Starting user U110904 in cluster 2 (index 82)
+2025-03-30 20:24:03,407 - INFO - history_titles:[] empty for user: U110904!!!
+2025-03-30 20:24:41,651 - INFO - Starting user U344648 in cluster 2 (index 83)
+2025-03-30 20:24:41,725 - INFO - history_titles:[] empty for user: U344648!!!
+2025-03-30 20:25:19,729 - INFO - Starting user U642982 in cluster 2 (index 84)
+2025-03-30 20:25:19,804 - INFO - history_titles:[] empty for user: U642982!!!
+2025-03-30 20:25:56,776 - INFO - Starting user U479071 in cluster 2 (index 85)
+2025-03-30 20:25:56,849 - INFO - history_titles:[] empty for user: U479071!!!
+2025-03-30 20:26:34,793 - INFO - Starting user U36940 in cluster 2 (index 86)
+2025-03-30 20:27:13,321 - INFO - Starting user U355171 in cluster 2 (index 87)
+2025-03-30 20:27:13,402 - INFO - history_titles:[] empty for user: U355171!!!
+2025-03-30 20:27:50,254 - INFO - Starting user U654088 in cluster 2 (index 88)
+2025-03-30 20:27:50,323 - INFO - history_titles:[] empty for user: U654088!!!
+2025-03-30 20:28:30,348 - INFO - Starting user U581465 in cluster 2 (index 89)
+2025-03-30 20:28:30,437 - INFO - history_titles:[] empty for user: U581465!!!
+2025-03-30 20:29:07,865 - ERROR - Failed on user U581465 in cluster 2 with error: [Errno 13] Permission denied: 'user_level_partial_results.csv'
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 1109, in run_cluster_experiments_user_level
+    write_partial_rows(partial_buffer, partial_csv)
+  File "/app/cluster_utils.py", line 950, in write_partial_rows
+    df.to_csv(
+  File "/usr/local/lib/python3.11/site-packages/pandas/util/_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pandas/core/generic.py", line 3967, in to_csv
+    return DataFrameRenderer(formatter).to_csv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pandas/io/formats/format.py", line 1014, in to_csv
+    csv_formatter.save()
+  File "/usr/local/lib/python3.11/site-packages/pandas/io/formats/csvs.py", line 251, in save
+    with get_handle(
+         ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pandas/io/common.py", line 873, in get_handle
+    handle = open(
+             ^^^^^
+PermissionError: [Errno 13] Permission denied: 'user_level_partial_results.csv'
+
+2025-03-30 20:29:07,866 - INFO - Starting user U331512 in cluster 2 (index 90)
+2025-03-30 20:29:07,942 - INFO - history_titles:[] empty for user: U331512!!!
+2025-03-30 20:29:47,359 - INFO - Starting user U187226 in cluster 2 (index 91)
+2025-03-30 20:29:47,454 - INFO - history_titles:[] empty for user: U187226!!!
+2025-03-30 20:30:29,774 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/train/, valid_data_dir = dataset/valid/, zip_file = MINDlarge_train.zip, valid_zip_file = MINDlarge_dev.zip, user_category_profiles_path = user_category_profiles.pkl, user_cluster_df_path = user_cluster_df.pkl):
+2025-03-30 20:31:46,252 - INFO - News data shape: (101527, 13)
+2025-03-30 20:31:46,252 - INFO - Behaviors data shape: (2232748, 6)
+2025-03-30 20:31:53,841 - INFO - Starting user U87243 in cluster 2 (index 0)
+2025-03-30 20:32:08,530 - INFO - lens: candidate_pool:6983,candidate_pool:6983
+2025-03-30 20:32:58,879 - INFO - Starting user U598644 in cluster 2 (index 1)
+2025-03-30 20:33:14,675 - INFO - lens: candidate_pool:6985,candidate_pool:6985
+2025-03-30 20:34:12,272 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/train/, valid_data_dir = dataset/valid/, zip_file = MINDlarge_train.zip, valid_zip_file = MINDlarge_dev.zip, user_category_profiles_path = user_category_profiles.pkl, user_cluster_df_path = user_cluster_df.pkl):
+2025-03-30 20:35:20,945 - INFO - News data shape: (101527, 13)
+2025-03-30 20:35:20,945 - INFO - Behaviors data shape: (2232748, 6)
+2025-03-30 20:35:28,166 - INFO - Starting user U87243 in cluster 2 (index 0)
+2025-03-30 20:35:43,041 - INFO - lens: newsdf:101527candidate_pool:6983,candidate_pool:6983
+2025-03-30 20:36:30,976 - INFO - Starting user U598644 in cluster 2 (index 1)
+2025-03-30 20:36:46,512 - INFO - lens: newsdf:101527candidate_pool:6985,candidate_pool:6985
+2025-03-30 20:37:11,729 - INFO - Starting user U532401 in cluster 2 (index 2)
+2025-03-30 20:37:11,802 - INFO - history_titles:[] empty for user: U532401!!!
+2025-03-30 20:37:26,287 - INFO - lens: newsdf:101527candidate_pool:6988,candidate_pool:6988
+2025-03-30 20:37:52,736 - INFO - Starting user U593596 in cluster 2 (index 3)
+2025-03-30 20:38:07,771 - INFO - lens: newsdf:101527candidate_pool:6981,candidate_pool:6981

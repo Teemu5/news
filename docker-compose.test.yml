@@ -1,11 +1,32 @@
+version: '3.8'
+
 services:
-  test:
+  test_cluster0:
     build: ./backend
     ports:
       - "8888:8888"
     volumes:
       - ./backend:/app
       - model_data:/app/data
-    command: python3 test_recommender.py
+    command: python3 test_recommender.py --cluster_id 0 --dataset valid
+
+  test_cluster1:
+    build: ./backend
+    ports:
+      - "8889:8888"
+    volumes:
+      - ./backend:/app
+      - model_data:/app/data
+    command: python3 test_recommender.py --cluster_id 1 --dataset valid
+
+  test_cluster2:
+    build: ./backend
+    ports:
+      - "8890:8888"
+    volumes:
+      - ./backend:/app
+      - model_data:/app/data
+    command: python3 test_recommender.py --cluster_id 2 --dataset valid
+
 volumes:
   model_data:

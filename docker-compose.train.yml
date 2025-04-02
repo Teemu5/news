@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  train_clusters:
+    build: ./backend
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./backend:/app
+      - model_data:/app/data
+    command: python3 test_recommender.py --cluster_id 0,1,2 --dataset train --process_dfs --process_behaviors
+
+
+volumes:
+  model_data:

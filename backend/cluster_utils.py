@@ -34,6 +34,7 @@ from recommender import (  # import functions from recommender module
     hybrid_ensemble
 )
 import hashlib
+from traceback import format_exc
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 # (Assume your other functions – candidate_generation, candidate_scoring, etc. – are defined above.)
@@ -50,10 +51,12 @@ def clean_text(text):
     words = [w for w in words if not w in stop_words]
     return ' '.join(words)
 import logging
+import datetime
 
-# Configure logging: you can place this at the top of your module.
+date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+log_filename = f"cluster_profile_{date_str}.log"
 logging.basicConfig(
-    filename='cluster_profile.log',
+    filename=log_filename,
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
@@ -673,6 +676,7 @@ def build_user_profile_tensor(
         for art in row["HistoryText"].split():
             all_hist_article_ids.add(art)
 
+    original_history_len = len(all_hist_article_ids)
     # Sort by most recent if you prefer
     # (If you have timestamps for each article in HistoryText, you can do so.
     #  Otherwise, just turn the set to a list.)
@@ -703,7 +707,10 @@ def build_user_profile_tensor(
             seq = [0]
         seq = pad_sequences([seq], maxlen=max_title_length, padding='post', truncating='post', value=0)[0]
         history_titles.append(seq)
-
+    history_titles = np.array(history_titles, dtype=int)
+    if history_titles.ndim == 1 and history_titles.shape[0] == 0:
+        history_titles = history_titles.reshape(0, max_title_length)
+        logging.info(f"history_titles:{history_titles} empty for user: {user_id}!!!")
     # Now we have a list of shape (num_history, max_title_length). 
     # We must pad/truncate to exactly max_history_length rows:
     if len(history_titles) < max_history_length:
@@ -718,7 +725,7 @@ def build_user_profile_tensor(
     # Convert to a TF tensor if you want:
     history_tensor = tf.convert_to_tensor(history_titles, dtype=tf.int32)
 
-    return history_tensor, history_article_ids
+    return history_tensor, history_article_ids, original_history_len
 def user_candidate_generation(
     user_id,
     user_history_ids,
@@ -798,7 +805,7 @@ def user_candidate_generation(
         seq = pad_sequences([seq], maxlen=max_title_length, padding='post', truncating='post')[0]
         candidate_tensors.append(tf.convert_to_tensor([seq], dtype=tf.int32))  # shape (1, max_title_length)
         candidate_ids.append(art_id)
-
+    logging.info(f"lens: newsdf:{len(news_df['NewsID'].tolist())}candidate_pool:{len(candidate_pool)},candidate_pool:{len(candidate_pool)}")
     return candidate_tensors, candidate_ids
 def get_user_future_clicks(user_id, behaviors_df, cutoff_time):
     """
@@ -852,7 +859,7 @@ def user_evaluation_loop(models_dict, news_df, behaviors_df, tokenizer, tfidf_ve
         chunk_results = []
         for user_id in chunk_user_ids:
             # 1) build_user_profile_tensor
-            user_hist_tensor, user_hist_ids = build_user_profile_tensor(
+            user_hist_tensor, user_hist_ids, original_history_len = build_user_profile_tensor(
                 user_id, 
                 behaviors_df, 
                 news_df, 
@@ -908,6 +915,90 @@ def user_evaluation_loop(models_dict, news_df, behaviors_df, tokenizer, tfidf_ve
     final_df = pd.concat(all_metrics, ignore_index=True)
     final_df.to_csv("user_metrics_all.csv", index=False)
     return final_df
+def write_results_to_csv(results_list, output_csv="user_level_experiment_results.csv", partial=False):
+    """
+    Writes a list of dict results to CSV. If partial=True,
+    it appends rows (without overwriting or rewriting headers).
+    If partial=False, it overwrites the file fully (writes header).
+    """
+    if not results_list:
+        return  # nothing to write
+
+    df = pd.DataFrame(results_list)
+    if partial:
+        # Append rows with no header if the file already exists:
+        mode = "a"
+        header = not os.path.exists(output_csv)
+    else:
+        # Overwrite the file, writing header
+        mode = "w"
+        header = True
+
+    df.to_csv(output_csv, mode=mode, header=header, index=False)
+def write_partial_rows(rows, filename="user_level_partial_results.csv"):
+    """
+    Appends a list of dictionaries (rows) to a CSV. 
+    - If the file doesn't exist, write headers.
+    - If it does exist, append without headers.
+    """
+    if not rows:
+        return  # nothing to write
+
+    df = pd.DataFrame(rows)
+    file_exists = os.path.exists(filename)
+
+    # If file exists, append without writing header:
+    df.to_csv(
+        filename,
+        mode='a',
+        header=not file_exists,  # write header if file doesn't exist
+        index=False
+    )
+def score_candidates_in_batch(history_tensor, candidate_tensors, model, batch_size=128):
+    """
+    Batch-scoring for a single Keras model:
+      - history_tensor: shape (1, max_history_length, max_title_length)
+      - candidate_tensors: list of shape (1, max_title_length) for each candidate
+      - model: a single Keras model
+      - batch_size: the batch size for model.predict()
+
+    Returns a 1D NumPy array of shape (num_candidates,) with predicted scores.
+    """
+
+    num_candidates = len(candidate_tensors)
+    if num_candidates == 0:
+        return np.array([], dtype=float)
+
+    # Stack all candidate rows => shape (num_candidates, max_title_length)
+    batch_candidates = tf.concat(candidate_tensors, axis=0)
+
+    # Repeat the user_history_tensor => shape (num_candidates, max_history_length, max_title_length)
+    batch_history = tf.repeat(history_tensor, repeats=num_candidates, axis=0)
+
+    # Single predict call
+    preds = model.predict(
+        {
+           "history_input": batch_history,
+           "candidate_input": batch_candidates
+        },
+        batch_size=batch_size
+    )
+    # preds is shape (num_candidates, 1)
+    return preds.ravel()  # flatten to shape (num_candidates,)
+def score_candidates_ensemble_batch(history_tensor, candidate_tensors, models_dict, batch_size=128):
+    """
+    Batch-scoring for an ensemble of models in 'models_dict'.
+    We'll do a simple average (like ensemble bagging).
+    """
+    # We'll store predictions from each model, then average
+    all_preds = []
+    for key, model in models_dict.items():
+        preds = score_candidates_in_batch(history_tensor, candidate_tensors, model, batch_size)
+        all_preds.append(preds)
+    # shape => (num_models, num_candidates)
+    # Average across axis=0 => shape (num_candidates,)
+    mean_preds = np.mean(all_preds, axis=0)
+    return mean_preds
 def run_cluster_experiments_user_level(
     cluster_mapping, 
     train_data, 
@@ -918,120 +1009,140 @@ def run_cluster_experiments_user_level(
     tokenizer,
     tfidf_vectorizer,
     cutoff_time,
-    k_values = [5, 10, 20, 50]
+    k_values=[5, 10, 20, 50],
+    partial_csv="user_level_partial_results.csv",
+    shuffle_clusters=False,       # New parameter: if True, randomize cluster order.
+    cluster_order=None            # New parameter: if provided, process clusters in this order.
 ):
     """
-    1) For each cluster, for each user:
-       - Build user profile from train_data.
-       - Generate & score candidates.
-       - Evaluate vs. test_data.
-    2) Compute user-level precision, recall, MAP, nDCG, coverage.
+    For each cluster (processed in a specified or random order), for each user:
+      - Build user profile from train_data.
+      - Generate & score candidates.
+      - Evaluate vs. test_data.
+    Partial per-user results (including candidate count, number of history articles, 
+    and number of future clicked articles for each user) are written to a CSV file incrementally.
     """
-    # We'll gather all user-level metrics for final summary
-    results = []
-
-    # Keep track for coverage
-    all_recommendations = []
-
-    total_articles = len(news_df)
+    import numpy as np
+    import pandas as pd
+    from tqdm import tqdm
     from traceback import format_exc
 
-    for i, user_id in enumerate(tqdm(user_list, desc="Evaluating users")):
-        try:
-            logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
-            
-            # 1) Build user profile
-            user_history_tensor, user_history_ids = build_user_profile_tensor(
-                user_id, behaviors_df, news_df, cutoff_time, tokenizer
-            )
+    results = []
+    total_articles = len(news_df)
+    partial_buffer = []
 
-            # 2) Build candidates
-            candidate_tensors, candidate_ids = user_candidate_generation(
-                user_id, user_history_ids, train_data, news_df,
-                tokenizer, tfidf_vectorizer, cutoff_time, 0.04
-            )
+    # Determine cluster order.
+    if cluster_order is not None:
+        ordered_clusters = cluster_order
+    else:
+        ordered_clusters = list(cluster_mapping.keys())
+        if shuffle_clusters:
+            np.random.shuffle(ordered_clusters)
 
-            # 3) Expand dims
-            user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
-
-            # 4) Score
-            candidate_scores = cluster_candidate_scoring(user_history_tensor, candidate_tensors, models_dict)
-
-            # 5) Evaluate
-            user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
-
-            for k in k_values:
-                recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
-                if k == 10:
-                    cluster_recs.append(recommended_ids)
-                prec_u, rec_u = compute_precision_recall_at_k(recommended_ids, user_future_clicks, k)
-                user_metrics[k]["precision"].append(prec_u)
-                user_metrics[k]["recall"].append(rec_u)
-                ap = average_precision_at_k(recommended_ids, user_future_clicks, k)
-                user_maps[k].append(ap)
-                ndcg_val = dcg_at_k(recommended_ids, user_future_clicks, k)
-                ideal_dcg = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
-                ndcg = ndcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
-                user_ndcgs[k].append(ndcg)
-
-            # Save partial results for this user to a CSV so if we crash, we have partial
-            with open("user_level_partial_results.csv", "a") as fout:
-                fout.write(f"{cluster_id},{user_id},{i},DONE\n")
-
-        except Exception as e:
-            logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
-            # Optionally you can continue to next user or break
-            continue
-    for cluster_id, user_list in cluster_mapping.items():
+    for cluster_id in ordered_clusters:
+        user_list = cluster_mapping[cluster_id]
+        # Initialize accumulators for cluster-level aggregation.
         user_metrics = {k: {"precision": [], "recall": []} for k in k_values}
         user_maps = {k: [] for k in k_values}
         user_ndcgs = {k: [] for k in k_values}
-
-        cluster_recs = []  # for coverage at cluster level
+        cluster_recs = []  # For coverage (we use top-10 recommendations)
         total_users = len(user_list)
-        for i, user_id in enumerate(tqdm(user_list, desc="Evaluating users")):
-            # Build user history from train_data
-            user_history_tensor, user_history_ids = build_user_profile_tensor(
-                user_id, behaviors_df, news_df, cutoff_time, tokenizer
-            )
 
-            # Generate candidate articles for user
-            candidate_tensors, candidate_ids = user_candidate_generation(
-                user_id, user_history_ids, train_data, news_df, tokenizer, tfidf_vectorizer, cutoff_time, 0.04
-            )
-            # modify user_history_tensor shape (50, 30) to (1, 50, 30)
-            user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)   # now shape (1, 50, 30)
-            logging.info(f"user_candidate_generation {i}/{user_id} candidate_tensors (len:{len(candidate_tensors)}) out of total news: {len(news_df['NewsID'].unique().tolist())}")
-            # Score using ensemble or single model (example: ensemble)
-            candidate_scores = cluster_candidate_scoring(user_history_tensor, candidate_tensors, models_dict)
-            logging.info(f"cluster_candidate_scoring {i}/{user_id} candidate_scores: {candidate_scores}")
-            # Build ground truth from test_data
-            user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
+        for i, user_id in enumerate(tqdm(user_list, desc=f"Evaluating users in cluster {cluster_id}")):
+            try:
+                logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                
+                # 1) Build user profile.
+                user_history_tensor, user_history_ids, original_history_len = build_user_profile_tensor(
+                    user_id, behaviors_df, news_df, cutoff_time, tokenizer
+                )
+                num_history_articles = len(user_history_ids)
+                
+                # 2) Build candidates.
+                candidate_tensors, candidate_ids = user_candidate_generation(
+                    user_id, user_history_ids, train_data, news_df,
+                    tokenizer, tfidf_vectorizer, cutoff_time, 0.00
+                )
+                num_candidates = len(candidate_ids)
+                
+                # 3) Expand dims (to shape (1, max_history_length, max_title_length))
+                user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+                
+                # 4) Score candidates using ensemble.
+                candidate_scores = score_candidates_ensemble_batch(
+                    user_history_tensor,
+                    candidate_tensors,
+                    models_dict,
+                    batch_size=512
+                )
+                
+                # 5) Get ground truth: articles clicked after cutoff.
+                user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
+                num_future_clicks = len(user_future_clicks)
+                
+                # Prepare partial result row with extra info.
+                partial_result_row = {
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "num_candidates": num_candidates,
+                    "num_history_articles": num_history_articles,
+                    "original_history_len": original_history_len,
+                    "num_future_clicks": num_future_clicks
+                }
+                
+                # For each k, compute evaluation metrics.
+                for k in k_values:
+                    recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
+                    # Record recommendations for coverage using k==10 (as an example)
+                    if k == 10:
+                        cluster_recs.append(recommended_ids)
+                    
+                    prec, rec = compute_precision_recall_at_k(recommended_ids, user_future_clicks, k)
+                    ap = average_precision_at_k(recommended_ids, user_future_clicks, k)
+                    ndcg_val = dcg_at_k(recommended_ids, user_future_clicks, k)
+                    ideal_dcg = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
+                    ndcg = ndcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
 
-            # Evaluate for each K
-            for k in k_values:
-                recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
-                # Save for coverage (just store the top-k for each user)
-                if k == 10:  # or whichever you want for coverage
-                    cluster_recs.append(recommended_ids)
+                    # Accumulate for cluster-level summary.
+                    user_metrics[k]["precision"].append(prec)
+                    user_metrics[k]["recall"].append(rec)
+                    user_maps[k].append(ap)
+                    user_ndcgs[k].append(ndcg)
+                    
+                    # Record per-user metrics.
+                    partial_result_row[f"precision_{k}"] = prec
+                    partial_result_row[f"recall_{k}"] = rec
+                    partial_result_row[f"ap_{k}"] = ap
+                    partial_result_row[f"ndcg_{k}"] = ndcg
+                    partial_result_row[f"num_recommendations_{k}"] = len(recommended_ids)
+                
+                partial_result_row["status"] = "DONE"
+                partial_buffer.append(partial_result_row)
+                
+                # Flush partial results every 10 users.
+                if (i + 1) % 10 == 0:
+                    logging.info(f"Writing partial rows: {partial_buffer}")
+                    write_partial_rows(partial_buffer, partial_csv)
+                    partial_buffer = []
+                    
+            except Exception as e:
+                logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
+                partial_buffer.append({
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "status": f"FAILED: {e}"
+                })
+                continue
 
-                prec_u, rec_u = compute_precision_recall_at_k(recommended_ids, user_future_clicks, k)
-                user_metrics[k]["precision"].append(prec_u)
-                user_metrics[k]["recall"].append(rec_u)
-
-                ap = average_precision_at_k(recommended_ids, user_future_clicks, k)
-                user_maps[k].append(ap)
-
-                # nDCG
-                ndcg_val = dcg_at_k(recommended_ids, user_future_clicks, k) 
-                ideal_dcg = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
-                ndcg = ndcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
-                user_ndcgs[k].append(ndcg)
-            if i % 1000 == 0:
-                logging.info(f"Processed {i}/{total_users} users so far in run_cluster_experiments_user_level.")
+        # Flush any remaining rows for this cluster.
+        if partial_buffer:
+            write_partial_rows(partial_buffer, partial_csv)
+            partial_buffer = []
         
-        # Summarize cluster-level
-        coverage_cluster = compute_coverage(cluster_recs, total_articles)  # coverage for top-k=10 by default
+        # Summarize cluster-level metrics.
+        coverage_cluster = compute_coverage(cluster_recs, total_articles)
         for k in k_values:
             mean_precision = np.mean(user_metrics[k]["precision"]) if user_metrics[k]["precision"] else 0
             mean_recall = np.mean(user_metrics[k]["recall"]) if user_metrics[k]["recall"] else 0
@@ -1048,6 +1159,159 @@ def run_cluster_experiments_user_level(
                 "coverage": coverage_cluster, 
                 "num_users": len(user_list)
             })
+    
+    results_df = pd.DataFrame(results)
+    results_df.to_csv("user_level_experiment_results.csv", index=False)
+    print("Cluster-level experiment results saved to 'user_level_experiment_results.csv'")
+    return results_df
+
+
+def run_cluster_experiments_user_level2(
+    cluster_mapping, 
+    train_data, 
+    test_data,
+    news_df,
+    behaviors_df,
+    models_dict, 
+    tokenizer,
+    tfidf_vectorizer,
+    cutoff_time,
+    k_values=[5, 10, 20, 50],
+    partial_csv="user_level_partial_results.csv"
+):
+    """
+    For each cluster, for each user:
+      - Build user profile from train_data.
+      - Generate & score candidates.
+      - Evaluate vs. test_data.
+    Partial per-user results (including candidate count and recommendation count for each k)
+    are written to a CSV file incrementally.
+    """
+    import numpy as np
+    import pandas as pd
+    from tqdm import tqdm
+    from traceback import format_exc
+
+    results = []
+    total_articles = len(news_df)
+    partial_buffer = []
+
+    for cluster_id, user_list in cluster_mapping.items():
+        # Initialize accumulators for cluster-level aggregation.
+        user_metrics = {k: {"precision": [], "recall": []} for k in k_values}
+        user_maps = {k: [] for k in k_values}
+        user_ndcgs = {k: [] for k in k_values}
+        cluster_recs = []  # For coverage (we use top-10 recommendations)
+        total_users = len(user_list)
+
+        for i, user_id in enumerate(tqdm(user_list, desc=f"Evaluating users in cluster {cluster_id}")):
+            try:
+                logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                
+                # 1) Build user profile.
+                user_history_tensor, user_history_ids = build_user_profile_tensor(
+                    user_id, behaviors_df, news_df, cutoff_time, tokenizer
+                )
+                
+                # 2) Build candidates.
+                candidate_tensors, candidate_ids = user_candidate_generation(
+                    user_id, user_history_ids, train_data, news_df,
+                    tokenizer, tfidf_vectorizer, cutoff_time, 0.00
+                )
+                num_candidates = len(candidate_ids)
+                
+                # 3) Expand dims: history tensor shape becomes (1, max_history_length, max_title_length).
+                user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+                
+                # 4) Batch score candidates from the ensemble.
+                candidate_scores = score_candidates_ensemble_batch(
+                    user_history_tensor,
+                    candidate_tensors,
+                    models_dict,
+                    batch_size=512
+                )
+                
+                # 5) Get ground truth.
+                user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
+                
+                # Prepare partial result row for this user.
+                partial_result_row = {
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "num_candidates": num_candidates  # new field: total candidates generated
+                }
+                
+                # For each k, compute metrics and also record number of recommendations.
+                for k in k_values:
+                    recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
+                    # Record candidate recommendations for coverage (using k==10, for example)
+                    if k == 10:
+                        cluster_recs.append(recommended_ids)
+                    
+                    prec, rec = compute_precision_recall_at_k(recommended_ids, user_future_clicks, k)
+                    ap = average_precision_at_k(recommended_ids, user_future_clicks, k)
+                    ndcg_val = dcg_at_k(recommended_ids, user_future_clicks, k)
+                    ideal_dcg = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
+                    ndcg = ndcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
+
+                    # Accumulate for cluster-level summary.
+                    user_metrics[k]["precision"].append(prec)
+                    user_metrics[k]["recall"].append(rec)
+                    user_maps[k].append(ap)
+                    user_ndcgs[k].append(ndcg)
+                    
+                    # Record per-user metrics along with number of recommendations.
+                    partial_result_row[f"precision_{k}"] = prec
+                    partial_result_row[f"recall_{k}"] = rec
+                    partial_result_row[f"ap_{k}"] = ap
+                    partial_result_row[f"ndcg_{k}"] = ndcg
+                    partial_result_row[f"num_recommendations_{k}"] = len(recommended_ids)
+                
+                partial_result_row["status"] = "DONE"
+                partial_buffer.append(partial_result_row)
+                
+                logging.error(f"iter:{i}")
+                # Flush partial results every x users.
+                if (i + 1) % 10 == 0:
+                    logging.error(f"Writing partial rows: {partial_buffer}")
+                    write_partial_rows(partial_buffer, partial_csv)
+                    partial_buffer = []
+                    
+            except Exception as e:
+                logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
+                partial_buffer.append({
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "status": f"FAILED: {e}"
+                })
+                continue
+
+        # Flush any remaining rows for this cluster.
+        if partial_buffer:
+            write_partial_rows(partial_buffer, partial_csv)
+            partial_buffer = []
+        
+        # Summarize cluster-level metrics.
+        coverage_cluster = compute_coverage(cluster_recs, total_articles)
+        for k in k_values:
+            mean_precision = np.mean(user_metrics[k]["precision"]) if user_metrics[k]["precision"] else 0
+            mean_recall = np.mean(user_metrics[k]["recall"]) if user_metrics[k]["recall"] else 0
+            map_k = np.mean(user_maps[k]) if user_maps[k] else 0
+            ndcg_k = np.mean(user_ndcgs[k]) if user_ndcgs[k] else 0
+
+            results.append({
+                "cluster_id": cluster_id,
+                "k": k,
+                "precision_user_level": mean_precision,
+                "recall_user_level": mean_recall,
+                "MAP": map_k,
+                "nDCG": ndcg_k,
+                "coverage": coverage_cluster, 
+                "num_users": len(user_list)
+            })
+    
     results_df = pd.DataFrame(results)
     results_df.to_csv("user_level_experiment_results.csv", index=False)
     print("Cluster-level experiment results saved to 'user_level_experiment_results.csv'")
@@ -1062,7 +1326,8 @@ def prepare_train_df(
     num_clusters=3,
     fraction=1,
     max_title_length=30,
-    max_history_length=50
+    max_history_length=50,
+    downsampling=False
 ):
     # Load news data
     news_path = os.path.join(data_dir, news_file)
@@ -1229,31 +1494,34 @@ def prepare_train_df(
 
     # Combine balanced data for all clusters
     balanced_train_df = pd.concat(balanced_data)
+    print("\nlabel balance (0 vs 1):")
+    print(train_df['Label'].value_counts())
+    if downsampling:
+        # Update train_df with the balanced data
+        # --- [Label Balancing for 0/1 Classes] ---
+        # Count how many 0s and 1s we have
+        label_counts = balanced_train_df['Label'].value_counts()
+        min_label_count = label_counts.min()
 
-    # Update train_df with the balanced data
-    # --- [Label Balancing for 0/1 Classes] ---
-    # Count how many 0s and 1s we have
-    label_counts = balanced_train_df['Label'].value_counts()
-    min_label_count = label_counts.min()
+        balanced_labels = []
+        for label_value in balanced_train_df['Label'].unique():
+            label_data = balanced_train_df[balanced_train_df['Label'] == label_value]
+            # Downsample to the min_label_count to balance the label distribution
+            balanced_label_data = label_data.sample(n=min_label_count, random_state=42)
+            balanced_labels.append(balanced_label_data)
 
-    balanced_labels = []
-    for label_value in balanced_train_df['Label'].unique():
-        label_data = balanced_train_df[balanced_train_df['Label'] == label_value]
-        # Downsample to the min_label_count to balance the label distribution
-        balanced_label_data = label_data.sample(n=min_label_count, random_state=42)
-        balanced_labels.append(balanced_label_data)
+        # Combine the label balanced data
+        final_balanced_train_df = pd.concat(balanced_labels, ignore_index=True)
 
-    # Combine the label balanced data
-    final_balanced_train_df = pd.concat(balanced_labels, ignore_index=True)
+        # Shuffle the final dataset to mix up the rows
+        final_balanced_train_df = final_balanced_train_df.sample(frac=1, random_state=42).reset_index(drop=True)
 
-    # Shuffle the final dataset to mix up the rows
-    final_balanced_train_df = final_balanced_train_df.sample(frac=1, random_state=42).reset_index(drop=True)
+        print("\nAfter label balancing (0 vs 1):")
+        print(final_balanced_train_df['Label'].value_counts())
 
-    print("\nAfter label balancing (0 vs 1):")
-    print(final_balanced_train_df['Label'].value_counts())
+        # Now final_balanced_train_df is balanced both by cluster and by label
+        train_df = final_balanced_train_df
 
-    # Now final_balanced_train_df is balanced both by cluster and by label
-    train_df = final_balanced_train_df
     #train_df = balanced_train_df.reset_index(drop=True)
 
     # Print summary of the balanced dataset
@@ -1309,13 +1577,15 @@ def prepare_train_df(
             'val': val_data.reset_index(drop=True)
         }
         print(f"Cluster {cluster}: {len(train_data)} training samples, {len(val_data)} validation samples.")
-    print("Saved after processing: models/news_df_processed.pkl, models/train_df_processed.pkl")
     if "small" in data_dir:
-        news_df.to_pickle("models/small_news_df_processed.pkl")
-        train_df.to_pickle("models/small_train_df_processed.pkl")
+        news_df_pkl = "models/small_news_df_processed.pkl"
+        train_df_pkl = "models/small_train_df_processed.pkl"
     else:
-        news_df.to_pickle("models/news_df_processed.pkl")
-        train_df.to_pickle("models/train_df_processed.pkl")
+        news_df_pkl = "models/news_df_processed.pkl"
+        train_df_pkl = "models/train_df_processed.pkl"
+    print("Saved after processing: models/news_df_processed.pkl, models/train_df_processed.pkl")
+    news_df.to_pickle(news_df_pkl)
+    train_df.to_pickle(train_df_pkl)
 
     return clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters
 
@@ -1777,6 +2047,10 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
             mode='max',
             save_best_only=True
         )
+        print("\nlabel balance (0 vs 1):")
+        print(train_df['Label'].value_counts())
+        class_weight = get_class_weights(train_df['Label'])
+        print("Class weights:", class_weight)
 
         # Train the model
         model.fit(
@@ -1785,7 +2059,8 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
             #steps_per_epoch=steps_per_epoch,
             #validation_data=val_generator,
             validation_steps=validation_steps,
-            callbacks=[early_stopping, csv_logger, model_checkpoint]
+            callbacks=[early_stopping, csv_logger, model_checkpoint],
+            class_weight=class_weight
         )
 
         # Save model weights
@@ -1874,6 +2149,137 @@ def make_user_cluster_df(user_category_profiles_path = 'user_category_profiles.p
     user_cluster_df.to_pickle(user_cluster_df_path)
     print(f"Saved user cluster assignments to {user_cluster_df_path}")
 
+# --- [Dataset Loading and Midpoint Calculation] ---
+def load_dataset(data_dir, news_file='news.tsv', behaviors_file='behaviors.tsv'):
+    """
+    Loads news and behaviors files from the given directory.
+    Fills missing HistoryText.
+    Returns: news_df, behaviors_df
+    """
+    news_path = os.path.join(data_dir, news_file)
+    news_df = pd.read_csv(news_path, sep='\t',
+                          names=['NewsID','Category','SubCategory','Title','Abstract','URL','TitleEntities','AbstractEntities'],
+                          index_col=False)
+    print(f"Loaded news data from {news_path}: {news_df.shape}")
+
+    behaviors_path = os.path.join(data_dir, behaviors_file)
+    behaviors_df = pd.read_csv(behaviors_path, sep='\t',
+                               names=['ImpressionID','UserID','Time','HistoryText','Impressions'],
+                               index_col=False)
+    print(f"Loaded behaviors data from {behaviors_path}: {behaviors_df.shape}")
+    behaviors_df['HistoryText'] = behaviors_df['HistoryText'].fillna('')
+    return news_df, behaviors_df
+
+def get_midpoint_time(behaviors_df):
+    behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    min_time = behaviors_df['Time'].min()
+    max_time = behaviors_df['Time'].max()
+    midpoint = min_time + (max_time - min_time) / 2
+    print(f"Midpoint time computed: {midpoint}")
+    return midpoint
+
+def init_dataset(data_dir, news_file='news.tsv', behaviors_file='behaviors.tsv'):
+    """
+    Loads a dataset from data_dir.
+    Returns news_df and behaviors_df.
+    """
+    news_df, behaviors_df = load_dataset(data_dir, news_file, behaviors_file)
+    # Create a combined text field for news
+    news_df['CleanTitle'] = news_df['Title'].apply(clean_text)
+    news_df['CleanAbstract'] = news_df['Abstract'].apply(clean_text)
+    news_df['CombinedText'] = news_df['CleanTitle'] + ' ' + news_df['CleanAbstract']
+    news_df["CombinedText"] = news_df["CombinedText"].astype(str).fillna("")
+    return news_df, behaviors_df
+
+# --- [Tokenizer and Preprocessing] ---
+def prepare_tokenizer(news_df, max_title_length=30):
+    tokenizer = Tokenizer()
+    tokenizer.fit_on_texts(news_df['CombinedText'].tolist())
+    vocab_size = len(tokenizer.word_index) + 1
+    print(f"Vocabulary Size: {vocab_size}")
+    # Save tokenizer for later use
+    with open('tokenizer.pkl', 'wb') as f:
+        pickle.dump(tokenizer, f)
+    return tokenizer, vocab_size
+
+def init_bug(process_dfs=False, process_behaviors=False,
+         data_dir='dataset/train/', valid_data_dir='dataset/valid/',
+         zip_file="MINDlarge_train.zip", valid_zip_file="MINDlarge_dev.zip"):
+    global vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, \
+           user_category_profiles, clustered_data, tokenizer, num_clusters
+
+    if is_colab():
+        print("Running on Google Colab")
+        data_dir = '/content/train/'
+        valid_data_dir = '/content/valid/'
+
+    # Construct full paths for the zip files
+    zip_file_path = os.path.join(data_dir, zip_file)
+    valid_zip_file_path = os.path.join(valid_data_dir, valid_zip_file)
+    
+    # Download zips if needed.
+    if not os.path.exists(zip_file_path):
+        hf_hub_download(repo_id="Teemu5/news", filename=zip_file, local_dir=data_dir)
+    if not os.path.exists(valid_zip_file_path):
+        hf_hub_download(repo_id="Teemu5/news", filename=valid_zip_file, local_dir=valid_data_dir)
+    
+    # Unzip both training and validation datasets.
+    output_folder = os.path.dirname(zip_file_path)
+    valid_output_folder = os.path.dirname(valid_zip_file_path)
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        zip_ref.extractall(output_folder)
+    with zipfile.ZipFile(valid_zip_file_path, 'r') as zip_ref:
+        zip_ref.extractall(valid_output_folder)
+
+    # Load datasets using our helper.
+    news_df_train, behaviors_df_train = load_dataset(data_dir)
+    news_df_valid, behaviors_df_valid = load_dataset(valid_data_dir)
+    
+    print("\n--- Training Data ---")
+    print(news_df_train.head())
+    print(behaviors_df_train.head())
+    
+    print("\n--- Validation Data ---")
+    print(news_df_valid.head())
+    print(behaviors_df_valid.head())
+    
+    # For backward compatibility, we continue processing only training data.
+    # (You can later decide to combine or process validation data similarly.)
+    news_df = news_df_train.copy()
+    behaviors_df = behaviors_df_train.copy()
+    
+    # The rest of your original init() follows.
+    # For example, initialize tokenizer on the training news:
+    tokenizer = Tokenizer()
+    tokenizer.fit_on_texts(news_df['CombinedText'].tolist())
+    vocab_size = len(tokenizer.word_index) + 1
+    max_history_length = 50
+    max_title_length = 30
+
+    # If process_dfs is True, then call your prepare_train_df() etc.
+    if process_dfs:
+        (clustered_data, tokenizer, vocab_size, max_history_length,
+         max_title_length, num_clusters) = prepare_train_df(
+            data_dir=data_dir,
+            news_file="news.tsv",
+            behaviours_file="behaviors.tsv",
+            user_category_profiles=None,  # Assuming you later generate or load profiles
+            num_clusters=3,
+            fraction=1,
+            max_title_length=max_title_length,
+            max_history_length=max_history_length
+        )
+    else:
+        # Load preprocessed news and train DataFrames if available.
+        news_df = pd.read_pickle("models/news_df_processed.pkl")
+        train_df = pd.read_pickle("models/train_df_processed.pkl")
+        clustered_data = make_clustered_data(train_df, num_clusters=3)
+    
+    # Return everything as before.
+    return data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, \
+           user_category_profiles, clustered_data, tokenizer, num_clusters
+
+# REMOVE OLD IF NEW WORKS
 def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip"):
     global vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
     if is_colab():
@@ -1899,10 +2305,13 @@ def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/tra
             local_dir=valid_data_dir
         )
     output_folder = os.path.dirname(zip_file_path)
+    valid_output_folder = os.path.dirname(valid_zip_file_path)
     
     # Unzip the file
     with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
         zip_ref.extractall(output_folder)
+    with zipfile.ZipFile(valid_zip_file_path, 'r') as zip_ref:
+        zip_ref.extractall(valid_output_folder)
     if is_colab():
       valid_output_folder = os.path.dirname(valid_zip_file_path)
       with zipfile.ZipFile(valid_zip_file_path, 'r') as zip_ref:
@@ -1933,6 +2342,29 @@ def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/tra
     
     print("\nLoaded behaviors data:")
     print(behaviors_df.head())
+
+    valid_news_path = os.path.join(valid_data_dir, news_file)
+    valid_news_df = pd.read_csv(
+        valid_news_path,
+        sep='\t',
+        names=['NewsID', 'Category', 'SubCategory', 'Title', 'Abstract', 'URL', 'TitleEntities', 'AbstractEntities'],
+        index_col=False
+    )
+    
+    print("Loaded news data:")
+    print(valid_news_df.head())
+    
+    # Load behaviors data
+    valid_behaviors_path = os.path.join(valid_data_dir, behaviors_file)
+    valid_behaviors_df = pd.read_csv(
+        valid_behaviors_path,
+        sep='\t',
+        names=['ImpressionID', 'UserID', 'Time', 'HistoryText', 'Impressions'],
+        index_col=False
+    )
+    
+    print("\nLoaded behaviors data:")
+    print(valid_behaviors_df.head())
     if process_behaviors:
         # Handle missing 'HistoryText' by replacing NaN with empty string
         behaviors_df['HistoryText'] = behaviors_df['HistoryText'].fillna('')
@@ -2110,8 +2542,14 @@ def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/tra
         filename="train_df_processed.pkl",
         local_dir="models"
     )
-    news_df = pd.read_pickle("models/news_df_processed.pkl")
-    train_df = pd.read_pickle("models/train_df_processed.pkl")
+    if "small" in data_dir:
+        news_df_pkl = "models/small_news_df_processed.pkl"
+        train_df_pkl = "models/small_train_df_processed.pkl"
+    else:
+        news_df_pkl = "models/news_df_processed.pkl"
+        train_df_pkl = "models/train_df_processed.pkl"
+    news_df = pd.read_pickle(news_df_pkl)
+    train_df = pd.read_pickle(train_df_pkl)
 
     clustered_data = make_clustered_data(train_df, num_clusters)
 
@@ -2121,6 +2559,13 @@ def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/tra
     max_title_length = 30
     batch_size = 64 # Adjust as needed
     return data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, user_category_profiles, clustered_data, tokenizer, num_clusters
+from sklearn.utils.class_weight import compute_class_weight
+
+def get_class_weights(labels):
+    print(f"get_class_weights: labels={labels}")
+    classes = np.unique(labels)
+    weights = compute_class_weight('balanced', classes=classes, y=labels)
+    return dict(zip(classes, weights))
 
 def get_models(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip"):
     news_file = 'news.tsv'
@@ -2146,9 +2591,10 @@ def get_models(process_dfs = False, process_behaviors = False, data_dir = 'datas
         num_clusters=num_clusters,
         batch_size=64,
         epochs=1,
-        load_models=[0,1,2,3]
+        load_models=[]
     )
     return models, news_df, behaviors_df, tokenizer
+
 def train_test_split_time(behaviors_df, cutoff_str="2019-11-20"):
     # Ensure Time column is datetime64[ns] and timezone-naive
     if behaviors_df["Time"].dtype != "datetime64[ns]":
@@ -2166,12 +2612,100 @@ def train_test_split_time(behaviors_df, cutoff_str="2019-11-20"):
     return train_data, test_data
 
 # ===================== __main__ =====================
+def main(dataset='train', process_dfs=False, process_behaviors=False,
+         data_dir_train='dataset/train/', data_dir_valid='dataset/valid/',
+         zip_file_train="MINDlarge_train.zip", zip_file_valid="MINDlarge_dev.zip",
+         user_category_profiles_path='', user_cluster_df_path='', cluster_id=None):
+    """
+    Main function to run tests on a given dataset type ('train' or 'valid').
+    It uses the midpoint time as cutoff and then runs evaluations.
+    """
+    # Choose dataset directory based on parameter.
+    if dataset.lower() == 'train':
+        data_dir = data_dir_train
+    elif dataset.lower() == 'valid':
+        data_dir = data_dir_valid
+    else:
+        raise ValueError("dataset must be either 'train' or 'valid'")
+    
+    # Unzip and load dataset (if not already unzipped)
+    # (You can implement similar zip download/unzip logic if needed.)
+    news_df, behaviors_df = init_dataset(data_dir)
+    
+    # Prepare tokenizer (we train only on news from the chosen dataset)
+    tokenizer, vocab_size = prepare_tokenizer(news_df)
+    max_history_length = 50
+    max_title_length = 30
 
-def main(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip", user_category_profiles_path = '', user_cluster_df_path = ''):
+    # Compute the midpoint time from the behaviors data and use it as cutoff
+    midpoint_time = get_midpoint_time(behaviors_df)
+    # Format the time to ISO 8601 with a trailing 'Z' (assuming UTC)
+    cutoff_time_str = midpoint_time.isoformat().replace('+00:00', 'Z')
+    print("Using cutoff time:", cutoff_time_str)
+
+    # (Assuming TF-IDF vectorizer is built on the news text)
+    tfidf_vectorizer = TfidfVectorizer()
+    tfidf_vectorizer.fit(news_df["CombinedText"])
+    
+    # Here you would continue with any clustering steps or training steps.
+    # For demonstration, we call the train_test_split function to get train/test splits from behaviors_df.
+    train_data, test_data = train_test_split_time(behaviors_df, cutoff_time_str)
+
+    # (Assume cluster_mapping and models_dict are available from your training procedure.
+    #  For example, if you already saved your models and cluster assignments, you would load them here.)
+    # For this example, we assume you have a user_cluster_df file:
+    if user_cluster_df_path == '':
+        user_cluster_df_path = hf_hub_download(
+            repo_id="Teemu5/news",
+            filename="user_cluster_df.pkl",
+            local_dir="models"
+        )
+    else:
+        # Optionally generate it if not available.
+        make_user_cluster_df(user_category_profiles_path, user_cluster_df_path)
+    user_cluster_df = pd.read_pickle(user_cluster_df_path)
+    cluster_mapping = {}
+    for cluster in user_cluster_df['Cluster'].unique():
+        cluster_mapping[cluster] = user_cluster_df[user_cluster_df['Cluster'] == cluster].index.tolist()
+    clusters_to_run = [999]
+    if cluster_id is not None:
+        # Support comma-separated list of cluster IDs:
+        clusters_to_run = [int(x.strip()) for x in str(cluster_id).split(",")]
+        cluster_mapping = {cl: users for cl, users in cluster_mapping.items() if cl in clusters_to_run}
+        print("Processing only clusters:", list(cluster_mapping.keys()))
+    # Here we assume your models_dict is obtained from training or loaded
+    models_dict, news_df, behaviors_df, tokenizer = get_models(process_dfs, process_behaviors, data_dir_train, data_dir_valid, zip_file_train, zip_file_valid)
+
+    # --- Run Evaluation and Write Intermediate Results ---
+    # The user-level evaluation function writes intermediate partial results every 10 users.
+    results_user_level = run_cluster_experiments_user_level(
+        cluster_mapping, 
+        train_data, 
+        test_data,
+        news_df,
+        behaviors_df,
+        models_dict,
+        tokenizer,
+        tfidf_vectorizer,
+        cutoff_time_str,
+        k_values=[5, 10, 20, 50, 100, 200, 500, 1000, 2000],
+        partial_csv=f"user_level_partial_results{clusters_to_run[0]}.csv",
+        shuffle_clusters=False
+    )
+
+    cluster_results_df = run_cluster_experiments(
+        cluster_mapping, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time_str, k_values=[5,10,20,50,100]
+    )
+    
+    print("Evaluation complete. Intermediate results were written during testing.")
+    return results_user_level, cluster_results_df
+
+def main2(process_dfs = False, process_behaviors = False, data_dir = 'dataset/train/', valid_data_dir = 'dataset/valid/', zip_file = f"MINDlarge_train.zip", valid_zip_file = f"MINDlarge_dev.zip", user_category_profiles_path = '', user_cluster_df_path = ''):
     logging.info(f"Starting main(process_dfs = {process_dfs}, process_behaviors = {process_behaviors}, data_dir = {data_dir}, valid_data_dir = {valid_data_dir}, zip_file = {zip_file}, valid_zip_file = {valid_zip_file}, user_category_profiles_path = {user_category_profiles_path}, user_cluster_df_path = {user_cluster_df_path}):")
     # Assume get_models() returns models_dict, news_df, behaviors_df, tokenizer
     models_dict, news_df, behaviors_df, tokenizer = get_models(process_dfs, process_behaviors, data_dir, valid_data_dir, zip_file, valid_zip_file)
-    
+    logging.info(f"News data shape: {news_df.shape}")
+    logging.info(f"Behaviors data shape: {behaviors_df.shape}")
     # Fit TF-IDF vectorizer on the combined text of news articles.
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_vectorizer.fit(news_df["CombinedText"])
@@ -2194,7 +2728,9 @@ def main(process_dfs = False, process_behaviors = False, data_dir = 'dataset/tra
         cluster_mapping[cluster] = user_cluster_df[user_cluster_df['Cluster'] == cluster].index.tolist()
     
     # Set a cutoff time (simulate recommendations at this time)
+    midpoint_time = get_midpoint_time(behaviors_df)
     cutoff_time_str = "2019-11-10T00:00:00Z"
+    cutoff_time_str = midpoint_time.isoformat().replace('+00:00', 'Z')
     print("Earliest interaction:", behaviors_df['Time'].min())
     print("Latest interaction:",   behaviors_df['Time'].max())
 

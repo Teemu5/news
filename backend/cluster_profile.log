@@ -76,3 +76,785 @@
  0.4917315  0.5377953  0.4355341  0.47472373 0.5224684  0.47938243
  0.49109295 0.5200767  0.4144129  0.48421574]
 2025-03-29 09:14:29,256 - INFO - Processed 0/48233 users so far in run_cluster_experiments_user_level.
+2025-03-29 09:38:07,806 - INFO - Starting main(process_dfs = False, process_behaviors = False, data_dir = dataset/small/train/, valid_data_dir = dataset/small/valid/, zip_file = MINDsmall_train.zip, valid_zip_file = MINDsmall_dev.zip, user_category_profiles_path = small_user_category_profiles.pkl, user_cluster_df_path = small_user_cluster_df.pkl):
+2025-03-29 09:38:54,249 - INFO - Starting user U13740 in cluster 1 (index 0)
+2025-03-29 09:40:38,973 - INFO - Starting user U73700 in cluster 1 (index 1)
+2025-03-29 09:40:39,053 - ERROR - Failed on user U73700 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:40:39,053 - INFO - Starting user U34670 in cluster 1 (index 2)
+2025-03-29 09:40:39,128 - ERROR - Failed on user U34670 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:40:39,128 - INFO - Starting user U8125 in cluster 1 (index 3)
+2025-03-29 09:40:39,193 - ERROR - Failed on user U8125 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:40:39,193 - INFO - Starting user U19739 in cluster 1 (index 4)
+2025-03-29 09:40:39,263 - ERROR - Failed on user U19739 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:40:39,263 - INFO - Starting user U8355 in cluster 1 (index 5)
+2025-03-29 09:40:39,334 - ERROR - Failed on user U8355 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:40:39,334 - INFO - Starting user U46596 in cluster 1 (index 6)
+2025-03-29 09:40:39,406 - ERROR - Failed on user U46596 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:40:39,407 - INFO - Starting user U79199 in cluster 1 (index 7)
+2025-03-29 09:40:39,485 - ERROR - Failed on user U79199 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:40:39,485 - INFO - Starting user U53231 in cluster 1 (index 8)
+2025-03-29 09:40:39,561 - ERROR - Failed on user U53231 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:40:39,562 - INFO - Starting user U10045 in cluster 1 (index 9)
+2025-03-29 09:42:08,952 - INFO - Starting user U63162 in cluster 1 (index 10)
+2025-03-29 09:42:09,028 - ERROR - Failed on user U63162 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:42:09,029 - INFO - Starting user U17841 in cluster 1 (index 11)
+2025-03-29 09:42:09,105 - ERROR - Failed on user U17841 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:42:09,105 - INFO - Starting user U8312 in cluster 1 (index 12)
+2025-03-29 09:42:09,175 - ERROR - Failed on user U8312 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:42:09,175 - INFO - Starting user U11306 in cluster 1 (index 13)
+2025-03-29 09:42:09,247 - ERROR - Failed on user U11306 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:42:09,248 - INFO - Starting user U38627 in cluster 1 (index 14)
+2025-03-29 09:42:09,317 - ERROR - Failed on user U38627 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:42:09,317 - INFO - Starting user U47654 in cluster 1 (index 15)
+2025-03-29 09:45:19,783 - INFO - Starting user U80798 in cluster 1 (index 16)
+2025-03-29 09:45:19,861 - ERROR - Failed on user U80798 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:19,861 - INFO - Starting user U67119 in cluster 1 (index 17)
+2025-03-29 09:45:19,929 - ERROR - Failed on user U67119 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:19,930 - INFO - Starting user U91678 in cluster 1 (index 18)
+2025-03-29 09:45:20,001 - ERROR - Failed on user U91678 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:20,001 - INFO - Starting user U12328 in cluster 1 (index 19)
+2025-03-29 09:45:20,069 - ERROR - Failed on user U12328 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:20,070 - INFO - Starting user U44808 in cluster 1 (index 20)
+2025-03-29 09:45:20,159 - ERROR - Failed on user U44808 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:20,159 - INFO - Starting user U33207 in cluster 1 (index 21)
+2025-03-29 09:45:20,235 - ERROR - Failed on user U33207 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:20,235 - INFO - Starting user U36009 in cluster 1 (index 22)
+2025-03-29 09:45:20,305 - ERROR - Failed on user U36009 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:20,305 - INFO - Starting user U85394 in cluster 1 (index 23)
+2025-03-29 09:45:20,382 - ERROR - Failed on user U85394 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:20,382 - INFO - Starting user U6744 in cluster 1 (index 24)
+2025-03-29 09:45:20,448 - ERROR - Failed on user U6744 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:20,448 - INFO - Starting user U81585 in cluster 1 (index 25)
+2025-03-29 09:45:20,516 - ERROR - Failed on user U81585 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:45:20,516 - INFO - Starting user U83994 in cluster 1 (index 26)
+2025-03-29 09:47:10,157 - INFO - Starting user U78244 in cluster 1 (index 27)
+2025-03-29 09:50:02,828 - INFO - Starting user U50695 in cluster 1 (index 28)
+2025-03-29 09:50:02,906 - ERROR - Failed on user U50695 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:50:02,906 - INFO - Starting user U80709 in cluster 1 (index 29)
+2025-03-29 09:50:02,975 - ERROR - Failed on user U80709 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:50:02,975 - INFO - Starting user U39703 in cluster 1 (index 30)
+2025-03-29 09:50:38,819 - INFO - Starting user U84248 in cluster 1 (index 31)
+2025-03-29 09:50:38,894 - ERROR - Failed on user U84248 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:50:38,895 - INFO - Starting user U78954 in cluster 1 (index 32)
+2025-03-29 09:51:30,508 - INFO - Starting user U15141 in cluster 1 (index 33)
+2025-03-29 09:52:17,590 - INFO - Starting user U16402 in cluster 1 (index 34)
+2025-03-29 09:52:17,665 - ERROR - Failed on user U16402 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:17,665 - INFO - Starting user U9312 in cluster 1 (index 35)
+2025-03-29 09:52:17,731 - ERROR - Failed on user U9312 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:17,731 - INFO - Starting user U1700 in cluster 1 (index 36)
+2025-03-29 09:52:17,801 - ERROR - Failed on user U1700 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:17,802 - INFO - Starting user U53159 in cluster 1 (index 37)
+2025-03-29 09:52:17,881 - ERROR - Failed on user U53159 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:17,881 - INFO - Starting user U40937 in cluster 1 (index 38)
+2025-03-29 09:52:17,957 - ERROR - Failed on user U40937 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:17,957 - INFO - Starting user U78765 in cluster 1 (index 39)
+2025-03-29 09:52:18,031 - ERROR - Failed on user U78765 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:18,032 - INFO - Starting user U700 in cluster 1 (index 40)
+2025-03-29 09:52:18,108 - ERROR - Failed on user U700 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:18,108 - INFO - Starting user U7932 in cluster 1 (index 41)
+2025-03-29 09:52:18,182 - ERROR - Failed on user U7932 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:18,183 - INFO - Starting user U2579 in cluster 1 (index 42)
+2025-03-29 09:52:18,253 - ERROR - Failed on user U2579 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:18,253 - INFO - Starting user U45798 in cluster 1 (index 43)
+2025-03-29 09:52:55,579 - INFO - Starting user U92183 in cluster 1 (index 44)
+2025-03-29 09:52:55,657 - ERROR - Failed on user U92183 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:55,657 - INFO - Starting user U73329 in cluster 1 (index 45)
+2025-03-29 09:52:55,728 - ERROR - Failed on user U73329 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:55,728 - INFO - Starting user U61875 in cluster 1 (index 46)
+2025-03-29 09:52:55,797 - ERROR - Failed on user U61875 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:55,798 - INFO - Starting user U39643 in cluster 1 (index 47)
+2025-03-29 09:52:55,866 - ERROR - Failed on user U39643 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:55,866 - INFO - Starting user U50562 in cluster 1 (index 48)
+2025-03-29 09:52:55,936 - ERROR - Failed on user U50562 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:55,936 - INFO - Starting user U53276 in cluster 1 (index 49)
+2025-03-29 09:52:56,010 - ERROR - Failed on user U53276 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:56,011 - INFO - Starting user U47477 in cluster 1 (index 50)
+2025-03-29 09:52:56,086 - ERROR - Failed on user U47477 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    user_history_tensor, user_history_ids = build_user_profile_tensor(
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    history_titles = np.vstack([padding_rows, history_titles])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:52:56,087 - INFO - Starting user U37844 in cluster 1 (index 51)
+2025-03-29 09:55:17,362 - INFO - Starting user U6518 in cluster 1 (index 52)
+2025-03-29 09:55:17,448 - ERROR - Failed on user U6518 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:17,448 - INFO - Starting user U39868 in cluster 1 (index 53)
+2025-03-29 09:55:17,519 - ERROR - Failed on user U39868 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:17,519 - INFO - Starting user U23485 in cluster 1 (index 54)
+2025-03-29 09:55:17,588 - ERROR - Failed on user U23485 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:17,588 - INFO - Starting user U61371 in cluster 1 (index 55)
+2025-03-29 09:55:17,664 - ERROR - Failed on user U61371 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:17,665 - INFO - Starting user U63808 in cluster 1 (index 56)
+2025-03-29 09:55:17,733 - ERROR - Failed on user U63808 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:17,733 - INFO - Starting user U2935 in cluster 1 (index 57)
+2025-03-29 09:55:17,800 - ERROR - Failed on user U2935 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:17,801 - INFO - Starting user U15363 in cluster 1 (index 58)
+2025-03-29 09:55:17,876 - ERROR - Failed on user U15363 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:17,876 - INFO - Starting user U5627 in cluster 1 (index 59)
+2025-03-29 09:55:17,942 - ERROR - Failed on user U5627 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:17,942 - INFO - Starting user U7471 in cluster 1 (index 60)
+2025-03-29 09:55:18,007 - ERROR - Failed on user U7471 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:18,008 - INFO - Starting user U67565 in cluster 1 (index 61)
+2025-03-29 09:55:18,076 - ERROR - Failed on user U67565 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:18,077 - INFO - Starting user U1376 in cluster 1 (index 62)
+2025-03-29 09:55:18,144 - ERROR - Failed on user U1376 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:18,144 - INFO - Starting user U11533 in cluster 1 (index 63)
+2025-03-29 09:55:18,218 - ERROR - Failed on user U11533 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:18,218 - INFO - Starting user U86017 in cluster 1 (index 64)
+2025-03-29 09:55:18,287 - ERROR - Failed on user U86017 in cluster 1 with error: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+Traceback (most recent call last):
+  File "/app/cluster_utils.py", line 951, in run_cluster_experiments_user_level
+    logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/cluster_utils.py", line 714, in build_user_profile_tensor
+    # pad the top
+                  
+  File "/usr/local/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 287, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 30 and the array at index 1 has size 0
+
+2025-03-29 09:55:18,287 - INFO - Starting user U3616 in cluster 1 (index 65)
