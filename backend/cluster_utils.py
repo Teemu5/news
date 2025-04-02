@@ -2279,7 +2279,7 @@ def init_bug(process_dfs=False, process_behaviors=False,
     return data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, \
            user_category_profiles, clustered_data, tokenizer, num_clusters
 
-def unzip_datasets(data_dir, zip_file, valid_zip_file):
+def unzip_datasets(data_dir, valid_data_dir, zip_file, valid_zip_file):
     zip_file_path = f"{data_dir}{zip_file}"
     valid_zip_file_path = f"{valid_data_dir}{valid_zip_file}"
     local_file_path = os.path.join(data_dir, zip_file)
@@ -2320,7 +2320,7 @@ def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/tra
         valid_data_dir = '/content/valid/'
     #data_dir = 'dataset/small/train/'  # Adjust path as necessary
     #zip_file = f"MINDsmall_train.zip"
-    unzip_datasets(data_dir, zip_file, valid_zip_file)
+    unzip_datasets(data_dir, valid_data_dir, zip_file, valid_zip_file)
     news_file = 'news.tsv'
     behaviors_file = 'behaviors.tsv'
     
@@ -2635,7 +2635,7 @@ def main(dataset='train', process_dfs=False, process_behaviors=False,
     
     # Unzip and load dataset (if not already unzipped)
     # (You can implement similar zip download/unzip logic if needed.)
-    unzip_datasets(data_dir, zip_file_train, zip_file_valid)
+    unzip_datasets(data_dir_train, data_dir_valid, zip_file_train, zip_file_valid)
     news_df, behaviors_df = init_dataset(data_dir)
     
     # Prepare tokenizer (we train only on news from the chosen dataset)
