@@ -2651,6 +2651,8 @@ def main(dataset='train', process_dfs=False, process_behaviors=False,
     # For demonstration, we call the train_test_split function to get train/test splits from behaviors_df.
     train_data, test_data = train_test_split_time(behaviors_df, cutoff_time_str)
 
+    # Here we assume your models_dict is obtained from training or loaded
+    models_dict, news_df, behaviors_df, tokenizer = get_models(process_dfs, process_behaviors, data_dir_train, data_dir_valid, zip_file_train, zip_file_valid)
     # (Assume cluster_mapping and models_dict are available from your training procedure.
     #  For example, if you already saved your models and cluster assignments, you would load them here.)
     # For this example, we assume you have a user_cluster_df file:
@@ -2673,9 +2675,6 @@ def main(dataset='train', process_dfs=False, process_behaviors=False,
         clusters_to_run = [int(x.strip()) for x in str(cluster_id).split(",")]
         cluster_mapping = {cl: users for cl, users in cluster_mapping.items() if cl in clusters_to_run}
         print("Processing only clusters:", list(cluster_mapping.keys()))
-    # Here we assume your models_dict is obtained from training or loaded
-    models_dict, news_df, behaviors_df, tokenizer = get_models(process_dfs, process_behaviors, data_dir_train, data_dir_valid, zip_file_train, zip_file_valid)
-
     # --- Run Evaluation and Write Intermediate Results ---
     # The user-level evaluation function writes intermediate partial results every 10 users.
     results_user_level = run_cluster_experiments_user_level(
