@@ -1026,7 +1026,7 @@ def run_cluster_experiments_user_level(
     import pandas as pd
     from tqdm import tqdm
     from traceback import format_exc
-
+    logging.info(f"partial_csv: {partial_csv}, cluster_mapping:{cluster_mapping}")
     results = []
     total_articles = len(news_df)
     partial_buffer = []
@@ -1061,7 +1061,7 @@ def run_cluster_experiments_user_level(
                 # 2) Build candidates.
                 candidate_tensors, candidate_ids = user_candidate_generation(
                     user_id, user_history_ids, train_data, news_df,
-                    tokenizer, tfidf_vectorizer, cutoff_time, 0.00
+                    tokenizer, tfidf_vectorizer, cutoff_time, 0.02
                 )
                 num_candidates = len(candidate_ids)
                 
@@ -1216,7 +1216,7 @@ def run_cluster_experiments_user_level2(
                 # 2) Build candidates.
                 candidate_tensors, candidate_ids = user_candidate_generation(
                     user_id, user_history_ids, train_data, news_df,
-                    tokenizer, tfidf_vectorizer, cutoff_time, 0.00
+                    tokenizer, tfidf_vectorizer, cutoff_time, 0.02
                 )
                 num_candidates = len(candidate_ids)
                 
@@ -2051,7 +2051,7 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
         print(train_df['Label'].value_counts())
         class_weight = get_class_weights(train_df['Label'])
         print("Class weights:", class_weight)
-
+        logging.info(f"Class weights: {class_weight}")
         # Train the model
         model.fit(
             train_generator,
@@ -2300,9 +2300,11 @@ def unzip_datasets(data_dir, valid_data_dir, zip_file, valid_zip_file):
     valid_output_folder = os.path.dirname(valid_zip_file_path)
     
     # Unzip the file
-    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+    print(f"unzip {local_file_path}")
+    with zipfile.ZipFile(local_file_path, 'r') as zip_ref:
         zip_ref.extractall(output_folder)
-    with zipfile.ZipFile(valid_zip_file_path, 'r') as zip_ref:
+    print(f"unzip {local_valid_file_path}")
+    with zipfile.ZipFile(local_valid_file_path, 'r') as zip_ref:
         zip_ref.extractall(valid_output_folder)
     if is_colab():
       valid_output_folder = os.path.dirname(valid_zip_file_path)
@@ -2596,7 +2598,7 @@ def get_models(process_dfs = False, process_behaviors = False, data_dir = 'datas
         num_clusters=num_clusters,
         batch_size=64,
         epochs=1,
-        load_models=[]
+        load_models=[0,1,2,3]
     )
     return models, news_df, behaviors_df, tokenizer
 
@@ -2683,6 +2685,7 @@ def main(dataset='train', process_dfs=False, process_behaviors=False,
         print("Processing only clusters:", list(cluster_mapping.keys()))
     # --- Run Evaluation and Write Intermediate Results ---
     # The user-level evaluation function writes intermediate partial results every 10 users.
+    results_partial_csv = f"user_level_partial_results_{date_str}_{list(cluster_mapping.keys())[0]}.csv"
     results_user_level = run_cluster_experiments_user_level(
         cluster_mapping, 
         train_data, 
@@ -2693,8 +2696,8 @@ def main(dataset='train', process_dfs=False, process_behaviors=False,
         tokenizer,
         tfidf_vectorizer,
         cutoff_time_str,
-        k_values=[5, 10, 20, 50, 100, 200, 500, 1000, 2000],
-        partial_csv=f"user_level_partial_results{clusters_to_run[0]}.csv",
+        k_values=[5, 10, 20, 50, 100],
+        partial_csv=results_partial_csv,
         shuffle_clusters=False
     )
 
