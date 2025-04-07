@@ -246,27 +246,23 @@ def get_cluster_ground_truth_frequency(cluster_users, behaviors_df, cutoff_time,
     logging.info(f"Cached ground truth frequency to {cache_filename}")
     return ground_truth_freq
 
-def compute_weighted_precision_recall_at_k(recommended_ids, ground_truth_freq, k):
+def compute_precision_recall_at_k(recommended_ids, ground_truth_ids, k, candidate_ids=None):
     """
-    Compute weighted precision and recall based on click frequency.
-    
-    recommended_ids: ordered list of recommended article IDs.
-    ground_truth_freq: dict mapping article IDs to click counts.
-    k: number of top recommendations.
-    
-    Here, weighted precision is calculated relative to the best possible cumulative frequency
-    that could be achieved by recommending the top-k most popular articles.
+    Compute precision@k and recall@k after filtering ground truth to only include articles
+    that exist in the candidate pool. If candidate_ids is not provided, it defaults to
+    the union of recommended_ids and ground_truth_ids.
     """
+    if candidate_ids is None:
+        candidate_ids = list(set(recommended_ids).union(ground_truth_ids))
+    filtered_ground_truth = set(ground_truth_ids).intersection(set(candidate_ids))
     recommended_k = recommended_ids[:k]
-    weighted_hits = sum(ground_truth_freq.get(rec, 0) for rec in recommended_k)
-    total_clicks = sum(ground_truth_freq.values())
-    
-    # The ideal top-k sum is computed from the k highest frequencies in the ground truth.
-    top_k_possible = sum(sorted(ground_truth_freq.values(), reverse=True)[:k])
-    
-    precision = weighted_hits / top_k_possible if top_k_possible > 0 else 0
-    recall = weighted_hits / total_clicks if total_clicks > 0 else 0
+    if not filtered_ground_truth:
+        return 0.0, 0.0
+    relevant = [1 if rec in filtered_ground_truth else 0 for rec in recommended_k]
+    precision = sum(relevant) / k
+    recall = sum(relevant) / len(filtered_ground_truth)
     return precision, recall
+
 
 def cluster_evaluate_weighted(recommended_ids, cluster_ground_truth_freq, k):
     """
@@ -452,14 +448,28 @@ def cluster_rank_candidates(candidate_scores, candidate_ids, k):
     """
     Ranks the candidate articles by their score and returns the top-k candidate IDs.
     """
+    k = min(k, len(candidate_ids))  # ensure k doesn't exceed available candidates
     top_indices = np.argsort(candidate_scores)[-k:][::-1]
+    logging.info(f"k:{k} candidate_ids: {len(candidate_ids)}!!!")
+    for i in top_indices:
+        logging.info(f"i:{i} candidate_ids[i]: {candidate_ids[i]}")
     recommended_ids = [candidate_ids[i] for i in top_indices]
     return recommended_ids
-def compute_precision_recall_at_k(recommended_ids, ground_truth_ids, k):
+def compute_precision_recall_at_k(recommended_ids, ground_truth_ids, k, candidate_ids=None):
+    """
+    Compute precision@k and recall@k after filtering ground truth to only include articles
+    that exist in the candidate pool. If candidate_ids is not provided, it defaults to
+    the union of recommended_ids and ground_truth_ids.
+    """
+    if candidate_ids is None:
+        candidate_ids = list(set(recommended_ids).union(ground_truth_ids))
+    filtered_ground_truth = set(ground_truth_ids).intersection(set(candidate_ids))
     recommended_k = recommended_ids[:k]
-    relevant = [1 if rec in ground_truth_ids else 0 for rec in recommended_k]
+    if not filtered_ground_truth:
+        return 0.0, 0.0
+    relevant = [1 if rec in filtered_ground_truth else 0 for rec in recommended_k]
     precision = sum(relevant) / k
-    recall = sum(relevant) / len(ground_truth_ids) if ground_truth_ids else 0
+    recall = sum(relevant) / len(filtered_ground_truth)
     return precision, recall
 
 def cluster_evaluate(recommended_ids, cluster_ground_truth, k):
@@ -469,20 +479,22 @@ def cluster_evaluate(recommended_ids, cluster_ground_truth, k):
     # Use the same compute_precision_recall_at_k function
     precision, recall = compute_precision_recall_at_k(recommended_ids, cluster_ground_truth, k)
     return precision, recall
-def average_precision_at_k(recommended_ids, ground_truth_ids, k):
+def average_precision_at_k(recommended_ids, ground_truth_ids, k, candidate_ids=None):
     """
-    Average Precision for a single user, given top-k recommended_ids and user’s ground_truth_ids.
+    Compute average precision at k after filtering ground truth to only include articles
+    that exist in the candidate pool.
     """
+    if candidate_ids is None:
+        candidate_ids = list(set(recommended_ids).union(ground_truth_ids))
+    filtered_ground_truth = set(ground_truth_ids).intersection(set(candidate_ids))
     recommended_k = recommended_ids[:k]
     hit_count = 0
     sum_precisions = 0.0
     for i, rec in enumerate(recommended_k, start=1):
-        if rec in ground_truth_ids:
+        if rec in filtered_ground_truth:
             hit_count += 1
             sum_precisions += hit_count / i
-    if hit_count == 0:
-        return 0.0
-    return sum_precisions / hit_count
+    return sum_precisions / hit_count if hit_count > 0 else 0.0
 
 def compute_map_at_k(recommended_ids_list, ground_truth_list, k):
     """
@@ -499,13 +511,18 @@ def compute_map_at_k(recommended_ids_list, ground_truth_list, k):
 # Similar for nDCG
 import math
 
-def dcg_at_k(recommended_ids, ground_truth_ids, k):
+def dcg_at_k(recommended_ids, ground_truth_ids, k, candidate_ids=None):
+    """
+    Compute Discounted Cumulative Gain at k after filtering ground truth.
+    """
+    if candidate_ids is None:
+        candidate_ids = list(set(recommended_ids).union(ground_truth_ids))
+    filtered_ground_truth = set(ground_truth_ids).intersection(set(candidate_ids))
     recommended_k = recommended_ids[:k]
     dcg = 0.0
     for i, rec in enumerate(recommended_k, start=1):
-        if rec in ground_truth_ids:
-            # binary relevance
-            dcg += 1.0 / math.log2(i+1)
+        if rec in filtered_ground_truth:
+            dcg += 1.0 / math.log2(i + 1)
     return dcg
 
 def compute_ndcg_at_k(recommended_ids_list, ground_truth_list, k):
@@ -518,6 +535,29 @@ def compute_ndcg_at_k(recommended_ids_list, ground_truth_list, k):
         dcg_val = dcg_at_k(rec_ids, gt_ids, k)
         ndcg_values.append(dcg_val / idcg)
     return np.mean(ndcg_values) if ndcg_values else 0.0
+
+def get_user_shown_articles(user_id, behaviors_df, cutoff_time):
+    """
+    Return a set of article IDs that were shown to the user after cutoff_time,
+    regardless of whether they were clicked.
+    """
+    shown_articles = set()
+    behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    cutoff_dt = pd.to_datetime(cutoff_time)
+    future_rows = behaviors_df[
+        (behaviors_df['UserID'] == user_id) &
+        (behaviors_df['Time'] > np.datetime64(cutoff_dt))
+    ]
+    for _, row in future_rows.iterrows():
+        if pd.isna(row["Impressions"]) or row["Impressions"].strip() == "":
+            continue
+        for imp in row["Impressions"].split():
+            try:
+                art_id, _ = imp.split('-')
+                shown_articles.add(art_id)
+            except:
+                pass
+    return shown_articles
 
 def evaluate_cluster_model(
     cluster_history_tensor,
@@ -566,6 +606,7 @@ def evaluate_cluster_model(
         metrics[0][f"precision_weighted@{k}"] = precision_weighted
         metrics[0][f"recall_weighted@{k}"] = recall_weighted
     return metrics
+
 def run_cluster_experiments(cluster_mapping, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer,
                             cutoff_time_str, k_values=[5,10,20,50,100]):
     """
@@ -844,97 +885,7 @@ def compute_coverage(all_recommended_ids, total_num_articles):
         recommended_set.update(rec_list)
     coverage_value = len(recommended_set) / total_num_articles
     return coverage_value
-def user_evaluation_loop(models_dict, news_df, behaviors_df, tokenizer, tfidf_vectorizer,
-                         user_ids, cutoff_str="2019-11-10T00:00:00Z", chunk_size=1000):
-    user_ids = list(user_ids)
-    cutoff_dt = pd.to_datetime(cutoff_str)
-    
-    # For measuring final metrics
-    all_metrics = []
-    
-    for start_idx in range(0, len(user_ids), chunk_size):
-        end_idx = start_idx + chunk_size
-        chunk_user_ids = user_ids[start_idx:end_idx]
-        
-        chunk_results = []
-        for user_id in chunk_user_ids:
-            # 1) build_user_profile_tensor
-            user_hist_tensor, user_hist_ids, original_history_len = build_user_profile_tensor(
-                user_id, 
-                behaviors_df, 
-                news_df, 
-                cutoff_dt,  # or cutoff_str
-                tokenizer
-            )
-            
-            # 2) user_candidate_generation
-            candidate_tensors, candidate_ids = user_candidate_generation(
-                user_id, 
-                user_hist_ids, 
-                behaviors_df, 
-                news_df, 
-                tokenizer, 
-                tfidf_vectorizer,
-                cutoff_time=cutoff_dt,
-                max_candidates=300  # e.g., re-rank 300
-            )
-            
-            # 3) Score (ensemble or single)
-                # 1) Score candidates
-            if isinstance(models_dict, dict):
-                # Ensemble with model dict
-                candidate_scores = cluster_candidate_scoring(user_hist_tensor, candidate_tensors, models_dict)
-            else:
-                # Single-model scoring
-                candidate_scores = cluster_candidate_scoring_single(user_hist_tensor, candidate_tensors, models_dict)
-            
-            # 4) ground truth
-            future_clicks = get_user_future_clicks(user_id, behaviors_df, cutoff_dt)
-            
-            # Example: Evaluate at k=10
-            k = 10
-            recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
-            prec, rec = compute_precision_recall_at_k(recommended_ids, future_clicks, k)
-            
-            # 5) Add to chunk results
-            chunk_results.append({
-                "user_id": user_id,
-                "precision@10": prec,
-                "recall@10": rec,
-                # etc.
-            })
-        
-        # Save chunk to CSV
-        chunk_df = pd.DataFrame(chunk_results)
-        chunk_df.to_csv(f"user_metrics_{start_idx}_{end_idx}.csv", index=False)
-        
-        # If you want global aggregates:
-        all_metrics.append(chunk_df)
-    
-    # Combine all chunks if you want
-    final_df = pd.concat(all_metrics, ignore_index=True)
-    final_df.to_csv("user_metrics_all.csv", index=False)
-    return final_df
-def write_results_to_csv(results_list, output_csv="user_level_experiment_results.csv", partial=False):
-    """
-    Writes a list of dict results to CSV. If partial=True,
-    it appends rows (without overwriting or rewriting headers).
-    If partial=False, it overwrites the file fully (writes header).
-    """
-    if not results_list:
-        return  # nothing to write
 
-    df = pd.DataFrame(results_list)
-    if partial:
-        # Append rows with no header if the file already exists:
-        mode = "a"
-        header = not os.path.exists(output_csv)
-    else:
-        # Overwrite the file, writing header
-        mode = "w"
-        header = True
-
-    df.to_csv(output_csv, mode=mode, header=header, index=False)
 def write_partial_rows(rows, filename="user_level_partial_results.csv"):
     """
     Appends a list of dictionaries (rows) to a CSV. 
@@ -985,6 +936,56 @@ def score_candidates_in_batch(history_tensor, candidate_tensors, model, batch_si
     )
     # preds is shape (num_candidates, 1)
     return preds.ravel()  # flatten to shape (num_candidates,)
+
+def generate_base_predictions(history_tensor, candidate_tensors, models_dict, batch_size=128):
+    """
+    For a given user, generate predictions from each base model.
+    Returns:
+      - A dictionary mapping model keys to their predictions (as numpy arrays).
+    """
+    separate_scores = {}
+    for key, model in models_dict.items():
+        preds = score_candidates_in_batch(history_tensor, candidate_tensors, model, batch_size)
+        separate_scores[key] = preds  # shape (num_candidates,)
+    return separate_scores
+
+def save_incremental(prediction, filename='scores.pkl'):
+    with open(filename, 'ab') as f:  # Open in append mode
+        pickle.dump(prediction, f)
+
+def build_meta_training_data(user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time):
+    """
+    For each user in user_ids, generate candidate predictions and build a training dataset for the meta-model.
+    Returns X_meta (features) and y_meta (binary labels).
+    """
+    X_meta, y_meta = [], []
+    for user_id in user_ids:
+        # Build user profile and candidate pool as you already do.
+        user_history_tensor, user_history_ids, _ = build_user_profile_tensor(user_id, behaviors_df, news_df, cutoff_time, tokenizer)
+        candidate_tensors, candidate_ids = user_candidate_generation(user_id, user_history_ids, behaviors_df, news_df, tokenizer, tfidf_vectorizer, cutoff_time, 0.02)
+        
+        # Expand dims to match model input.
+        user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+        
+        # Generate base model predictions.
+        base_preds = generate_base_predictions(user_history_tensor, candidate_tensors, models_dict)
+        # Combine predictions into a feature matrix.
+        # Assuming candidate_ids are in the same order for all models.
+        num_candidates = len(candidate_ids)
+        # For each candidate, create feature vector: [pred_model1, pred_model2, pred_model3]
+        features = np.column_stack([base_preds[key] for key in models_dict.keys()])
+        
+        # Get ground truth: whether the candidate was clicked.
+        ground_truth = get_user_future_clicks(user_id, behaviors_df, cutoff_time)
+        labels = np.array([1 if art in ground_truth else 0 for art in candidate_ids])
+        
+        X_meta.append(features)
+        y_meta.append(labels)
+    # Flatten lists over all users. (Make sure the dimensions match: each row is one candidate)
+    X_meta = np.vstack(X_meta)
+    y_meta = np.hstack(y_meta)
+    return X_meta, y_meta
+
 def score_candidates_ensemble_batch(history_tensor, candidate_tensors, models_dict, batch_size=128):
     """
     Batch-scoring for an ensemble of models in 'models_dict'.
@@ -1001,7 +1002,624 @@ def score_candidates_ensemble_batch(history_tensor, candidate_tensors, models_di
     # Average across axis=0 => shape (num_candidates,)
     mean_preds = np.mean(all_preds, axis=0)
     return mean_preds, separate_scores
-def run_cluster_experiments_user_level(
+
+def candidate_pool_from_behavior(user_id, behaviors_df, cutoff_time):
+    """
+    Return the set of article IDs that appear in the user's impression data after the cutoff,
+    representing articles that were shown to the user.
+    """
+    behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    cutoff_dt = pd.to_datetime(cutoff_time)
+    pool = set()
+    user_rows = behaviors_df[behaviors_df['UserID'] == user_id]
+    for _, row in user_rows.iterrows():
+        if row['Time'] > np.datetime64(cutoff_dt) and pd.notna(row["Impressions"]) and row["Impressions"].strip() != "":
+            for imp in row["Impressions"].split():
+                try:
+                    art, _ = imp.split('-')
+                    pool.add(art)
+                except Exception as e:
+                    print(f"Error parsing impression {imp}: {e}")
+    return pool
+
+def evaluate_candidate_pool(scores, candidate_ids, ground_truth_ids, k_values):
+    """
+    For a given candidate set and corresponding scores, compute evaluation metrics.
+    The candidate_ids and scores are assumed to be aligned.
+    Returns a dictionary mapping each k to a sub-dictionary of metrics.
+    """
+    metrics = {}
+    # Ensure that for each k we do not request more items than available.
+    for k in k_values:
+        effective_k = min(k, len(candidate_ids))
+        if effective_k == 0:
+            metrics[k] = {"recommended_ids": [],
+                          "precision": 0.0,
+                          "recall": 0.0,
+                          "ap": 0.0,
+                          "ndcg": 0.0,
+                          "num_recommendations": 0}
+            continue
+        # Get the indices of the top effective_k scores.
+        top_indices = np.argsort(scores)[-effective_k:][::-1]
+        recommended_ids = [candidate_ids[i] for i in top_indices]
+        prec, rec = compute_precision_recall_at_k(recommended_ids, ground_truth_ids, effective_k, candidate_ids)
+        ap = average_precision_at_k(recommended_ids, ground_truth_ids, effective_k, candidate_ids)
+        dcg_val = dcg_at_k(recommended_ids, ground_truth_ids, effective_k, candidate_ids)
+        ideal_dcg = dcg_at_k(list(ground_truth_ids), ground_truth_ids, effective_k, candidate_ids)
+        ndcg = dcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
+        metrics[k] = {
+            "recommended_ids": recommended_ids,
+            "precision": prec,
+            "recall": rec,
+            "ap": ap,
+            "ndcg": ndcg,
+            "num_recommendations": len(recommended_ids)
+        }
+    return metrics
+
+
+def run_cluster_experiments_user_level(cluster_mapping, train_data, test_data, news_df,
+                                       behaviors_df, models_dict, tokenizer,
+                                       tfidf_vectorizer, cutoff_time, 
+                                       k_values=[5, 10, 20, 50],
+                                       partial_csv="user_level_partial_results.csv",
+                                       shuffle_clusters=False, cluster_order=None):
+    import numpy as np
+    import pandas as pd
+    from tqdm import tqdm
+    from traceback import format_exc
+    logging.info(f"partial_csv: {partial_csv}, cluster_mapping:{cluster_mapping}")
+    results = []
+    total_articles = len(news_df)
+    
+    # Initialize a partial buffer for each model including ensemble ("bagging")
+    partial_buffer = {"bagging": []}
+    for model_key in models_dict.keys():
+        partial_buffer[model_key] = []
+
+    # Determine cluster order.
+    if cluster_order is not None:
+        ordered_clusters = cluster_order
+    else:
+        ordered_clusters = list(cluster_mapping.keys())
+        if shuffle_clusters:
+            np.random.shuffle(ordered_clusters)
+
+    for cluster_id in ordered_clusters:
+        user_list = cluster_mapping[cluster_id]
+        # Initialize accumulators for cluster-level aggregation.
+        user_metrics = {k: {"precision": [], "recall": []} for k in k_values}
+        user_maps = {k: [] for k in k_values}
+        user_ndcgs = {k: [] for k in k_values}
+        cluster_recs = []  # For coverage (using top-10 recommendations)
+        total_users = len(user_list)
+
+        for i, user_id in enumerate(tqdm(user_list, desc=f"Evaluating users in cluster {cluster_id}")):
+            try:
+                logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                # 1) Build user profile.
+                user_history_tensor, user_history_ids, original_history_len = build_user_profile_tensor(
+                    user_id, behaviors_df, news_df, cutoff_time, tokenizer)
+                num_history_articles = len(user_history_ids)
+                
+                # 2) Build full candidate pool.
+                candidate_tensors, candidate_ids = user_candidate_generation(
+                    user_id, user_history_ids, train_data, news_df,
+                    tokenizer, tfidf_vectorizer, cutoff_time, 0.02)
+                num_candidates = len(candidate_ids)
+                
+                # 3) Expand dims for prediction.
+                user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+                
+                # 4) Score candidates using ensemble.
+                candidate_scores, separate_scores = score_candidates_ensemble_batch(
+                    user_history_tensor, candidate_tensors, models_dict, batch_size=512)
+                # Get ground truth clicks and shown articles.
+                user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
+                shown_articles = get_user_shown_articles(user_id, test_data, cutoff_time)
+                # Build behavior-only candidate pool from impressions.
+                behavior_candidate_ids = list(candidate_pool_from_behavior(user_id, test_data, cutoff_time))
+                
+                # Prepare base result row.
+                partial_result_row = {
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "num_candidates_full": num_candidates,
+                    "num_history_articles": num_history_articles,
+                    "original_history_len": original_history_len,
+                    "num_future_clicks": len(user_future_clicks),
+                    "num_ground_truth_all": len(user_future_clicks),
+                    "num_shown_articles": len(shown_articles),
+                    "num_candidates_behavior": len(behavior_candidate_ids),
+                    "num_ground_truth_in_behavior": len(set(user_future_clicks).intersection(behavior_candidate_ids))
+                }
+                
+                # Compute metrics for the full candidate pool.
+                full_metrics = evaluate_candidate_pool(candidate_scores, candidate_ids, user_future_clicks, k_values)
+                
+                # Compute metrics for the behavior-only candidate pool:
+                # Filter scores and candidate_ids for those in the behavior-only pool.
+                behavior_indices = [idx for idx, art in enumerate(candidate_ids) if art in behavior_candidate_ids]
+                if behavior_indices:
+                    behavior_scores = [candidate_scores[idx] for idx in behavior_indices]
+                    behavior_candidate_ids_filtered = [candidate_ids[idx] for idx in behavior_indices]
+                    behavior_metrics = evaluate_candidate_pool(behavior_scores, behavior_candidate_ids_filtered, user_future_clicks, k_values)
+                else:
+                    # If no behavior candidates, return zeros.
+                    behavior_metrics = {k: {"precision": 0.0, "recall": 0.0, "ap": 0.0, "ndcg": 0.0, "num_recommendations": 0} for k in k_values}
+                
+                # Merge full and behavior-only metrics into the result row.
+                for k in k_values:
+                    partial_result_row[f"precision_full_{k}"] = full_metrics[k]["precision"]
+                    partial_result_row[f"recall_full_{k}"] = full_metrics[k]["recall"]
+                    partial_result_row[f"ap_full_{k}"] = full_metrics[k]["ap"]
+                    partial_result_row[f"ndcg_full_{k}"] = full_metrics[k]["ndcg"]
+                    partial_result_row[f"num_recommendations_full_{k}"] = full_metrics[k]["num_recommendations"]
+                    
+                    partial_result_row[f"precision_behavior_{k}"] = behavior_metrics[k]["precision"]
+                    partial_result_row[f"recall_behavior_{k}"] = behavior_metrics[k]["recall"]
+                    partial_result_row[f"ap_behavior_{k}"] = behavior_metrics[k]["ap"]
+                    partial_result_row[f"ndcg_behavior_{k}"] = behavior_metrics[k]["ndcg"]
+                    partial_result_row[f"num_recommendations_behavior_{k}"] = behavior_metrics[k]["num_recommendations"]
+                
+                partial_result_row["status"] = "DONE"
+                partial_buffer["bagging"].append(partial_result_row)
+                # Flush partial results every 10 users.
+                if (i + 1) % 1 == 0:
+                    logging.info(f"Writing partial rows to {partial_csv}")
+                    save_incremental(separate_scores, f"{partial_csv.split('.csv')[0]}.pkl")
+                    write_partial_rows(partial_buffer["bagging"], partial_csv)
+                    partial_buffer["bagging"] = []
+                
+                # If desired, repeat similar metric evaluation for individual models.
+                for model_key, single_model in models_dict.items():
+                    ind_metrics = evaluate_candidate_pool(separate_scores[model_key], candidate_ids, user_future_clicks, k_values)
+                    behavior_ind = None
+                    behavior_indices = [idx for idx, art in enumerate(candidate_ids) if art in behavior_candidate_ids]
+                    if behavior_indices:
+                        behavior_scores = [separate_scores[model_key][idx] for idx in behavior_indices]
+                        behavior_candidate_ids_filtered = [candidate_ids[idx] for idx in behavior_indices]
+                        behavior_ind = evaluate_candidate_pool(behavior_scores, behavior_candidate_ids_filtered, user_future_clicks, k_values)
+                    else:
+                        behavior_ind = {k: {"precision": 0.0, "recall": 0.0, "ap": 0.0, "ndcg": 0.0, "num_recommendations": 0} for k in k_values}
+                    
+                    ind_result = {
+                        "cluster_id": cluster_id,
+                        "user_id": user_id,
+                        "user_index_in_cluster": i,
+                        "num_candidates_full": num_candidates,
+                        "num_history_articles": num_history_articles,
+                        "original_history_len": original_history_len,
+                        "num_future_clicks": len(user_future_clicks),
+                        "num_ground_truth_all": len(user_future_clicks),
+                        "num_shown_articles": len(shown_articles),
+                        "num_candidates_behavior": len(behavior_candidate_ids),
+                        "num_ground_truth_in_behavior": len(set(user_future_clicks).intersection(behavior_candidate_ids))
+                    }
+                    for k in k_values:
+                        ind_result[f"precision_full_{k}"] = ind_metrics[k]["precision"]
+                        ind_result[f"recall_full_{k}"] = ind_metrics[k]["recall"]
+                        ind_result[f"ap_full_{k}"] = ind_metrics[k]["ap"]
+                        ind_result[f"ndcg_full_{k}"] = ind_metrics[k]["ndcg"]
+                        ind_result[f"num_recommendations_full_{k}"] = ind_metrics[k]["num_recommendations"]
+                        
+                        ind_result[f"precision_behavior_{k}"] = behavior_ind[k]["precision"]
+                        ind_result[f"recall_behavior_{k}"] = behavior_ind[k]["recall"]
+                        ind_result[f"ap_behavior_{k}"] = behavior_ind[k]["ap"]
+                        ind_result[f"ndcg_behavior_{k}"] = behavior_ind[k]["ndcg"]
+                        ind_result[f"num_recommendations_behavior_{k}"] = behavior_ind[k]["num_recommendations"]
+                    ind_result["status"] = "DONE"
+                    partial_buffer[model_key].append(ind_result)
+                    if (i + 1) % 1 == 0:
+                        logging.info(f"Writing partial rows to {model_key}_{partial_csv}")
+
+                        save_incremental(separate_scores, f"{model_key}_{partial_csv.split('.csv')[0]}.pkl")
+                        write_partial_rows(partial_buffer[model_key], f"{model_key}_{partial_csv}")
+
+                        partial_buffer[model_key] = []
+                    
+            except Exception as e:
+                logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
+                partial_buffer["bagging"].append({
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "status": f"FAILED: {e}"
+                })
+                continue
+
+        for key in partial_buffer:
+            if partial_buffer[key]:
+                write_partial_rows(partial_buffer[key], partial_csv)
+                partial_buffer[key] = []
+        
+        # (Aggregation of cluster-level metrics omitted for brevity)
+        # You would compute average precision/recall, MAP, nDCG per cluster and add to results.
+    
+    # Finally, save and return your results DataFrame.
+    results_df = pd.DataFrame(results)
+    results_df.to_csv("user_level_experiment_results.csv", index=False)
+    print("Cluster-level experiment results saved to 'user_level_experiment_results.csv'")
+    return results_df
+
+
+def evaluate_candidate_pool4(scores, candidate_ids, user_future_clicks, k_values):
+    """
+    For a given candidate set (candidate_ids) and score vector, compute evaluation metrics.
+    Uses compute_precision_recall_at_k, average_precision_at_k, and dcg_at_k.
+    Returns a dictionary mapping each k to a sub-dictionary of metrics.
+    """
+    metrics = {}
+    for k in k_values:
+        recommended_ids = cluster_rank_candidates(scores, candidate_ids, k)
+        # Here, we pass candidate_ids to our metric functions if needed.
+        prec, rec = compute_precision_recall_at_k(recommended_ids, user_future_clicks, k, candidate_ids)
+        ap = average_precision_at_k(recommended_ids, user_future_clicks, k, candidate_ids)
+        dcg_val = dcg_at_k(recommended_ids, user_future_clicks, k, candidate_ids)
+        ideal_dcg = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)), candidate_ids)
+        ndcg = dcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
+        metrics[k] = {
+            "recommended_ids": recommended_ids,
+            "precision": prec,
+            "recall": rec,
+            "ap": ap,
+            "ndcg": ndcg,
+            "num_recommendations": len(recommended_ids)
+        }
+    return metrics
+
+def run_cluster_experiments_user_level4(cluster_mapping, train_data, test_data, news_df,
+                                       behaviors_df, models_dict, tokenizer,
+                                       tfidf_vectorizer, cutoff_time, k_values=[5,10,20,50],
+                                       partial_csv="user_level_partial_results.csv",
+                                       shuffle_clusters=False, cluster_order=None):
+    import numpy as np
+    import pandas as pd
+    from tqdm import tqdm
+    from traceback import format_exc
+    logging.info(f"partial_csv: {partial_csv}, cluster_mapping:{cluster_mapping}")
+    results = []
+    total_articles = len(news_df)
+    # Initialize a partial buffer for each model including ensemble ("bagging")
+    partial_buffer = {"bagging": []}
+    for model_key in models_dict.keys():
+        partial_buffer[model_key] = []
+
+    if cluster_order is not None:
+        ordered_clusters = cluster_order
+    else:
+        ordered_clusters = list(cluster_mapping.keys())
+        if shuffle_clusters:
+            np.random.shuffle(ordered_clusters)
+
+    for cluster_id in ordered_clusters:
+        user_list = cluster_mapping[cluster_id]
+        # Accumulators for cluster-level metrics
+        user_metrics = {k: {"precision": [], "recall": []} for k in k_values}
+        user_maps = {k: [] for k in k_values}
+        user_ndcgs = {k: [] for k in k_values}
+        cluster_recs = []  # for coverage using top-10 recommendations
+        total_users = len(user_list)
+
+        for i, user_id in enumerate(tqdm(user_list, desc=f"Evaluating users in cluster {cluster_id}")):
+            try:
+                logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                # 1) Build user profile.
+                user_history_tensor, user_history_ids, original_history_len = build_user_profile_tensor(
+                    user_id, behaviors_df, news_df, cutoff_time, tokenizer)
+                num_history_articles = len(user_history_ids)
+                # 2) Build candidates from full candidate pool.
+                candidate_tensors, candidate_ids = user_candidate_generation(
+                    user_id, user_history_ids, train_data, news_df, tokenizer,
+                    tfidf_vectorizer, cutoff_time, 0.02)
+                num_candidates = len(candidate_ids)
+                # 3) Expand dims.
+                user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+                # 4) Score candidates using ensemble.
+                candidate_scores, separate_scores = score_candidates_ensemble_batch(
+                    user_history_tensor, candidate_tensors, models_dict, batch_size=512)
+                
+                # Get ground truth clicks and shown articles.
+                user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
+                shown_articles = get_user_shown_articles(user_id, test_data, cutoff_time)
+                # Build behavior-only candidate pool.
+                behavior_candidate_ids = list(candidate_pool_from_behavior(user_id, test_data, cutoff_time))
+                
+                # Prepare a base result row.
+                partial_result_row = {
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "num_candidates_full": num_candidates,
+                    "num_history_articles": num_history_articles,
+                    "original_history_len": original_history_len,
+                    "num_future_clicks": len(user_future_clicks),
+                    "num_ground_truth_all": len(user_future_clicks),
+                    "num_shown_articles": len(shown_articles),
+                    "num_candidates_behavior": len(behavior_candidate_ids),
+                    "num_ground_truth_in_behavior": len(set(user_future_clicks).intersection(behavior_candidate_ids))
+                }
+                # Compute metrics for full candidate pool.
+                full_metrics = evaluate_candidate_pool(candidate_scores, candidate_ids, user_future_clicks, k_values)
+                # Compute metrics for behavior-only candidate pool.
+                behavior_metrics = evaluate_candidate_pool(candidate_scores, behavior_candidate_ids, user_future_clicks, k_values)
+                
+                # Merge these into the result row.
+                for k in k_values:
+                    partial_result_row[f"precision_full_{k}"] = full_metrics[k]["precision"]
+                    partial_result_row[f"recall_full_{k}"] = full_metrics[k]["recall"]
+                    partial_result_row[f"ap_full_{k}"] = full_metrics[k]["ap"]
+                    partial_result_row[f"ndcg_full_{k}"] = full_metrics[k]["ndcg"]
+                    partial_result_row[f"num_recommendations_full_{k}"] = full_metrics[k]["num_recommendations"]
+                    
+                    partial_result_row[f"precision_behavior_{k}"] = behavior_metrics[k]["precision"]
+                    partial_result_row[f"recall_behavior_{k}"] = behavior_metrics[k]["recall"]
+                    partial_result_row[f"ap_behavior_{k}"] = behavior_metrics[k]["ap"]
+                    partial_result_row[f"ndcg_behavior_{k}"] = behavior_metrics[k]["ndcg"]
+                    partial_result_row[f"num_recommendations_behavior_{k}"] = behavior_metrics[k]["num_recommendations"]
+                
+                # Append and flush if necessary.
+                partial_result_row["status"] = "DONE"
+                partial_buffer["bagging"].append(partial_result_row)
+                if (i + 1) % 1 == 0:
+                    logging.info(f"Writing partial rows: {partial_buffer['bagging']}")
+                    write_partial_rows(partial_buffer["bagging"], partial_csv)
+                    partial_buffer["bagging"] = []
+                
+                # Also, if you wish, repeat for individual models:
+                for model_key, single_model in models_dict.items():
+                    # Here, similar procedure can be applied using separate_scores[model_key]
+                    ind_metrics = evaluate_candidate_pool(separate_scores[model_key], candidate_ids, user_future_clicks, k_values)
+                    ind_behavior = evaluate_candidate_pool(separate_scores[model_key], behavior_candidate_ids, user_future_clicks, k_values)
+                    ind_result = {
+                        "cluster_id": cluster_id,
+                        "user_id": user_id,
+                        "user_index_in_cluster": i,
+                        "num_candidates_full": num_candidates,
+                        "num_history_articles": num_history_articles,
+                        "original_history_len": original_history_len,
+                        "num_future_clicks": len(user_future_clicks),
+                        "num_ground_truth_all": len(user_future_clicks),
+                        "num_shown_articles": len(shown_articles),
+                        "num_candidates_behavior": len(behavior_candidate_ids),
+                        "num_ground_truth_in_behavior": len(set(user_future_clicks).intersection(behavior_candidate_ids))
+                    }
+                    for k in k_values:
+                        ind_result[f"precision_full_{k}"] = ind_metrics[k]["precision"]
+                        ind_result[f"recall_full_{k}"] = ind_metrics[k]["recall"]
+                        ind_result[f"ap_full_{k}"] = ind_metrics[k]["ap"]
+                        ind_result[f"ndcg_full_{k}"] = ind_metrics[k]["ndcg"]
+                        ind_result[f"num_recommendations_full_{k}"] = ind_metrics[k]["num_recommendations"]
+
+                        ind_result[f"precision_behavior_{k}"] = ind_behavior[k]["precision"]
+                        ind_result[f"recall_behavior_{k}"] = ind_behavior[k]["recall"]
+                        ind_result[f"ap_behavior_{k}"] = ind_behavior[k]["ap"]
+                        ind_result[f"ndcg_behavior_{k}"] = ind_behavior[k]["ndcg"]
+                        ind_result[f"num_recommendations_behavior_{k}"] = ind_behavior[k]["num_recommendations"]
+                    ind_result["status"] = "DONE"
+                    partial_buffer[model_key].append(ind_result)
+                    if (i + 1) % 10 == 0:
+                        write_partial_rows(partial_buffer[model_key], f"{model_key}_{partial_csv}")
+                        partial_buffer[model_key] = []
+                
+            except Exception as e:
+                logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
+                partial_buffer["bagging"].append({
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "status": f"FAILED: {e}"
+                })
+                continue
+
+        for key in partial_buffer:
+            if partial_buffer[key]:
+                write_partial_rows(partial_buffer[key], partial_csv)
+                partial_buffer[key] = []
+        
+        # Aggregate cluster-level metrics as before...
+        # (Aggregation code omitted for brevity)
+    results_df = pd.DataFrame(results)
+    results_df.to_csv("user_level_experiment_results.csv", index=False)
+    print("Cluster-level experiment results saved to 'user_level_experiment_results.csv'")
+    return results_df
+
+def run_cluster_experiments_user_level3(
+    cluster_mapping, 
+    train_data, 
+    test_data,
+    news_df,
+    behaviors_df,
+    models_dict, 
+    tokenizer,
+    tfidf_vectorizer,
+    cutoff_time,
+    k_values=[5, 10, 20, 50],
+    partial_csv="user_level_partial_results.csv",
+    shuffle_clusters=False,
+    cluster_order=None
+):
+    import numpy as np
+    import pandas as pd
+    from tqdm import tqdm
+    from traceback import format_exc
+    logging.info(f"partial_csv: {partial_csv}, cluster_mapping:{cluster_mapping}")
+    results = []
+    total_articles = len(news_df)
+    # Initialize a partial buffer for each model including ensemble ("bagging")
+    partial_buffer = {"bagging": []}
+    for model_key in models_dict.keys():
+        partial_buffer[model_key] = []
+
+    if cluster_order is not None:
+        ordered_clusters = cluster_order
+    else:
+        ordered_clusters = list(cluster_mapping.keys())
+        if shuffle_clusters:
+            np.random.shuffle(ordered_clusters)
+
+    for cluster_id in ordered_clusters:
+        user_list = cluster_mapping[cluster_id]
+        # Initialize accumulators for cluster-level aggregation.
+        user_metrics = {k: {"precision": [], "recall": []} for k in k_values}
+        user_maps = {k: [] for k in k_values}
+        user_ndcgs = {k: [] for k in k_values}
+        cluster_recs = []  # For coverage (we use top-10 recommendations)
+        total_users = len(user_list)
+
+        for i, user_id in enumerate(tqdm(user_list, desc=f"Evaluating users in cluster {cluster_id}")):
+            try:
+                logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
+                
+                # 1) Build user profile.
+                user_history_tensor, user_history_ids, original_history_len = build_user_profile_tensor(
+                    user_id, behaviors_df, news_df, cutoff_time, tokenizer
+                )
+                num_history_articles = len(user_history_ids)
+                
+                # 2) Build candidates from full candidate pool.
+                candidate_tensors, candidate_ids = user_candidate_generation(
+                    user_id, user_history_ids, train_data, news_df,
+                    tokenizer, tfidf_vectorizer, cutoff_time, 0.00
+                )
+                num_candidates = len(candidate_ids)
+                
+                # 3) Expand dims.
+                user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+                
+                # 4) Score candidates using ensemble.
+                candidate_scores, separate_scores = score_candidates_ensemble_batch(
+                    user_history_tensor,
+                    candidate_tensors,
+                    models_dict,
+                    batch_size=128
+                )
+                
+                # Define an inner helper that computes two sets of metrics:
+                def evaluate_scores(scores, model_key, partial_csv, partial_buffer):
+                    # Get ground truth (clicked articles) and shown articles.
+                    user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
+                    shown_articles = get_user_shown_articles(user_id, test_data, cutoff_time)
+                    # Standard: ground truth within full candidate pool.
+                    gt_in_candidates = set(user_future_clicks).intersection(set(candidate_ids))
+                    # Behavior-only: build a candidate pool from impressions.
+                    behavior_candidate_ids = list(candidate_pool_from_behavior(user_id, test_data, cutoff_time))
+                    gt_in_behavior = set(user_future_clicks).intersection(set(behavior_candidate_ids))
+                    
+                    num_future_clicks = len(user_future_clicks)
+                    num_behavior_candidates = len(behavior_candidate_ids)
+                    #cluster_id,user_id,user_index_in_cluster,num_candidates_full,num_history_articles,original_history_len,num_future_clicks,num_ground_truth_all,num_ground_truth_in_full,num_shown_articles,num_candidates_behavior,num_ground_truth_in_behavior,precision_full_5,recall_full_5,ap_full_5,ndcg_full_5,num_recommendations_full_5,precision_behavior_5,recall_behavior_5,ap_behavior_5,ndcg_behavior_5,num_recommendations_behavior_5,precision_full_10,recall_full_10,ap_full_10,ndcg_full_10,num_recommendations_full_10,precision_behavior_10,recall_behavior_10,ap_behavior_10,ndcg_behavior_10,num_recommendations_behavior_10,precision_full_20,recall_full_20,ap_full_20,ndcg_full_20,num_recommendations_full_20,precision_behavior_20,recall_behavior_20,ap_behavior_20,ndcg_behavior_20,num_recommendations_behavior_20,precision_full_50,recall_full_50,ap_full_50,ndcg_full_50,num_recommendations_full_50,precision_behavior_50,recall_behavior_50,ap_behavior_50,ndcg_behavior_50,num_recommendations_behavior_50,precision_full_100,recall_full_100,ap_full_100,ndcg_full_100,num_recommendations_full_100,precision_behavior_100,recall_behavior_100,ap_behavior_100,ndcg_behavior_100,num_recommendations_behavior_100,status
+                    #2,U86679,11,4525,15,15,3,3,3,56,56,3,0.0,0.0,0.0,0.0,5,0.2,0.3333333333333333,0.25,0.20210734650054757,5
+                    partial_result_row = {
+                        "cluster_id": cluster_id,
+                        "user_id": user_id,
+                        "user_index_in_cluster": i,
+                        "num_candidates_full": num_candidates,
+                        "num_history_articles": num_history_articles,
+                        "original_history_len": original_history_len,
+                        "num_future_clicks": num_future_clicks,
+                        "num_ground_truth_all": len(user_future_clicks),
+                        "num_ground_truth_in_full": len(gt_in_candidates),
+                        "num_shown_articles": len(shown_articles),
+                        "num_candidates_behavior": num_behavior_candidates,
+                        "num_ground_truth_in_behavior": len(gt_in_behavior)
+                    }
+                    
+                    # For each k, compute metrics on both candidate pools.
+                    for k in k_values:
+                        # Full candidate pool recommendations.
+                        recommended_ids_full = cluster_rank_candidates(scores, candidate_ids, k)
+                        prec_full, rec_full = compute_precision_recall_at_k(recommended_ids_full, user_future_clicks, k)
+                        ap_full = average_precision_at_k(recommended_ids_full, user_future_clicks, k)
+                        dcg_val_full = dcg_at_k(recommended_ids_full, user_future_clicks, k)
+                        ideal_dcg_full = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
+                        ndcg_full = dcg_val_full / ideal_dcg_full if ideal_dcg_full > 0 else 0.0
+                        
+                        # Behavior-only candidate pool:
+                        # Filter scores and candidate_ids to those in behavior_candidate_ids.
+                        behavior_indices = [idx for idx, art in enumerate(candidate_ids) if art in behavior_candidate_ids]
+                        if behavior_indices:
+                            behavior_scores = scores[behavior_indices]
+                            behavior_candidate_ids_filtered = [candidate_ids[idx] for idx in behavior_indices]
+                            recommended_ids_behavior = cluster_rank_candidates(behavior_scores, behavior_candidate_ids_filtered, k)
+                            prec_behavior, rec_behavior = compute_precision_recall_at_k(recommended_ids_behavior, user_future_clicks, k)
+                            ap_behavior = average_precision_at_k(recommended_ids_behavior, user_future_clicks, k)
+                            dcg_val_behavior = dcg_at_k(recommended_ids_behavior, user_future_clicks, k)
+                            ideal_dcg_behavior = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
+                            ndcg_behavior = dcg_val_behavior / ideal_dcg_behavior if ideal_dcg_behavior > 0 else 0.0
+                        else:
+                            # No behavior candidates available.
+                            recommended_ids_behavior = []
+                            prec_behavior, rec_behavior, ap_behavior, ndcg_behavior = 0, 0, 0, 0
+                        
+                        # Record metrics.
+                        partial_result_row[f"precision_full_{k}"] = prec_full
+                        partial_result_row[f"recall_full_{k}"] = rec_full
+                        partial_result_row[f"ap_full_{k}"] = ap_full
+                        partial_result_row[f"ndcg_full_{k}"] = ndcg_full
+                        partial_result_row[f"num_recommendations_full_{k}"] = len(recommended_ids_full)
+                        
+                        partial_result_row[f"precision_behavior_{k}"] = prec_behavior
+                        partial_result_row[f"recall_behavior_{k}"] = rec_behavior
+                        partial_result_row[f"ap_behavior_{k}"] = ap_behavior
+                        partial_result_row[f"ndcg_behavior_{k}"] = ndcg_behavior
+                        partial_result_row[f"num_recommendations_behavior_{k}"] = len(recommended_ids_behavior)
+                    
+                    partial_result_row["status"] = "DONE"
+                    partial_buffer.append(partial_result_row)
+                    if (i + 1) % 10 == 0:
+                        logging.info(f"Writing partial rows: {partial_buffer}")
+                        write_partial_rows(partial_buffer, partial_csv)
+                        partial_buffer = []
+                    return partial_buffer
+
+                # Evaluate for ensemble (bagging) model.
+                partial_buffer["bagging"] = evaluate_scores(candidate_scores, "bagging", f"bagging_{partial_csv}", partial_buffer["bagging"])
+                # Evaluate for each individual model.
+                for model_key, single_model in models_dict.items():
+                    partial_buffer[model_key] = evaluate_scores(separate_scores[model_key], model_key, f"{model_key}_{partial_csv}", partial_buffer[model_key])
+                    
+            except Exception as e:
+                logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
+                partial_buffer["bagging"].append({
+                    "cluster_id": cluster_id,
+                    "user_id": user_id,
+                    "user_index_in_cluster": i,
+                    "status": f"FAILED: {e}"
+                })
+                continue
+
+        for key in partial_buffer:
+            if partial_buffer[key]:
+                write_partial_rows(partial_buffer[key], partial_csv)
+                partial_buffer[key] = []
+        
+        coverage_cluster = compute_coverage(cluster_recs, total_articles)
+        for k in k_values:
+            mean_precision = np.mean(user_metrics[k]["precision"]) if user_metrics[k]["precision"] else 0
+            mean_recall = np.mean(user_metrics[k]["recall"]) if user_metrics[k]["recall"] else 0
+            map_k = np.mean(user_maps[k]) if user_maps[k] else 0
+            ndcg_k = np.mean(user_ndcgs[k]) if user_ndcgs[k] else 0
+
+            results.append({
+                "cluster_id": cluster_id,
+                "k": k,
+                "precision_user_level": mean_precision,
+                "recall_user_level": mean_recall,
+                "MAP": map_k,
+                "nDCG": ndcg_k,
+                "coverage": coverage_cluster, 
+                "num_users": len(user_list)
+            })
+    
+    results_df = pd.DataFrame(results)
+    results_df.to_csv("user_level_experiment_results.csv", index=False)
+    print("Cluster-level experiment results saved to 'user_level_experiment_results.csv'")
+    return results_df
+
+def run_cluster_experiments_user_level2(
     cluster_mapping, 
     train_data, 
     test_data,
@@ -1031,7 +1649,11 @@ def run_cluster_experiments_user_level(
     logging.info(f"partial_csv: {partial_csv}, cluster_mapping:{cluster_mapping}")
     results = []
     total_articles = len(news_df)
-    partial_buffer = []
+    partial_buffer = {
+        "bagging": []
+    }
+    for model_key, single_model in models_dict.items():
+        partial_buffer[model_key] = []
 
     # Determine cluster order.
     if cluster_order is not None:
@@ -1063,7 +1685,7 @@ def run_cluster_experiments_user_level(
                 # 2) Build candidates.
                 candidate_tensors, candidate_ids = user_candidate_generation(
                     user_id, user_history_ids, train_data, news_df,
-                    tokenizer, tfidf_vectorizer, cutoff_time, 0.02
+                    tokenizer, tfidf_vectorizer, cutoff_time, 0.00
                 )
                 num_candidates = len(candidate_ids)
                 
@@ -1075,9 +1697,9 @@ def run_cluster_experiments_user_level(
                     user_history_tensor,
                     candidate_tensors,
                     models_dict,
-                    batch_size=512
+                    batch_size=128
                 )
-                def evaluate_scores(scores, model_key, partial_csv):
+                def evaluate_scores(scores, model_key, partial_csv, partial_buffer):
                     # 5) Get ground truth: articles clicked after cutoff.
                     user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
                     num_future_clicks = len(user_future_clicks)
@@ -1127,13 +1749,14 @@ def run_cluster_experiments_user_level(
                         logging.info(f"Writing partial rows: {partial_buffer}")
                         write_partial_rows(partial_buffer, partial_csv)
                         partial_buffer = []
-                evaluate_scores(candidate_scores, "bagging", f"bagging_{partial_csv}")
+                    return partial_buffer
+                partial_buffer['bagging'] = evaluate_scores(candidate_scores, "bagging", f"bagging_{partial_csv}", partial_buffer['bagging'])
                 for model_key, single_model in models_dict.items():
-                    evaluate_scores(separate_scores[model_key], model_key, f"{model_key}_{partial_csv}")
+                    partial_buffer[model_key] = evaluate_scores(separate_scores[model_key], model_key, f"{model_key}_{partial_csv}", partial_buffer[model_key])
                     
             except Exception as e:
                 logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
-                partial_buffer.append({
+                partial_buffer['bagging'].append({
                     "cluster_id": cluster_id,
                     "user_id": user_id,
                     "user_index_in_cluster": i,
@@ -1170,157 +1793,6 @@ def run_cluster_experiments_user_level(
     print("Cluster-level experiment results saved to 'user_level_experiment_results.csv'")
     return results_df
 
-
-def run_cluster_experiments_user_level2(
-    cluster_mapping, 
-    train_data, 
-    test_data,
-    news_df,
-    behaviors_df,
-    models_dict, 
-    tokenizer,
-    tfidf_vectorizer,
-    cutoff_time,
-    k_values=[5, 10, 20, 50],
-    partial_csv="user_level_partial_results.csv"
-):
-    """
-    For each cluster, for each user:
-      - Build user profile from train_data.
-      - Generate & score candidates.
-      - Evaluate vs. test_data.
-    Partial per-user results (including candidate count and recommendation count for each k)
-    are written to a CSV file incrementally.
-    """
-    import numpy as np
-    import pandas as pd
-    from tqdm import tqdm
-    from traceback import format_exc
-
-    results = []
-    total_articles = len(news_df)
-    partial_buffer = []
-
-    for cluster_id, user_list in cluster_mapping.items():
-        # Initialize accumulators for cluster-level aggregation.
-        user_metrics = {k: {"precision": [], "recall": []} for k in k_values}
-        user_maps = {k: [] for k in k_values}
-        user_ndcgs = {k: [] for k in k_values}
-        cluster_recs = []  # For coverage (we use top-10 recommendations)
-        total_users = len(user_list)
-
-        for i, user_id in enumerate(tqdm(user_list, desc=f"Evaluating users in cluster {cluster_id}")):
-            try:
-                logging.info(f"Starting user {user_id} in cluster {cluster_id} (index {i})")
-                
-                # 1) Build user profile.
-                user_history_tensor, user_history_ids = build_user_profile_tensor(
-                    user_id, behaviors_df, news_df, cutoff_time, tokenizer
-                )
-                
-                # 2) Build candidates.
-                candidate_tensors, candidate_ids = user_candidate_generation(
-                    user_id, user_history_ids, train_data, news_df,
-                    tokenizer, tfidf_vectorizer, cutoff_time, 0.02
-                )
-                num_candidates = len(candidate_ids)
-                
-                # 3) Expand dims: history tensor shape becomes (1, max_history_length, max_title_length).
-                user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
-                
-                # 4) Batch score candidates from the ensemble.
-                candidate_scores, separate_scores = score_candidates_ensemble_batch(
-                    user_history_tensor,
-                    candidate_tensors,
-                    models_dict,
-                    batch_size=512
-                )
-                
-                # 5) Get ground truth.
-                user_future_clicks = get_user_future_clicks(user_id, test_data, cutoff_time)
-                
-                # Prepare partial result row for this user.
-                partial_result_row = {
-                    "cluster_id": cluster_id,
-                    "user_id": user_id,
-                    "user_index_in_cluster": i,
-                    "num_candidates": num_candidates  # new field: total candidates generated
-                }
-                
-                # For each k, compute metrics and also record number of recommendations.
-                for k in k_values:
-                    recommended_ids = cluster_rank_candidates(candidate_scores, candidate_ids, k)
-                    # Record candidate recommendations for coverage (using k==10, for example)
-                    if k == 10:
-                        cluster_recs.append(recommended_ids)
-                    
-                    prec, rec = compute_precision_recall_at_k(recommended_ids, user_future_clicks, k)
-                    ap = average_precision_at_k(recommended_ids, user_future_clicks, k)
-                    ndcg_val = dcg_at_k(recommended_ids, user_future_clicks, k)
-                    ideal_dcg = dcg_at_k(list(user_future_clicks), user_future_clicks, min(k, len(user_future_clicks)))
-                    ndcg = ndcg_val / ideal_dcg if ideal_dcg > 0 else 0.0
-
-                    # Accumulate for cluster-level summary.
-                    user_metrics[k]["precision"].append(prec)
-                    user_metrics[k]["recall"].append(rec)
-                    user_maps[k].append(ap)
-                    user_ndcgs[k].append(ndcg)
-                    
-                    # Record per-user metrics along with number of recommendations.
-                    partial_result_row[f"precision_{k}"] = prec
-                    partial_result_row[f"recall_{k}"] = rec
-                    partial_result_row[f"ap_{k}"] = ap
-                    partial_result_row[f"ndcg_{k}"] = ndcg
-                    partial_result_row[f"num_recommendations_{k}"] = len(recommended_ids)
-                
-                partial_result_row["status"] = "DONE"
-                partial_buffer.append(partial_result_row)
-                
-                logging.error(f"iter:{i}")
-                # Flush partial results every x users.
-                if (i + 1) % 10 == 0:
-                    logging.error(f"Writing partial rows: {partial_buffer}")
-                    write_partial_rows(partial_buffer, partial_csv)
-                    partial_buffer = []
-                    
-            except Exception as e:
-                logging.error(f"Failed on user {user_id} in cluster {cluster_id} with error: {e}\n{format_exc()}")
-                partial_buffer.append({
-                    "cluster_id": cluster_id,
-                    "user_id": user_id,
-                    "user_index_in_cluster": i,
-                    "status": f"FAILED: {e}"
-                })
-                continue
-
-        # Flush any remaining rows for this cluster.
-        if partial_buffer:
-            write_partial_rows(partial_buffer, partial_csv)
-            partial_buffer = []
-        
-        # Summarize cluster-level metrics.
-        coverage_cluster = compute_coverage(cluster_recs, total_articles)
-        for k in k_values:
-            mean_precision = np.mean(user_metrics[k]["precision"]) if user_metrics[k]["precision"] else 0
-            mean_recall = np.mean(user_metrics[k]["recall"]) if user_metrics[k]["recall"] else 0
-            map_k = np.mean(user_maps[k]) if user_maps[k] else 0
-            ndcg_k = np.mean(user_ndcgs[k]) if user_ndcgs[k] else 0
-
-            results.append({
-                "cluster_id": cluster_id,
-                "k": k,
-                "precision_user_level": mean_precision,
-                "recall_user_level": mean_recall,
-                "MAP": map_k,
-                "nDCG": ndcg_k,
-                "coverage": coverage_cluster, 
-                "num_users": len(user_list)
-            })
-    
-    results_df = pd.DataFrame(results)
-    results_df.to_csv("user_level_experiment_results.csv", index=False)
-    print("Cluster-level experiment results saved to 'user_level_experiment_results.csv'")
-    return results_df
 
 # --- [Data Preparation Function] ---
 def prepare_train_df(
@@ -2206,83 +2678,6 @@ def prepare_tokenizer(news_df, max_title_length=30):
     with open('tokenizer.pkl', 'wb') as f:
         pickle.dump(tokenizer, f)
     return tokenizer, vocab_size
-
-def init_bug(process_dfs=False, process_behaviors=False,
-         data_dir='dataset/train/', valid_data_dir='dataset/valid/',
-         zip_file="MINDlarge_train.zip", valid_zip_file="MINDlarge_dev.zip"):
-    global vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, \
-           user_category_profiles, clustered_data, tokenizer, num_clusters
-
-    if is_colab():
-        print("Running on Google Colab")
-        data_dir = '/content/train/'
-        valid_data_dir = '/content/valid/'
-
-    # Construct full paths for the zip files
-    zip_file_path = os.path.join(data_dir, zip_file)
-    valid_zip_file_path = os.path.join(valid_data_dir, valid_zip_file)
-    
-    # Download zips if needed.
-    if not os.path.exists(zip_file_path):
-        hf_hub_download(repo_id="Teemu5/news", filename=zip_file, local_dir=data_dir)
-    if not os.path.exists(valid_zip_file_path):
-        hf_hub_download(repo_id="Teemu5/news", filename=valid_zip_file, local_dir=valid_data_dir)
-    
-    # Unzip both training and validation datasets.
-    output_folder = os.path.dirname(zip_file_path)
-    valid_output_folder = os.path.dirname(valid_zip_file_path)
-    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-        zip_ref.extractall(output_folder)
-    with zipfile.ZipFile(valid_zip_file_path, 'r') as zip_ref:
-        zip_ref.extractall(valid_output_folder)
-
-    # Load datasets using our helper.
-    news_df_train, behaviors_df_train = load_dataset(data_dir)
-    news_df_valid, behaviors_df_valid = load_dataset(valid_data_dir)
-    
-    print("\n--- Training Data ---")
-    print(news_df_train.head())
-    print(behaviors_df_train.head())
-    
-    print("\n--- Validation Data ---")
-    print(news_df_valid.head())
-    print(behaviors_df_valid.head())
-    
-    # For backward compatibility, we continue processing only training data.
-    # (You can later decide to combine or process validation data similarly.)
-    news_df = news_df_train.copy()
-    behaviors_df = behaviors_df_train.copy()
-    
-    # The rest of your original init() follows.
-    # For example, initialize tokenizer on the training news:
-    tokenizer = Tokenizer()
-    tokenizer.fit_on_texts(news_df['CombinedText'].tolist())
-    vocab_size = len(tokenizer.word_index) + 1
-    max_history_length = 50
-    max_title_length = 30
-
-    # If process_dfs is True, then call your prepare_train_df() etc.
-    if process_dfs:
-        (clustered_data, tokenizer, vocab_size, max_history_length,
-         max_title_length, num_clusters) = prepare_train_df(
-            data_dir=data_dir,
-            news_file="news.tsv",
-            behaviours_file="behaviors.tsv",
-            user_category_profiles=None,  # Assuming you later generate or load profiles
-            num_clusters=3,
-            fraction=1,
-            max_title_length=max_title_length,
-            max_history_length=max_history_length
-        )
-    else:
-        # Load preprocessed news and train DataFrames if available.
-        news_df = pd.read_pickle("models/news_df_processed.pkl")
-        train_df = pd.read_pickle("models/train_df_processed.pkl")
-        clustered_data = make_clustered_data(train_df, num_clusters=3)
-    
-    # Return everything as before.
-    return data_dir, vocab_size, max_history_length, max_title_length, news_df, train_df, behaviors_df, \
-           user_category_profiles, clustered_data, tokenizer, num_clusters
 
 def unzip_datasets(data_dir, valid_data_dir, zip_file, valid_zip_file):
     zip_file_path = f"{data_dir}{zip_file}"
