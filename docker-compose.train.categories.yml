@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  train_meta:
+  train_categories:
     build: ./backend
     ports:
-      - "8888:8888"
+      - "8889:8888"
     volumes:
       - ./backend:/app
       - model_data:/app/data
-    command: python3 train_meta_model.py --dataset train --dataset_size small
+    command: python3 train_category_models.py --dataset train --dataset_size large
 
 volumes:
   model_data:

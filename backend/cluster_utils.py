@@ -42,11 +42,8 @@ stop_words = set(stopwords.words('english'))
 def clean_text(text):
     if pd.isna(text):
         return ''
-    # Remove special characters and numbers
     text = re.sub(r'[^a-zA-Z\s]', '', text)
-    # Convert to lowercase
     text = text.lower()
-    # Remove stopwords
     words = text.split()
     words = [w for w in words if not w in stop_words]
     return ' '.join(words)
@@ -62,13 +59,16 @@ logging.basicConfig(
 )
 
 
-def prepare_category_train_dfs(data_dir, news_file, behaviours_file, max_title_length=30, max_history_length=50):
-    """
-    Loads news and behavior data, builds training samples (as in your existing prepare_train_df)
-    but now also looks up the candidate article’s category. Then groups samples by category.
-    
-    Returns a dictionary mapping each category to its training DataFrame.
-    """
+def prepare_category_train_dfs(data_dir, news_file, behaviors_file, max_title_length=30, max_history_length=50, save_filename='category_train_dfs.pkl'):
+    if os.path.exists(save_filename):
+        print(f"Loading precomputed category training data from {save_filename}...")
+        with open(save_filename, "rb") as f:
+            category_train_dfs, news_df, behaviors_df, tokenizer = pickle.load(f)
+        print("Loaded category training data.")
+        return category_train_dfs, news_df, behaviors_df, tokenizer
+
+    print("Precomputed category training data not found. Computing now...")
+
     # Load news data
     news_path = os.path.join(data_dir, news_file)
     news_df = pd.read_csv(
@@ -77,14 +77,16 @@ def prepare_category_train_dfs(data_dir, news_file, behaviours_file, max_title_l
         names=['NewsID', 'Category', 'SubCategory', 'Title', 'Abstract', 'URL', 'TitleEntities', 'AbstractEntities'],
         index_col=False
     )
-    # Clean titles and abstracts and build a combined text field.
+    print(f"Loaded news data from {news_path}: {news_df.shape}")
+
+    # Clean titles and abstracts and create combined text
     news_df['CleanTitle'] = news_df['Title'].apply(clean_text)
     news_df['CleanAbstract'] = news_df['Abstract'].apply(clean_text)
     news_df['CombinedText'] = news_df['CleanTitle'] + " " + news_df['CleanAbstract']
     news_df["CombinedText"] = news_df["CombinedText"].astype(str).fillna("")
-    
+
     # Load behaviors data
-    behaviors_path = os.path.join(data_dir, behaviours_file)
+    behaviors_path = os.path.join(data_dir, behaviors_file)
     behaviors_df = pd.read_csv(
         behaviors_path,
         sep='\t',
@@ -92,17 +94,18 @@ def prepare_category_train_dfs(data_dir, news_file, behaviours_file, max_title_l
         index_col=False
     )
     behaviors_df['HistoryText'] = behaviors_df['HistoryText'].fillna("")
-    
-    # Build a tokenizer from news combined text.
+    print(f"Loaded behaviors data from {behaviors_path}: {behaviors_df.shape}")
+
+    # Fit the tokenizer on news CombinedText
     tokenizer = Tokenizer()
     tokenizer.fit_on_texts(news_df['CombinedText'].tolist())
-    
-    # Create a mapping from NewsID to padded combined text (for later use, if needed)
+
+    # Create mapping from NewsID to padded text
     news_df['EncodedText'] = tokenizer.texts_to_sequences(news_df['CombinedText'])
     news_df['PaddedText'] = list(pad_sequences(news_df['EncodedText'], maxlen=max_title_length, padding='post', truncating='post'))
     news_text_dict = dict(zip(news_df['NewsID'], news_df['PaddedText']))
-    
-    # Function to parse impressions and labels from the behaviors data.
+
+    # Function to parse impressions and labels
     def parse_impressions(impressions):
         impression_list = impressions.split()
         news_ids = []
@@ -119,30 +122,29 @@ def prepare_category_train_dfs(data_dir, news_file, behaviours_file, max_title_l
     behaviors_df[['ImpressionNewsIDs', 'ImpressionLabels']] = behaviors_df['Impressions'].apply(
         lambda x: pd.Series(parse_impressions(x))
     )
-    
-    # Build training samples similar to your prepare_train_df.
+
+    # Build training samples with candidate category information.
     samples = []
-    for _, row in tqdm(behaviors_df.iterrows(), total=behaviors_df.shape[0], desc="Building samples"):
+    print("Building training samples...")
+    total_rows = len(behaviors_df)
+    for i, row in tqdm(behaviors_df.iterrows(), total=behaviors_df.shape[0], desc="Building samples"):
         user_id = row['UserID']
-        # Process user history: split HistoryText and get padded texts.
+        # Process user history: get candidate training sample history
         history_ids = row['HistoryText'].split() if row['HistoryText'] != "" else []
-        history_texts = [news_text_dict.get(nid, [0]*max_title_length) for nid in history_ids]
+        history_texts = [news_text_dict.get(nid, [0] * max_title_length) for nid in history_ids]
         if len(history_texts) < max_history_length:
-            padding = [[0]*max_title_length] * (max_history_length - len(history_texts))
+            padding = [[0] * max_title_length] * (max_history_length - len(history_texts))
             history_texts = padding + history_texts
         else:
             history_texts = history_texts[-max_history_length:]
-        
+
         candidate_news_ids = row['ImpressionNewsIDs']
         labels = row['ImpressionLabels']
         for candidate_news_id, label in zip(candidate_news_ids, labels):
-            candidate_text = news_text_dict.get(candidate_news_id, [0]*max_title_length)
-            # Look up category for candidate article
-            candidate_category = news_df[news_df['NewsID'] == candidate_news_id]['Category']
-            if candidate_category.empty:
-                candidate_category = "Unknown"
-            else:
-                candidate_category = candidate_category.iloc[0]
+            candidate_text = news_text_dict.get(candidate_news_id, [0] * max_title_length)
+            # Look up candidate article category (if not found, use "Unknown")
+            candidate_category_series = news_df[news_df['NewsID'] == candidate_news_id]['Category']
+            candidate_category = candidate_category_series.iloc[0] if not candidate_category_series.empty else "Unknown"
             samples.append({
                 'UserID': user_id,
                 'HistoryTitles': history_texts,
@@ -150,91 +152,77 @@ def prepare_category_train_dfs(data_dir, news_file, behaviours_file, max_title_l
                 'Label': label,
                 'CandidateCategory': candidate_category
             })
-    
+        if i % 1000 == 0:
+            logging.info(f"{i+1}/{total_rows} rows done.")
     train_df = pd.DataFrame(samples)
     print(f"Created training DataFrame with {len(train_df)} samples.")
     
-    # Group training samples by candidate category.
+    # Group training samples by candidate category
     category_train_dfs = dict(tuple(train_df.groupby('CandidateCategory')))
     for category, df in category_train_dfs.items():
         print(f"Category '{category}': {len(df)} samples.")
-    
+
+    # Save the computed data to disk
+    with open(save_filename, "wb") as f:
+        pickle.dump((category_train_dfs, news_df, behaviors_df, tokenizer), f)
+    print(f"Saved category training data to {save_filename}")
+
     return category_train_dfs, news_df, behaviors_df, tokenizer
 
-def train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, base_model_trainer):
+def train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=64, epochs=5, dataset_size=''):
     """
-    Train a Fastformer-based model for each category.
-    
-    Parameters:
-      - category_train_dfs: Dictionary mapping category -> training DataFrame (as produced above).
-      - vocab_size, max_history_length, max_title_length: Model/data parameters.
-      - base_model_trainer: a function that trains a model given a training DataFrame. For instance,
-                            you could reuse your existing train_cluster_models function after minor adjustments.
-    
-    Returns:
-      - category_models: A dictionary mapping category -> trained model.
+    Train a model for each category in the category_train_dfs dict.
     """
     category_models = {}
     for category, df in category_train_dfs.items():
-        print(f"Training model for category: {category} with {len(df)} samples.")
-        # Split training and validation data:
+        print(f"--- Training model for category: {category} ---")
+        # Split into train/validation sets
         train_data, val_data = train_test_split(df, test_size=0.2, random_state=42)
-        # Here, you could simply call your existing model training routine
-        # For example, if you have a function `train_model_on_df`
-        # that returns a trained model, you would call:
-        #
-        # model = train_model_on_df(train_data, val_data, vocab_size, max_history_length, max_title_length)
-        #
-        # For illustration, we simply build and "train" a model as a placeholder:
+        print(f"Category '{category}': {len(train_data)} training samples, {len(val_data)} validation samples.")
+
+        # Create data generators (assuming your DataGenerator class uses fields 'HistoryTitles' and 'CandidateTitleTokens')
+        train_generator = DataGenerator(train_data, batch_size=batch_size, max_history_length=max_history_length, max_title_length=max_title_length)
+        val_generator = DataGenerator(val_data, batch_size=batch_size, max_history_length=max_history_length, max_title_length=max_title_length)
+
         model = build_model(vocab_size, max_title_length, max_history_length, embedding_dim=256, nb_head=8, size_per_head=32, dropout_rate=0.2)
-        # Create data generators (you already have a DataGenerator class)
-        train_generator = DataGenerator(train_data, batch_size=64, max_history_length=max_history_length, max_title_length=max_title_length)
-        val_generator = DataGenerator(val_data, batch_size=64, max_history_length=max_history_length, max_title_length=max_title_length)
-        
-        # Define callbacks, etc.
+        model.summary(print_fn=lambda x: print(f"[{category}] {x}"))
+
         early_stopping = EarlyStopping(monitor='val_AUC', patience=2, mode='max', restore_best_weights=True)
         csv_logger = CSVLogger(f'training_log_category_{category}.csv', append=True)
         model_checkpoint = ModelCheckpoint(f'best_model_category_{category}.keras', monitor='val_AUC', mode='max', save_best_only=True)
-        
+
+        print(f"Training model for category '{category}'...")
         model.fit(
             train_generator,
-            epochs=5,  # adjust as needed
+            epochs=epochs,
             validation_data=val_generator,
             callbacks=[early_stopping, csv_logger, model_checkpoint]
         )
-        # Save the model for this category.
-        model.save(f'fastformer_category_{category}.keras')
-        print(f"Saved model for category {category}")
+        # Save model
+        model_save_path = f'fastformer_{dataset_size}_category_{category}.keras'
+        model.save(model_save_path)
+        print(f"Saved model for category '{category}' to {model_save_path}")
         category_models[category] = model
     return category_models
 
-def run_category_based_training(dataset='train', data_dir_train='dataset/train/', news_file='news.tsv', behaviours_file='behaviours.tsv'):
-    """
-    This function integrates the category splitting and per-category model training.
+def run_category_based_training(dataset_size, data_dir_train, valid_data_dir, zip_file, valid_zip_file, news_file='news.tsv', behaviors_file='behaviors.tsv'):
+    print(f"unzipping datasets: data_dir_train={data_dir_train}, valid_data_dir={valid_data_dir}, zip_file={zip_file}, valid_zip_file={valid_zip_file}")
+    unzip_datasets(data_dir_train, valid_data_dir, zip_file, valid_zip_file)
+    print("Starting category-based training...")
+    # Step 1: Load data and prepare training samples grouped by candidate category.
+    category_train_dfs, news_df, behaviors_df, tokenizer = prepare_category_train_dfs(data_dir_train, news_file, behaviors_file, 30, 50, f"category_train_dfs_{dataset_size}.pkl")
     
-    Steps:
-      1. Load news and behaviors data.
-      2. Prepare training data grouped by candidate article category.
-      3. Train a Fastformer-based model for each category.
-    
-    Returns:
-      - category_models: Dictionary mapping each category to its trained model.
-      - Additional data (if needed).
-    """
-    # Step 1: Load and preprocess data
-    news_df, behaviors_df = init_dataset(data_dir_train, news_file, behaviours_file)
-    category_train_dfs, news_df, behaviors_df, tokenizer = prepare_category_train_dfs(data_dir_train, news_file, behaviours_file)
-    
-    # You might want to compute vocab_size from the tokenizer.
+    # Compute vocabulary size from the tokenizer.
     vocab_size = len(tokenizer.word_index) + 1
+    print(f"Vocabulary size: {vocab_size}")
+    
     max_history_length = 50
     max_title_length = 30
     
     # Step 2: Train a model for each category.
-    # You could pass an existing function if you already have one,
-    # here we call our new train_category_models function.
-    category_models = train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, base_model_trainer=None)
+    category_models = train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=64, epochs=5, dataset_size=dataset_size)
     
+    print("Category-based training complete.")
     return category_models, news_df, behaviors_df, tokenizer
 
 # ===================== Cluster-Level Evaluation Functions =====================
@@ -1976,7 +1964,7 @@ def run_cluster_experiments_user_level(cluster_mapping, train_data, test_data, n
 def prepare_train_df(
     data_dir,
     news_file,
-    behaviours_file,
+    behaviors_file,
     user_category_profiles,
     num_clusters=3,
     fraction=1,
@@ -1996,7 +1984,7 @@ def prepare_train_df(
     print(news_df.head())
 
     # Load behaviors data
-    behaviors_path = os.path.join(data_dir, behaviours_file)
+    behaviors_path = os.path.join(data_dir, behaviors_file)
     behaviors_df = pd.read_csv(
         behaviors_path,
         sep='\t',
@@ -3110,7 +3098,7 @@ def init(process_dfs = False, process_behaviors = False, data_dir = 'dataset/tra
         clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters = prepare_train_df(
             data_dir=data_dir,
             news_file=news_file,
-            behaviours_file=behaviors_file,
+            behaviors_file=behaviors_file,
             user_category_profiles=user_category_profiles,
             num_clusters=num_clusters,
             fraction=1,
@@ -3160,7 +3148,7 @@ def get_models(process_dfs = False, process_behaviors = False, data_dir = 'datas
         clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters = prepare_train_df(
             data_dir=data_dir,
             news_file=news_file,
-            behaviours_file=behaviors_file,
+            behaviors_file=behaviors_file,
             user_category_profiles=user_category_profiles,
             num_clusters=3,
             fraction=1,
