@@ -117,3 +117,269 @@
 2025-04-07 14:19:39,040 - INFO - Starting user U407018 in cluster 0 (index 54)
 2025-04-07 14:19:55,412 - INFO - lens: newsdf:101527candidate_pool:5915,candidate_pool:5915
 2025-04-07 14:20:16,612 - INFO - Starting user U285771 in cluster 0 (index 55)
+2025-04-07 14:43:06,353 - INFO - lens: newsdf:101527candidate_pool:14638,candidate_pool:14638
+2025-04-07 14:45:17,893 - INFO - lens: newsdf:101527candidate_pool:14641,candidate_pool:14641
+2025-04-07 14:47:03,178 - INFO - lens: newsdf:101527candidate_pool:14642,candidate_pool:14642
+2025-04-07 14:48:50,639 - INFO - lens: newsdf:101527candidate_pool:14643,candidate_pool:14643
+2025-04-07 14:50:21,061 - INFO - lens: newsdf:101527candidate_pool:14638,candidate_pool:14638
+2025-04-07 14:54:08,788 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 14:54:45,277 - WARNING - 5 out of the last 15 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x7fc71c9637f0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+2025-04-07 14:54:52,210 - INFO - history_titles:[] empty for user: U34670!!!
+2025-04-07 14:56:20,518 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 15:02:09,089 - INFO - history_titles:[] empty for user: U34670!!!
+2025-04-07 15:04:53,903 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 15:05:34,158 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 15:38:20,178 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 15:38:20,708 - INFO - history_titles:[] empty for user: U34670!!!
+2025-04-07 15:41:59,429 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 15:45:36,465 - INFO - lens: newsdf:51282candidate_pool:14637,candidate_pool:14637
+2025-04-07 15:51:56,006 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 15:51:56,507 - INFO - history_titles:[] empty for user: U34670!!!
+2025-04-07 15:55:30,902 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 15:59:08,926 - INFO - lens: newsdf:51282candidate_pool:14637,candidate_pool:14637
+2025-04-07 16:02:44,428 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 16:02:44,548 - INFO - history_titles:[] empty for user: U53231!!!
+2025-04-07 16:06:21,066 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:06:21,183 - INFO - history_titles:[] empty for user: U92486!!!
+2025-04-07 16:10:00,525 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:18:59,642 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 16:19:00,197 - INFO - history_titles:[] empty for user: U34670!!!
+2025-04-07 16:22:39,276 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:26:16,147 - INFO - lens: newsdf:51282candidate_pool:14637,candidate_pool:14637
+2025-04-07 16:29:47,938 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 16:29:48,481 - INFO - history_titles:[] empty for user: U53231!!!
+2025-04-07 16:33:18,555 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:33:18,680 - INFO - history_titles:[] empty for user: U92486!!!
+2025-04-07 16:36:49,703 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:40:20,167 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:40:20,277 - INFO - history_titles:[] empty for user: U8312!!!
+2025-04-07 16:43:49,538 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:47:19,619 - INFO - lens: newsdf:51282candidate_pool:14637,candidate_pool:14637
+2025-04-07 16:50:49,689 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 16:50:49,804 - INFO - history_titles:[] empty for user: U91678!!!
+2025-04-07 16:54:20,538 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:57:50,437 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 16:57:50,546 - INFO - history_titles:[] empty for user: U85394!!!
+2025-04-07 17:01:21,077 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 17:01:21,189 - INFO - history_titles:[] empty for user: U81585!!!
+2025-04-07 17:04:50,164 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 17:08:20,999 - INFO - lens: newsdf:51282candidate_pool:14634,candidate_pool:14634
+2025-04-07 17:08:21,553 - INFO - history_titles:[] empty for user: U49572!!!
+2025-04-07 17:11:51,749 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 17:11:51,858 - INFO - history_titles:[] empty for user: U80709!!!
+2025-04-07 17:15:20,410 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 17:18:50,167 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 17:22:21,368 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 17:25:51,750 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 17:25:51,871 - INFO - history_titles:[] empty for user: U7932!!!
+2025-04-07 17:29:21,905 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 17:32:52,614 - INFO - lens: newsdf:51282candidate_pool:14633,candidate_pool:14633
+2025-04-07 17:36:22,917 - INFO - lens: newsdf:51282candidate_pool:14636,candidate_pool:14636
+2025-04-07 17:39:52,361 - INFO - lens: newsdf:51282candidate_pool:14640,candidate_pool:14640
+2025-04-07 17:39:52,946 - INFO - history_titles:[] empty for user: U54128!!!
+2025-04-07 17:43:23,458 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 17:46:52,794 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 17:50:22,869 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-07 17:53:52,953 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-07 17:53:53,139 - INFO - history_titles:[] empty for user: U39868!!!
+2025-04-07 17:57:21,575 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 18:00:51,743 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 18:04:21,893 - INFO - lens: newsdf:51282candidate_pool:14630,candidate_pool:14630
+2025-04-07 18:04:22,001 - INFO - history_titles:[] empty for user: U2935!!!
+2025-04-07 18:07:52,016 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 18:11:23,399 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 18:14:52,344 - INFO - lens: newsdf:51282candidate_pool:14640,candidate_pool:14640
+2025-04-07 18:18:21,732 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 18:18:21,844 - INFO - history_titles:[] empty for user: U22930!!!
+2025-04-07 18:21:51,310 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 18:21:51,424 - INFO - history_titles:[] empty for user: U86017!!!
+2025-04-07 18:25:22,165 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 18:28:51,469 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 18:28:51,579 - INFO - history_titles:[] empty for user: U37127!!!
+2025-04-07 18:32:20,590 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 18:35:52,135 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-07 18:39:21,418 - INFO - lens: newsdf:51282candidate_pool:14635,candidate_pool:14635
+2025-04-07 18:39:21,535 - INFO - history_titles:[] empty for user: U89839!!!
+2025-04-07 18:42:51,873 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 18:46:21,568 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 18:49:51,884 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 18:49:52,399 - INFO - history_titles:[] empty for user: U21482!!!
+2025-04-07 18:53:23,339 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 18:53:23,459 - INFO - history_titles:[] empty for user: U5786!!!
+2025-04-07 18:56:52,294 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:00:23,385 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-07 19:00:23,491 - INFO - history_titles:[] empty for user: U80525!!!
+2025-04-07 19:03:53,244 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:07:23,722 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 19:10:52,935 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:10:53,044 - INFO - history_titles:[] empty for user: U73145!!!
+2025-04-07 19:14:21,155 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:17:51,987 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 19:21:20,765 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 19:21:20,875 - INFO - history_titles:[] empty for user: U78130!!!
+2025-04-07 19:24:50,247 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:28:19,416 - INFO - lens: newsdf:51282candidate_pool:14635,candidate_pool:14635
+2025-04-07 19:28:19,528 - INFO - history_titles:[] empty for user: U44296!!!
+2025-04-07 19:31:48,930 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:35:18,686 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 19:38:48,084 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:38:48,210 - INFO - history_titles:[] empty for user: U89226!!!
+2025-04-07 19:42:18,528 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:45:48,049 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 19:49:18,089 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:49:18,200 - INFO - history_titles:[] empty for user: U80142!!!
+2025-04-07 19:52:47,639 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:56:18,609 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 19:56:18,721 - INFO - history_titles:[] empty for user: U88635!!!
+2025-04-07 19:59:52,886 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 19:59:53,529 - INFO - history_titles:[] empty for user: U57919!!!
+2025-04-07 20:03:30,112 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:03:30,226 - INFO - history_titles:[] empty for user: U2476!!!
+2025-04-07 20:07:05,212 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:07:05,332 - INFO - history_titles:[] empty for user: U65361!!!
+2025-04-07 20:10:41,276 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:10:41,398 - INFO - history_titles:[] empty for user: U46937!!!
+2025-04-07 20:14:20,094 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:14:20,219 - INFO - history_titles:[] empty for user: U51668!!!
+2025-04-07 20:18:00,087 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:21:36,928 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:25:13,453 - INFO - lens: newsdf:51282candidate_pool:14624,candidate_pool:14624
+2025-04-07 20:28:52,642 - INFO - lens: newsdf:51282candidate_pool:14637,candidate_pool:14637
+2025-04-07 20:28:52,838 - INFO - history_titles:[] empty for user: U29035!!!
+2025-04-07 20:32:37,511 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:36:36,151 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 20:40:39,463 - INFO - lens: newsdf:51282candidate_pool:14640,candidate_pool:14640
+2025-04-07 20:40:39,963 - INFO - history_titles:[] empty for user: U90945!!!
+2025-04-07 20:44:27,469 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:48:12,593 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 20:48:13,200 - INFO - history_titles:[] empty for user: U83995!!!
+2025-04-07 20:51:59,143 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 20:55:46,156 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 20:59:36,434 - INFO - lens: newsdf:51282candidate_pool:14636,candidate_pool:14636
+2025-04-07 21:03:28,853 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-07 21:03:28,984 - INFO - history_titles:[] empty for user: U20995!!!
+2025-04-07 21:07:11,075 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 21:07:11,206 - INFO - history_titles:[] empty for user: U57069!!!
+2025-04-07 21:10:53,074 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 21:14:31,094 - INFO - lens: newsdf:51282candidate_pool:14640,candidate_pool:14640
+2025-04-07 21:18:09,112 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 21:21:45,525 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 21:25:21,812 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 21:28:58,479 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 21:32:35,189 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 21:32:35,386 - INFO - history_titles:[] empty for user: U50647!!!
+2025-04-07 21:36:11,264 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 21:36:11,386 - INFO - history_titles:[] empty for user: U87873!!!
+2025-04-07 21:39:47,090 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 21:43:25,510 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 21:47:01,852 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 21:50:39,067 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-07 21:54:15,540 - INFO - lens: newsdf:51282candidate_pool:14635,candidate_pool:14635
+2025-04-07 21:57:53,877 - INFO - lens: newsdf:51282candidate_pool:14633,candidate_pool:14633
+2025-04-07 21:57:54,004 - INFO - history_titles:[] empty for user: U38989!!!
+2025-04-07 22:01:33,770 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:01:34,337 - INFO - history_titles:[] empty for user: U5285!!!
+2025-04-07 22:05:07,556 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:08:42,793 - INFO - lens: newsdf:51282candidate_pool:14640,candidate_pool:14640
+2025-04-07 22:12:17,404 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:17:32,849 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 22:17:33,133 - INFO - history_titles:[] empty for user: U34670!!!
+2025-04-07 22:21:08,216 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:24:43,091 - INFO - lens: newsdf:51282candidate_pool:14637,candidate_pool:14637
+2025-04-07 22:28:18,380 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-07 22:28:18,579 - INFO - history_titles:[] empty for user: U53231!!!
+2025-04-07 22:31:57,532 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:31:57,724 - INFO - history_titles:[] empty for user: U92486!!!
+2025-04-07 22:35:39,149 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:39:20,079 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:39:20,263 - INFO - history_titles:[] empty for user: U8312!!!
+2025-04-07 22:43:00,682 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:46:39,216 - INFO - lens: newsdf:51282candidate_pool:14637,candidate_pool:14637
+2025-04-07 22:50:15,596 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 22:50:15,803 - INFO - history_titles:[] empty for user: U91678!!!
+2025-04-07 22:53:52,583 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:57:31,704 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 22:57:31,892 - INFO - history_titles:[] empty for user: U85394!!!
+2025-04-07 23:01:10,651 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 23:01:10,815 - INFO - history_titles:[] empty for user: U81585!!!
+2025-04-07 23:04:49,851 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 23:08:29,563 - INFO - lens: newsdf:51282candidate_pool:14634,candidate_pool:14634
+2025-04-07 23:08:29,986 - INFO - history_titles:[] empty for user: U49572!!!
+2025-04-07 23:12:09,658 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 23:12:09,820 - INFO - history_titles:[] empty for user: U80709!!!
+2025-04-07 23:15:49,430 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 23:19:28,860 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 23:23:10,221 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 23:26:50,771 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-07 23:26:51,042 - INFO - history_titles:[] empty for user: U7932!!!
+2025-04-07 23:30:29,743 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 23:34:10,983 - INFO - lens: newsdf:51282candidate_pool:14633,candidate_pool:14633
+2025-04-07 23:37:50,603 - INFO - lens: newsdf:51282candidate_pool:14636,candidate_pool:14636
+2025-04-07 23:41:32,960 - INFO - lens: newsdf:51282candidate_pool:14640,candidate_pool:14640
+2025-04-07 23:41:33,180 - INFO - history_titles:[] empty for user: U54128!!!
+2025-04-07 23:45:13,657 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-07 23:48:55,735 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-07 23:52:35,269 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-07 23:56:16,571 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-07 23:56:16,759 - INFO - history_titles:[] empty for user: U39868!!!
+2025-04-07 23:59:56,260 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 00:03:37,161 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-08 00:07:17,109 - INFO - lens: newsdf:51282candidate_pool:14630,candidate_pool:14630
+2025-04-08 00:07:17,591 - INFO - history_titles:[] empty for user: U2935!!!
+2025-04-08 00:11:03,139 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 00:14:46,939 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 00:18:28,667 - INFO - lens: newsdf:51282candidate_pool:14640,candidate_pool:14640
+2025-04-08 00:22:08,728 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-08 00:22:09,468 - INFO - history_titles:[] empty for user: U22930!!!
+2025-04-08 00:25:47,553 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 00:25:47,715 - INFO - history_titles:[] empty for user: U86017!!!
+2025-04-08 00:29:31,941 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 00:33:10,636 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-08 00:33:10,836 - INFO - history_titles:[] empty for user: U37127!!!
+2025-04-08 00:36:44,068 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 00:40:16,975 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-08 00:43:51,430 - INFO - lens: newsdf:51282candidate_pool:14635,candidate_pool:14635
+2025-04-08 00:43:51,713 - INFO - history_titles:[] empty for user: U89839!!!
+2025-04-08 00:47:31,786 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 00:51:12,627 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-08 00:54:50,766 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-08 00:54:50,962 - INFO - history_titles:[] empty for user: U21482!!!
+2025-04-08 00:58:32,675 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 00:58:32,839 - INFO - history_titles:[] empty for user: U5786!!!
+2025-04-08 01:02:10,684 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:05:49,903 - INFO - lens: newsdf:51282candidate_pool:14638,candidate_pool:14638
+2025-04-08 01:05:50,086 - INFO - history_titles:[] empty for user: U80525!!!
+2025-04-08 01:09:30,517 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:13:13,811 - INFO - lens: newsdf:51282candidate_pool:14641,candidate_pool:14641
+2025-04-08 01:16:58,293 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:16:58,478 - INFO - history_titles:[] empty for user: U73145!!!
+2025-04-08 01:20:38,941 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:24:21,238 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-08 01:28:01,242 - INFO - lens: newsdf:51282candidate_pool:14642,candidate_pool:14642
+2025-04-08 01:28:01,420 - INFO - history_titles:[] empty for user: U78130!!!
+2025-04-08 01:31:41,953 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:35:25,273 - INFO - lens: newsdf:51282candidate_pool:14635,candidate_pool:14635
+2025-04-08 01:35:25,469 - INFO - history_titles:[] empty for user: U44296!!!
+2025-04-08 01:39:07,596 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:42:48,077 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-08 01:46:27,619 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:46:27,786 - INFO - history_titles:[] empty for user: U89226!!!
+2025-04-08 01:50:03,909 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:53:38,199 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-08 01:57:10,361 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 01:57:10,538 - INFO - history_titles:[] empty for user: U80142!!!
+2025-04-08 02:00:53,334 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 02:04:34,713 - INFO - lens: newsdf:51282candidate_pool:14639,candidate_pool:14639
+2025-04-08 02:04:34,901 - INFO - history_titles:[] empty for user: U88635!!!
+2025-04-08 02:08:17,990 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 02:08:18,149 - INFO - history_titles:[] empty for user: U57919!!!
+2025-04-08 02:11:58,111 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 02:11:58,266 - INFO - history_titles:[] empty for user: U2476!!!
+2025-04-08 02:15:33,288 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 02:15:33,458 - INFO - history_titles:[] empty for user: U65361!!!
+2025-04-08 02:19:08,915 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 02:19:09,076 - INFO - history_titles:[] empty for user: U46937!!!
+2025-04-08 02:22:44,776 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 02:22:44,950 - INFO - history_titles:[] empty for user: U51668!!!
+2025-04-08 02:26:24,579 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643
+2025-04-08 02:30:03,053 - INFO - lens: newsdf:51282candidate_pool:14643,candidate_pool:14643

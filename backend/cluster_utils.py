@@ -304,7 +304,7 @@ def get_cluster_ground_truth(cluster_users, behaviors_df, cutoff_time, cache_dir
     logging.info(f"Cached ground truth frequency to {cache_filename}")
     return ground_truth
 
-def tfidf_filter_candidates(candidates_df: pd.DataFrame, user_history_text: str, tfidf_vectorizer: TfidfVectorizer, min_similarity: float = 0.1) -> pd.DataFrame:
+def tfidf_filter_candidates(candidates_df: pd.DataFrame, user_history_text: str, tfidf_vectorizer: TfidfVectorizer, min_similarity: float = 0.1, plot = False) -> pd.DataFrame:
     """
     Re-rank and optionally filter candidate articles using TF-IDF similarity.
     
@@ -326,16 +326,16 @@ def tfidf_filter_candidates(candidates_df: pd.DataFrame, user_history_text: str,
     
     # Compute cosine similarities between user history and each candidate
     similarities = cosine_similarity(user_vector, candidate_vectors)[0]
-
-    # Log the similarity distribution (for threshold determination)
-    import matplotlib.pyplot as plt
-    plt.hist(similarities, bins=20, color='skyblue', edgecolor='black')
-    plt.xlabel("TF-IDF Cosine Similarity")
-    plt.ylabel("Frequency")
-    plt.title("Distribution of Candidate Similarity Scores")
-    plt.savefig("tfidf_similarity_distribution.png")
-    plt.close()
-    print("TF-IDF similarity distribution plotted and saved as 'tfidf_similarity_distribution.png'.")
+    if plot:
+        # Log the similarity distribution (for threshold determination)
+        import matplotlib.pyplot as plt
+        plt.hist(similarities, bins=20, color='skyblue', edgecolor='black')
+        plt.xlabel("TF-IDF Cosine Similarity")
+        plt.ylabel("Frequency")
+        plt.title("Distribution of Candidate Similarity Scores")
+        plt.savefig("tfidf_similarity_distribution.png")
+        plt.close()
+        print("TF-IDF similarity distribution plotted and saved as 'tfidf_similarity_distribution.png'.")
 
     # Add the similarity score to the DataFrame
     candidates_df = candidates_df.copy()
@@ -684,6 +684,50 @@ import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+def get_or_compute_global_average_profile(behaviors_df, news_df, tokenizer, cutoff_time, 
+                                            max_history_length=50, max_title_length=30,
+                                            filename='global_average_profile.pkl'):
+    """
+    Check if the global average profile has been computed and saved.
+    If the file exists, load the global average profile.
+    Otherwise, compute it, save it, and return it.
+    
+    Parameters:
+      - behaviors_df: DataFrame of user behaviors.
+      - news_df: DataFrame of news/articles.
+      - tokenizer: Pre-fitted Keras Tokenizer.
+      - cutoff_time: The cutoff time to split historical interactions.
+      - max_history_length: Maximum number of historical items in the profile.
+      - max_title_length: Maximum length of each article's tokenized title.
+      - filename: The file in which the global average profile is stored.
+      
+    Returns:
+      - A TensorFlow tensor of shape (max_history_length, max_title_length) representing the global average profile.
+    """
+    if os.path.exists(filename):
+        with open(filename, "rb") as f:
+            avg_profile = pickle.load(f)
+        print(f"Loaded global average profile from {filename}")
+        return avg_profile
+    else:
+        # Compute the global average profile.
+        profiles = []
+        user_ids = behaviors_df['UserID'].unique()
+        for user_id in user_ids:
+            history_tensor, history_ids, _ = build_user_profile_tensor(user_id, behaviors_df, news_df, cutoff_time, tokenizer,
+                                                                       max_history_length, max_title_length)
+            if history_ids:  # Include only users with a non-empty history.
+                profiles.append(history_tensor.numpy())
+        if profiles:
+            avg_profile = tf.convert_to_tensor(np.mean(np.stack(profiles, axis=0), axis=0), dtype=tf.int32)
+        else:
+            avg_profile = tf.zeros((max_history_length, max_title_length), dtype=tf.int32)
+        # Save the computed global average profile.
+        with open(filename, "wb") as f:
+            pickle.dump(avg_profile, f)
+        print(f"Saved global average profile to {filename}")
+        return avg_profile
+
 def build_user_profile_tensor(
     user_id,
     behaviors_df,
@@ -700,14 +744,17 @@ def build_user_profile_tensor(
     4) Return (history_tensor, history_article_ids)
     """
     # Ensure 'Time' is datetime
+    logging.info(f"Started build_user_profile_tensor")
     behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
     cutoff_dt = pd.to_datetime(cutoff_time)
+    logging.info(f"Time set to datetime")
 
     # Filter to user’s rows up to cutoff
     user_hist = behaviors_df[
         (behaviors_df['UserID'] == user_id)
         & (behaviors_df['Time'] <= np.datetime64(cutoff_dt))
     ].copy()
+    logging.info(f"Filtered user behaviors up to {cutoff_time}")
 
     # Collect article IDs from user’s HistoryText
     all_hist_article_ids = set()
@@ -716,6 +763,7 @@ def build_user_profile_tensor(
             continue
         for art in row["HistoryText"].split():
             all_hist_article_ids.add(art)
+    logging.info(f"Collected users history of length:{len(all_hist_article_ids)}")
 
     original_history_len = len(all_hist_article_ids)
     # Sort by most recent if you prefer
@@ -729,6 +777,7 @@ def build_user_profile_tensor(
     # Keep only up to max_history_length
     if len(history_article_ids) > max_history_length:
         history_article_ids = history_article_ids[-max_history_length:]  # or however you want to slice
+    logging.info(f"Kept users history of length:{len(history_article_ids)}")
 
     # Build a "history" text from each article’s "CombinedText"
     # or you can build an array of tokenized titles. (Below is an array-of-titles approach.)
@@ -748,6 +797,7 @@ def build_user_profile_tensor(
             seq = [0]
         seq = pad_sequences([seq], maxlen=max_title_length, padding='post', truncating='post', value=0)[0]
         history_titles.append(seq)
+    logging.info(f"Built combined text from every article in history. history_titles length:{len(history_titles)}")
     history_titles = np.array(history_titles, dtype=int)
     if history_titles.ndim == 1 and history_titles.shape[0] == 0:
         history_titles = history_titles.reshape(0, max_title_length)
@@ -762,11 +812,52 @@ def build_user_profile_tensor(
     else:
         history_titles = np.array(history_titles[-max_history_length:])
 
+    logging.info(f"Convert history_titles to tensor")
     # The final shape should be (max_history_length, max_title_length).
     # Convert to a TF tensor if you want:
     history_tensor = tf.convert_to_tensor(history_titles, dtype=tf.int32)
 
+    logging.info(f"Converted history_titles to tensor")
     return history_tensor, history_article_ids, original_history_len
+
+# Global cache for candidate pool for a given cutoff_time.
+CANDIDATE_POOL_CACHE = {}
+
+def precompute_candidate_pool(behaviors_df, cutoff_time):
+    """
+    Precompute the candidate pool for the given cutoff_time.
+    This function processes the entire behaviors_df only once.
+    """
+    # Convert times once
+    behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
+    cutoff_dt = pd.to_datetime(cutoff_time)
+    if cutoff_dt.tzinfo is not None:
+        cutoff_dt = cutoff_dt.tz_convert(None)
+    
+    first_interactions = {}
+    for _, row in behaviors_df.iterrows():
+        if pd.isna(row["Time"]) or pd.isna(row["Impressions"]) or row["Impressions"].strip() == "":
+            continue
+        if row["Time"] <= np.datetime64(cutoff_dt):
+            for imp in row["Impressions"].split():
+                art_id, _ = imp.split('-')
+                # Record the earliest time seen for the article.
+                if art_id not in first_interactions or row["Time"] < first_interactions[art_id]:
+                    first_interactions[art_id] = row["Time"]
+    candidate_pool = [art for art, t in first_interactions.items() if t <= cutoff_dt]
+    return candidate_pool
+
+def get_candidate_pool_for_user(user_id, behaviors_df, news_df, cutoff_time, user_history_ids):
+    """
+    Retrieve or compute the candidate pool for the given cutoff_time, and then remove user-specific history.
+    """
+    global CANDIDATE_POOL_CACHE
+    if cutoff_time not in CANDIDATE_POOL_CACHE:
+        CANDIDATE_POOL_CACHE[cutoff_time] = precompute_candidate_pool(behaviors_df, cutoff_time)
+    candidate_pool = CANDIDATE_POOL_CACHE[cutoff_time]
+    candidate_pool_user = list(set(candidate_pool) - set(user_history_ids))
+    return candidate_pool_user
+
 def user_candidate_generation(
     user_id,
     user_history_ids,
@@ -788,36 +879,22 @@ def user_candidate_generation(
     """
 
     # Optionally filter articles by cutoff_time
+    logging.info(f"Filtering based on cutoff time: {cutoff_time}")
     if cutoff_time is not None:
-        behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
-        cutoff_dt = pd.to_datetime(cutoff_time)
-        if cutoff_dt.tzinfo is not None:
-            cutoff_dt = cutoff_dt.tz_convert(None)
-        first_interactions = {}
-        for _, row in behaviors_df.iterrows():
-            if pd.isna(row["Time"]):
-                continue
-            if pd.isna(row["Impressions"]) or row["Impressions"].strip() == "":
-                continue
-            if row["Time"] <= np.datetime64(cutoff_dt):
-                # record earliest time
-                for imp in row["Impressions"].split():
-                    art_id, label = imp.split('-')
-                    if art_id not in first_interactions or row["Time"] < first_interactions[art_id]:
-                        first_interactions[art_id] = row["Time"]
-        candidate_pool = [art for art, t in first_interactions.items() if t <= cutoff_dt]
+        candidate_pool = get_candidate_pool_for_user(user_id, behaviors_df, news_df, cutoff_time, user_history_ids)
     else:
-        # If no time constraint, let candidate_pool be all news
         candidate_pool = news_df['NewsID'].unique().tolist()
 
+    logging.info(f"After Filtering candidate pool length: {len(candidate_pool)}")
     # remove user's history from the candidate pool
     candidate_pool = list(set(candidate_pool) - set(user_history_ids))
-
+    logging.info(f"After removing user history from candidate pool: {len(candidate_pool)}")
     # Build candidates_df
     candidates_df = news_df[news_df['NewsID'].isin(candidate_pool)].copy()
+    logging.info(f"built candidates_df")
 
-    # Optional TF–IDF filter
-    if tfidf_vectorizer is not None:
+    logging.info(f"tfidf filtering candidates when min_tfidf_similarity={min_tfidf_similarity}")
+    if tfidf_vectorizer is not None and min_tfidf_similarity > 0.0:
         # Build user’s aggregated text from user_history_ids
         texts = []
         for art_id in user_history_ids:
@@ -828,13 +905,14 @@ def user_candidate_generation(
 
         # Then your function tfidf_filter_candidates
         candidates_df = tfidf_filter_candidates(candidates_df, user_history_text, tfidf_vectorizer, 
-                                                min_similarity=min_tfidf_similarity)
+                                                    min_similarity=min_tfidf_similarity)
+    logging.info(f"tfidf filtering done.")
 
-    # Optionally limit the candidate size
+    logging.info(f"filtering candidates (length:{len(candidates_df)}) with max size:{max_candidates}")
     if max_candidates > 0 and len(candidates_df) > max_candidates:
         candidates_df = candidates_df.head(max_candidates)
 
-    # Build the candidate tensors
+    logging.info(f"building candidate tensors")
     candidate_tensors = []
     candidate_ids = []
     for idx, row in candidates_df.iterrows():
@@ -848,6 +926,7 @@ def user_candidate_generation(
         candidate_ids.append(art_id)
     logging.info(f"lens: newsdf:{len(news_df['NewsID'].tolist())}candidate_pool:{len(candidate_pool)},candidate_pool:{len(candidate_pool)}")
     return candidate_tensors, candidate_ids
+
 def get_user_future_clicks(user_id, behaviors_df, cutoff_time):
     """
     Return a set of article IDs that user clicked after cutoff_time.
@@ -952,39 +1031,439 @@ def generate_base_predictions(history_tensor, candidate_tensors, models_dict, ba
 def save_incremental(prediction, filename='scores.pkl'):
     with open(filename, 'ab') as f:  # Open in append mode
         pickle.dump(prediction, f)
+from joblib import Parallel, delayed
 
-def build_meta_training_data(user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time):
+def process_user_for_meta(user_id, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time):
+    # Build user profile and candidate pool.
+    user_history_tensor, user_history_ids, _ = build_user_profile_tensor(user_id, behaviors_df, news_df, cutoff_time, tokenizer)
+    candidate_tensors, candidate_ids = user_candidate_generation(user_id, user_history_ids, behaviors_df, news_df, tokenizer, tfidf_vectorizer, cutoff_time, 0.00)
+    
+    # Expand dims to match model input.
+    user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+    
+    # Generate base model predictions.
+    base_preds = generate_base_predictions(user_history_tensor, candidate_tensors, models_dict)
+    
+    # Combine predictions into a feature matrix.
+    # Assuming candidate_ids are in the same order for all models.
+    features = np.column_stack([base_preds[key] for key in models_dict.keys()])
+    
+    # Get ground truth: whether each candidate was clicked.
+    ground_truth = get_user_future_clicks(user_id, behaviors_df, cutoff_time)
+    labels = np.array([1 if art in ground_truth else 0 for art in candidate_ids])
+    
+    return features, labels
+
+def build_meta_training_data_parallel(user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time, n_jobs=-1):
     """
-    For each user in user_ids, generate candidate predictions and build a training dataset for the meta-model.
-    Returns X_meta (features) and y_meta (binary labels).
+    Build meta-training data in parallel.
+    
+    Parameters:
+      - user_ids: list of user IDs.
+      - n_jobs: number of parallel jobs (-1 uses all cores).
+      
+    Returns:
+      - X_meta: Combined feature matrix.
+      - y_meta: Combined labels.
     """
-    X_meta, y_meta = [], []
-    for user_id in user_ids:
-        # Build user profile and candidate pool as you already do.
+    results = Parallel(n_jobs=n_jobs)(delayed(process_user_for_meta)(
+        user_id, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time
+    ) for user_id in user_ids)
+    
+    # Unzip results into features and labels lists.
+    X_meta_list, y_meta_list = zip(*results)
+    X_meta = np.vstack(X_meta_list)
+    y_meta = np.hstack(y_meta_list)
+    return X_meta, y_meta
+
+def batch_predict_users2(user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time, batch_size=128):
+    # Lists to hold batched candidate tensors and corresponding repeated user_history tensors.
+    all_candidate_tensors = []
+    all_history_tensors = []
+    all_candidate_ids = []  # To keep track of candidate ids per prediction.
+    
+    # Loop over a batch of users (you can modify this to process the whole user_ids list in chunks)
+    total_users = len(user_ids)
+    for i, user_id in enumerate(user_ids):
+        print(f"{i}/{total_users}:start")
+        # Compute user profile and candidate pool
         user_history_tensor, user_history_ids, _ = build_user_profile_tensor(user_id, behaviors_df, news_df, cutoff_time, tokenizer)
-        candidate_tensors, candidate_ids = user_candidate_generation(user_id, user_history_ids, behaviors_df, news_df, tokenizer, tfidf_vectorizer, cutoff_time, 0.02)
+        #print(f"{i}/{total_users}: build_user_profile_tensor done")
+        candidate_tensors, candidate_ids = user_candidate_generation(user_id, user_history_ids, behaviors_df, news_df, tokenizer, tfidf_vectorizer, cutoff_time, 0.00)
+        #print(f"{i}/{total_users}: user_candidate_generation done")
+        if not candidate_tensors:
+            continue
+        num_candidates = len(candidate_tensors)
+        # Expand dims of user history to shape (1, max_history_length, max_title_length)
+        user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+        # Repeat the user history tensor for each candidate so that its shape becomes
+        # (num_candidates, max_history_length, max_title_length)
+        repeated_history = tf.repeat(user_history_tensor, repeats=num_candidates, axis=0)
+        # Concatenate candidate tensors along the batch axis; each tensor is shape (1, max_title_length)
+        batch_candidates = tf.concat(candidate_tensors, axis=0)
         
+        all_history_tensors.append(repeated_history)
+        all_candidate_tensors.append(batch_candidates)
+        all_candidate_ids.extend(candidate_ids)
+    
+    # Now, concatenate all user history tensors and candidate tensors across users.
+    if not all_history_tensors or not all_candidate_tensors:
+        return None, None  # No predictions if lists are empty
+    
+    batched_history = tf.concat(all_history_tensors, axis=0)
+    batched_candidates = tf.concat(all_candidate_tensors, axis=0)
+    
+    # Example: Use a single model from the models_dict (or average predictions from several)
+    # Here we use the first model in the dictionary.
+    model_key = list(models_dict.keys())[0]
+    model = models_dict[model_key]
+    
+    # Predict in one batch:
+    predictions = model.predict(
+        {
+            "history_input": batched_history,
+            "candidate_input": batched_candidates
+        },
+        batch_size=batch_size
+    )
+    predictions = predictions.ravel()  # Flatten to shape (total_num_candidates,)
+    return predictions, all_candidate_ids
+
+def batch_predict_users(user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time, batch_size=128):
+    """
+    Process a list of user_ids in batch. For each user, build candidate tensors and run the base model predictions.
+    Returns:
+      - predictions: a list of dictionaries (one per user), where each dict contains predictions
+                     for each base model (e.g. {"model1": array([...]), "model2": array([...])}).
+      - candidate_ids_list: a list of lists; each inner list contains candidate IDs for the corresponding user.
+      - user_id_order: a list of user IDs (order corresponding to predictions).
+    """
+    all_predictions = []
+    all_candidate_ids = []
+    user_id_order = []
+    
+    total_users = len(user_ids)
+    for i, user_id in enumerate(user_ids):
+        print(f"{i+1}/{total_users}: Processing user {user_id}")
+        logging.info(f"{i+1}/{total_users}: Processing user {user_id}")
+
+        # Build user history and candidate pool for the user.
+        logging.info(f"Starting build_user_profile_tensor")
+        user_history_tensor, user_history_ids, _ = build_user_profile_tensor(user_id, behaviors_df, news_df, cutoff_time, tokenizer)
+        logging.info(f"Starting user_candidate_generation")
+        candidate_tensors, candidate_ids = user_candidate_generation(user_id, user_history_ids, behaviors_df, news_df,
+                                                                      tokenizer, tfidf_vectorizer, cutoff_time, 0.00)
+        logging.info(f"Ended user_candidate_generation")
+        if not candidate_tensors:
+            continue
         # Expand dims to match model input.
         user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+        num_candidates = len(candidate_tensors)
         
-        # Generate base model predictions.
-        base_preds = generate_base_predictions(user_history_tensor, candidate_tensors, models_dict)
-        # Combine predictions into a feature matrix.
-        # Assuming candidate_ids are in the same order for all models.
-        num_candidates = len(candidate_ids)
-        # For each candidate, create feature vector: [pred_model1, pred_model2, pred_model3]
-        features = np.column_stack([base_preds[key] for key in models_dict.keys()])
+        # Repeat user history tensor for each candidate.
+        repeated_history = tf.repeat(user_history_tensor, repeats=num_candidates, axis=0)
+        # Concatenate candidate tensors along batch axis.
+        batch_candidates = tf.concat(candidate_tensors, axis=0)
         
-        # Get ground truth: whether the candidate was clicked.
+        # For demonstration, use the first model from the models_dict (or you can aggregate across models).
+        user_preds = {}
+        for key, model in models_dict.items():
+            preds = model.predict(
+                {"history_input": repeated_history, "candidate_input": batch_candidates},
+                batch_size=batch_size
+            )
+            # Flatten predictions to a 1D array.
+            user_preds[key] = preds.ravel()
+        
+        all_predictions.append(user_preds)
+        all_candidate_ids.append(candidate_ids)
+        user_id_order.append(user_id)
+        print(f"{i+1}/{total_users}: Done.")
+        
+    return all_predictions, all_candidate_ids, user_id_order
+
+def build_meta_training_data(user_ids, behaviors_df, news_df, models_dict, tokenizer, 
+                             tfidf_vectorizer, cutoff_time):
+    """
+    Build the meta-training data for a batch of user IDs.
+    
+    This version calls the batch prediction function once, so that we do not have
+    an inner loop over users for the candidate prediction step.
+    
+    Returns:
+      - X_meta: A 2D feature matrix where each row is the feature vector for one candidate.
+      - y_meta: A 1D label vector (1 if candidate was clicked, else 0).
+    """
+    # Get batch predictions once.
+    
+    logging.info(f"Starting batch_predict_users")
+    predictions_list, candidate_ids_list, user_id_order = batch_predict_users(
+        user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time, batch_size=128
+    )
+    logging.info(f"end batch_predict_users")
+    
+    X_meta_list = []
+    y_meta_list = []
+    
+    total_users = len(user_id_order)
+    for idx, user_id in enumerate(user_id_order):
+        candidate_ids = candidate_ids_list[idx]
+        logging.info(f"{idx}/{total_users} in user_id_order")
+        # predictions_list[idx] is a dictionary, e.g., {"model1": array([...]), "model2": array([...])}
+        user_preds = predictions_list[idx]
+        # Combine the predictions from each model into a feature vector per candidate.
+        features = np.column_stack([user_preds[key] for key in models_dict.keys()])
+        
+        # Get ground truth for this user.
         ground_truth = get_user_future_clicks(user_id, behaviors_df, cutoff_time)
         labels = np.array([1 if art in ground_truth else 0 for art in candidate_ids])
         
+        X_meta_list.append(features)
+        y_meta_list.append(labels)
+        print(f"Processed meta data for user {idx+1}/{total_users}")
+    
+    if X_meta_list:
+        X_meta = np.vstack(X_meta_list)
+        y_meta = np.hstack(y_meta_list)
+    else:
+        X_meta = np.empty((0, len(models_dict)))
+        y_meta = np.empty(0)
+    return X_meta, y_meta
+
+def train_meta_models_for_batches(user_ids, behaviors_df, news_df, models_dict, tokenizer, 
+                                  tfidf_vectorizer, cutoff_time, batch_size=100):
+    """
+    Trains a separate meta model on each batch of users.
+    
+    For each batch:
+      - Builds meta-training data using build_meta_training_data().
+      - Trains a LogisticRegression meta-model on the batch.
+      - Saves the trained meta-model as 'meta_model_batch_<i>.pkl'.
+    
+    Finally, saves the meta-model from the latest batch as 'latest_meta_model.pkl'.
+
+    Parameters:
+      - user_ids: List of user IDs to process.
+      - behaviors_df: DataFrame of user behaviors.
+      - news_df: DataFrame of news/articles.
+      - models_dict: Dictionary of pre-trained base models.
+      - tokenizer: Pre-fitted Keras Tokenizer.
+      - tfidf_vectorizer: Pre-fitted TfidfVectorizer.
+      - cutoff_time: Cutoff time (string or datetime) used for splitting historical and future data.
+      - batch_size: The number of users to process per batch.
+    
+    Returns:
+      - meta_models: A list containing the meta-models trained on each batch.
+    """
+    meta_models = []
+    num_batches = (len(user_ids) + batch_size - 1) // batch_size
+    X_total = []
+    y_total = []
+    for i in range(num_batches):
+        batch_user_ids = user_ids[i * batch_size:(i + 1) * batch_size]
+        print(f"Processing batch {i+1}/{num_batches} with {len(batch_user_ids)} users.")
+        logging.info(f"Processing batch {i+1}/{num_batches} with {len(batch_user_ids)} users.")
+        
+        # Build meta-training data for this batch
+        X_batch, y_batch = build_meta_training_data(batch_user_ids, behaviors_df, news_df, 
+                                                    models_dict, tokenizer, tfidf_vectorizer, cutoff_time)
+        if X_batch.shape[0] == 0:
+            print(f"Batch {i+1} has no candidate data, skipping.")
+            continue
+        
+        # Train meta-model for this batch
+        meta_model = LogisticRegression(max_iter=1000)
+        meta_model.fit(X_batch, y_batch)
+        batch_auc = roc_auc_score(y_batch, meta_model.predict_proba(X_batch)[:, 1])
+        print(f"Trained meta-model for batch {i+1}/{num_batches} - Batch AUC: {batch_auc:.4f}")
+        
+        meta_models.append(meta_model)
+        
+        # Save the meta-model for the current batch.
+        batch_model_filename = f"meta_model_batch_{i+1}.pkl"
+        with open(batch_model_filename, "wb") as f:
+            pickle.dump(meta_model, f)
+        print(f"Saved meta-model for batch {i+1} to {batch_model_filename}")
+        X_total.extend(X_batch)
+        y_total.extend(y_batch)
+    
+    if meta_models:
+        # Save the latest meta model to a file for later loading.
+        with open(f"latest_meta_model_{date_str}.pkl", "wb") as f:
+            pickle.dump(meta_models[-1], f)
+        print("Saved latest meta-model to latest_meta_model.pkl")
+    else:
+        print("No meta-models were trained.")
+
+    return meta_models, 
+
+# Example usage:
+# user_ids_train = list(train_data['UserID'].unique())
+# meta_models = train_meta_models_for_batches(user_ids_train, behaviors_df, news_df, models_dict,
+#                                              tokenizer, tfidf_vectorizer, cutoff_time_str, batch_size=100)
+
+def build_meta_training_data_batched(user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time, batch_size=128):
+    """
+    Batched version: Builds meta training data by batching model predictions for efficiency.
+    """
+    X_meta, y_meta = [], []
+    total_users = len(user_ids)
+    
+    # Process users in batches
+    for batch_start in range(0, total_users, batch_size):
+        batch_user_ids = user_ids[batch_start:batch_start + batch_size]
+
+        all_history_tensors = []
+        all_candidate_tensors = []
+        all_candidate_ids = []
+        all_ground_truth = []
+
+        for user_id in batch_user_ids:
+            user_history_tensor, user_history_ids, _ = build_user_profile_tensor(
+                user_id, behaviors_df, news_df, cutoff_time, tokenizer)
+            candidate_tensors, candidate_ids = user_candidate_generation(
+                user_id, user_history_ids, behaviors_df, news_df, tokenizer, tfidf_vectorizer, cutoff_time, 0.02)
+            
+            if not candidate_tensors:
+                continue  # skip empty candidate set
+
+            num_candidates = len(candidate_tensors)
+            user_history_tensor = tf.expand_dims(user_history_tensor, axis=0)
+            repeated_history = tf.repeat(user_history_tensor, repeats=num_candidates, axis=0)
+            batch_candidates = tf.concat(candidate_tensors, axis=0)
+
+            all_history_tensors.append(repeated_history)
+            all_candidate_tensors.append(batch_candidates)
+            all_candidate_ids.extend(candidate_ids)
+
+            # Ground truth per candidate
+            future_clicks = get_user_future_clicks(user_id, behaviors_df, cutoff_time)
+            labels = [1 if cid in future_clicks else 0 for cid in candidate_ids]
+            all_ground_truth.extend(labels)
+
+        if not all_candidate_tensors:
+            continue
+
+        # Combine all users’ data for batch prediction
+        batched_history = tf.concat(all_history_tensors, axis=0)
+        batched_candidates = tf.concat(all_candidate_tensors, axis=0)
+
+        # Run each base model and collect predictions
+        base_preds = {
+            model_key: models_dict[model_key].predict(
+                {"history_input": batched_history, "candidate_input": batched_candidates}, batch_size=128
+            ).reshape(-1)
+            for model_key in models_dict
+        }
+
+        # Combine model predictions into feature matrix
+        features = np.column_stack([base_preds[key] for key in models_dict.keys()])
+        labels = np.array(all_ground_truth)
+
         X_meta.append(features)
         y_meta.append(labels)
-    # Flatten lists over all users. (Make sure the dimensions match: each row is one candidate)
+
+        print(f"{min(batch_start + batch_size, total_users)}/{total_users} users done.")
+
+    # Final output
     X_meta = np.vstack(X_meta)
     y_meta = np.hstack(y_meta)
     return X_meta, y_meta
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+
+# Example usage:
+# user_ids_train = list_of_train_user_ids  # Provide a list of user IDs from your training set.
+# meta_model, X_meta, y_meta = train_meta_model(user_ids_train, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time)
+def train_meta_model(user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time):
+    """
+    Build meta-training data from the given user IDs and train a meta-model to combine base model predictions.
+    
+    Parameters:
+      - user_ids: List of user IDs (from the training set).
+      - behaviors_df: DataFrame containing user behaviors.
+      - news_df: DataFrame containing news/articles.
+      - models_dict: Dictionary of pre-trained base models.
+      - tokenizer: Pre-fitted Keras Tokenizer.
+      - tfidf_vectorizer: Pre-fitted TfidfVectorizer.
+      - cutoff_time: Cutoff time (string or datetime) used for splitting historical and future data.
+    
+    Returns:
+      - meta_model: The trained meta-model (e.g. LogisticRegression).
+      - X_meta: Feature matrix used for meta-training.
+      - y_meta: Ground truth binary labels.
+    """
+    X_meta, y_meta = build_meta_training_data(user_ids, behaviors_df, news_df, models_dict, tokenizer, tfidf_vectorizer, cutoff_time)
+    
+    meta_model = LogisticRegression(max_iter=1000)
+    meta_model.fit(X_meta, y_meta)
+    
+    train_auc = roc_auc_score(y_meta, meta_model.predict_proba(X_meta)[:, 1])
+    print(f"Meta model training AUC: {train_auc:.4f}")
+    
+    return meta_model, X_meta, y_meta
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import roc_auc_score
+
+def incremental_train_meta_model(user_ids, behaviors_df, news_df, models_dict, 
+                                 tokenizer, tfidf_vectorizer, cutoff_time, batch_size=100):
+    """
+    Incrementally trains the meta-model using batches of user IDs.
+    
+    Parameters:
+      - user_ids: List of user IDs for which to build meta-training data.
+      - behaviors_df: DataFrame of user behavior logs.
+      - news_df: DataFrame of news/articles.
+      - models_dict: Dictionary of base models.
+      - tokenizer: Pre-fitted Keras Tokenizer.
+      - tfidf_vectorizer: Pre-fitted TfidfVectorizer.
+      - cutoff_time: The cutoff time (string or datetime) for splitting historical/future interactions.
+      - batch_size: Number of users to process per batch.
+    
+    Returns:
+      - meta_model: The trained incremental meta-model.
+    """
+    # Use SGDClassifier with logistic loss, which supports partial_fit
+    meta_model = SGDClassifier(loss='log', max_iter=1000, tol=1e-3)
+    # Define class labels required by partial_fit
+    classes = np.array([0, 1])
+    X_batch_total = []
+    y_batch_total = []
+    total_users = len(user_ids)
+    for start in range(0, total_users, batch_size):
+        batch_ids = user_ids[start:start + batch_size]
+        # Build meta-training data for this batch:
+        X_batch, y_batch = build_meta_training_data(batch_ids, behaviors_df, news_df, 
+                                                    models_dict, tokenizer, tfidf_vectorizer, cutoff_time)
+        if start == 0:
+            # For the first batch, we need to pass the classes to partial_fit.
+            meta_model.partial_fit(X_batch, y_batch, classes=classes)
+        else:
+            meta_model.partial_fit(X_batch, y_batch)
+        
+        # Optionally evaluate performance on the current batch:
+        batch_auc = roc_auc_score(y_batch, meta_model.predict_proba(X_batch)[:, 1])
+        print(f"Processed batch {(start // batch_size) + 1}/{(total_users // batch_size) + 1}: Batch AUC = {batch_auc:.4f}")
+        logging.info(f"Processed batch {(start // batch_size) + 1}/{(total_users // batch_size) + 1}: Batch AUC = {batch_auc:.4f}")
+        X_batch_total.extend(X_batch)
+        y_batch_total.extend(y_batch)
+    
+    return meta_model, X_batch_total, y_batch_total
+
+def score_candidates_batch(history_tensor, candidate_tensors, models_dict, batch_size=128):
+    """
+    Batch-scoring for an ensemble of models in 'models_dict'.
+    We'll do a simple average (like ensemble bagging).
+    """
+    # We'll store predictions from each model, then average
+    all_preds = []
+    separate_scores = {}
+    for key, model in models_dict.items():
+        preds = score_candidates_in_batch(history_tensor, candidate_tensors, model, batch_size)
+        all_preds.append(preds)
+        separate_scores[key] = preds
+    return separate_scores
 
 def score_candidates_ensemble_batch(history_tensor, candidate_tensors, models_dict, batch_size=128):
     """
@@ -2467,12 +2946,89 @@ def train_test_split_time(behaviors_df, cutoff_str="2019-11-20"):
     train_data = behaviors_df[behaviors_df["Time"] <= cutoff_dt].copy()
     test_data = behaviors_df[behaviors_df["Time"] > cutoff_dt].copy()
     return train_data, test_data
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+def run_meta_training(dataset='train', process_dfs=False, process_behaviors=False,
+         data_dir_train='dataset/train/', data_dir_valid='dataset/valid/',
+         zip_file_train="MINDlarge_train.zip", zip_file_valid="MINDlarge_dev.zip",
+         user_category_profiles_path='', user_cluster_df_path='', cluster_id=None,):
+    """
+    Standalone function to train the meta-model using only the meta-training pipeline.
+    
+    Steps:
+      1. Load the dataset and prepare the tokenizer.
+      2. Build a TF-IDF vectorizer on the news combined text.
+      3. Split the behaviors data to extract training users.
+      4. Load or train the base models.
+      5. Build meta-training data (features and labels) using the base models’ predictions.
+      6. Train and return a meta-model.
+      
+    Returns:
+      - meta_model: The trained meta-model.
+      - X_meta: Feature matrix used for meta-training.
+      - y_meta: Ground truth binary labels.
+    """
+    if dataset.lower() == 'train':
+        data_dir = data_dir_train
+    elif dataset.lower() == 'valid':
+        data_dir = data_dir_valid
+    else:
+        raise ValueError("dataset must be either 'train' or 'valid'")
+    # Load dataset and prepare tokenizer
+    news_df, behaviors_df = init_dataset(data_dir_train)
+    tokenizer, vocab_size = prepare_tokenizer(news_df)
+    max_history_length = 50
+    max_title_length = 30
+
+    # Compute cutoff time (using the midpoint from behaviors)
+    midpoint_time = get_midpoint_time(behaviors_df)
+    cutoff_time_str = midpoint_time.isoformat().replace('+00:00', 'Z')
+
+    # Build TF-IDF vectorizer on news CombinedText
+    tfidf_vectorizer = TfidfVectorizer()
+    tfidf_vectorizer.fit(news_df["CombinedText"])
+
+    # Split behaviors to get training data (ignore test split since we focus on meta-training)
+    train_data, _ = train_test_split_time(behaviors_df, cutoff_time_str)
+    
+    # Get unique user IDs from training data
+    user_ids_train = list(train_data['UserID'].unique())
+    
+    # Load or train your base models
+    models_dict, news_df, behaviors_df, tokenizer = get_models(
+        process_dfs, process_behaviors, data_dir_train, data_dir_valid, zip_file_train, zip_file_valid
+    )
+    logging.info(f"computing or loading global average user profile: get_or_compute_global_average_profile")
+    global_average_profile = get_or_compute_global_average_profile(behaviors_df, news_df, tokenizer, cutoff_time_str)
+    GLOBAL_AVG_PROFILE = global_average_profile
+    logging.info(f"Starting train_meta_models_for_batches")
+    meta_models, X_meta, y_meta = train_meta_models_for_batches(user_ids_train, behaviors_df, news_df, models_dict, tokenizer, 
+                                  tfidf_vectorizer, cutoff_time_str)
+    #meta_model, X_meta, y_meta = incremental_train_meta_model(user_ids_train, behaviors_df, news_df, models_dict, 
+    #                             tokenizer, tfidf_vectorizer, cutoff_time_str)
+    # Build meta-training data using your existing function.
+    # This returns X_meta (features: base model predictions) and y_meta (binary click labels)
+    #X_meta, y_meta = build_meta_training_data(user_ids_train, behaviors_df, news_df,
+    #                                          models_dict, tokenizer, tfidf_vectorizer,
+    #                                          cutoff_time_str)
+    
+    # Train a meta-model (e.g. Logistic Regression)
+    #meta_model = LogisticRegression(max_iter=1000)
+    #meta_model.fit(X_meta, y_meta)
+    
+    # Optionally, evaluate meta-model performance on the training set
+    #train_auc = roc_auc_score(y_meta, meta_model.predict_proba(X_meta)[:, 1])
+    #print(f"Meta model training AUC: {train_auc:.4f}")
+    
+    return meta_models, X_meta, y_meta
 
 # ===================== __main__ =====================
 def main(dataset='train', process_dfs=False, process_behaviors=False,
          data_dir_train='dataset/train/', data_dir_valid='dataset/valid/',
          zip_file_train="MINDlarge_train.zip", zip_file_valid="MINDlarge_dev.zip",
-         user_category_profiles_path='', user_cluster_df_path='', cluster_id=None):
+         user_category_profiles_path='', user_cluster_df_path='', cluster_id=None, meta_train=False):
     """
     Main function to run tests on a given dataset type ('train' or 'valid').
     It uses the midpoint time as cutoff and then runs evaluations.
