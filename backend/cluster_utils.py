@@ -60,6 +60,183 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+
+
+def prepare_category_train_dfs(data_dir, news_file, behaviours_file, max_title_length=30, max_history_length=50):
+    """
+    Loads news and behavior data, builds training samples (as in your existing prepare_train_df)
+    but now also looks up the candidate article’s category. Then groups samples by category.
+    
+    Returns a dictionary mapping each category to its training DataFrame.
+    """
+    # Load news data
+    news_path = os.path.join(data_dir, news_file)
+    news_df = pd.read_csv(
+        news_path,
+        sep='\t',
+        names=['NewsID', 'Category', 'SubCategory', 'Title', 'Abstract', 'URL', 'TitleEntities', 'AbstractEntities'],
+        index_col=False
+    )
+    # Clean titles and abstracts and build a combined text field.
+    news_df['CleanTitle'] = news_df['Title'].apply(clean_text)
+    news_df['CleanAbstract'] = news_df['Abstract'].apply(clean_text)
+    news_df['CombinedText'] = news_df['CleanTitle'] + " " + news_df['CleanAbstract']
+    news_df["CombinedText"] = news_df["CombinedText"].astype(str).fillna("")
+    
+    # Load behaviors data
+    behaviors_path = os.path.join(data_dir, behaviours_file)
+    behaviors_df = pd.read_csv(
+        behaviors_path,
+        sep='\t',
+        names=['ImpressionID', 'UserID', 'Time', 'HistoryText', 'Impressions'],
+        index_col=False
+    )
+    behaviors_df['HistoryText'] = behaviors_df['HistoryText'].fillna("")
+    
+    # Build a tokenizer from news combined text.
+    tokenizer = Tokenizer()
+    tokenizer.fit_on_texts(news_df['CombinedText'].tolist())
+    
+    # Create a mapping from NewsID to padded combined text (for later use, if needed)
+    news_df['EncodedText'] = tokenizer.texts_to_sequences(news_df['CombinedText'])
+    news_df['PaddedText'] = list(pad_sequences(news_df['EncodedText'], maxlen=max_title_length, padding='post', truncating='post'))
+    news_text_dict = dict(zip(news_df['NewsID'], news_df['PaddedText']))
+    
+    # Function to parse impressions and labels from the behaviors data.
+    def parse_impressions(impressions):
+        impression_list = impressions.split()
+        news_ids = []
+        labels = []
+        for imp in impression_list:
+            try:
+                news_id, label = imp.split('-')
+                news_ids.append(news_id)
+                labels.append(int(label))
+            except ValueError:
+                continue
+        return news_ids, labels
+
+    behaviors_df[['ImpressionNewsIDs', 'ImpressionLabels']] = behaviors_df['Impressions'].apply(
+        lambda x: pd.Series(parse_impressions(x))
+    )
+    
+    # Build training samples similar to your prepare_train_df.
+    samples = []
+    for _, row in tqdm(behaviors_df.iterrows(), total=behaviors_df.shape[0], desc="Building samples"):
+        user_id = row['UserID']
+        # Process user history: split HistoryText and get padded texts.
+        history_ids = row['HistoryText'].split() if row['HistoryText'] != "" else []
+        history_texts = [news_text_dict.get(nid, [0]*max_title_length) for nid in history_ids]
+        if len(history_texts) < max_history_length:
+            padding = [[0]*max_title_length] * (max_history_length - len(history_texts))
+            history_texts = padding + history_texts
+        else:
+            history_texts = history_texts[-max_history_length:]
+        
+        candidate_news_ids = row['ImpressionNewsIDs']
+        labels = row['ImpressionLabels']
+        for candidate_news_id, label in zip(candidate_news_ids, labels):
+            candidate_text = news_text_dict.get(candidate_news_id, [0]*max_title_length)
+            # Look up category for candidate article
+            candidate_category = news_df[news_df['NewsID'] == candidate_news_id]['Category']
+            if candidate_category.empty:
+                candidate_category = "Unknown"
+            else:
+                candidate_category = candidate_category.iloc[0]
+            samples.append({
+                'UserID': user_id,
+                'HistoryTitles': history_texts,
+                'CandidateTitleTokens': candidate_text,
+                'Label': label,
+                'CandidateCategory': candidate_category
+            })
+    
+    train_df = pd.DataFrame(samples)
+    print(f"Created training DataFrame with {len(train_df)} samples.")
+    
+    # Group training samples by candidate category.
+    category_train_dfs = dict(tuple(train_df.groupby('CandidateCategory')))
+    for category, df in category_train_dfs.items():
+        print(f"Category '{category}': {len(df)} samples.")
+    
+    return category_train_dfs, news_df, behaviors_df, tokenizer
+
+def train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, base_model_trainer):
+    """
+    Train a Fastformer-based model for each category.
+    
+    Parameters:
+      - category_train_dfs: Dictionary mapping category -> training DataFrame (as produced above).
+      - vocab_size, max_history_length, max_title_length: Model/data parameters.
+      - base_model_trainer: a function that trains a model given a training DataFrame. For instance,
+                            you could reuse your existing train_cluster_models function after minor adjustments.
+    
+    Returns:
+      - category_models: A dictionary mapping category -> trained model.
+    """
+    category_models = {}
+    for category, df in category_train_dfs.items():
+        print(f"Training model for category: {category} with {len(df)} samples.")
+        # Split training and validation data:
+        train_data, val_data = train_test_split(df, test_size=0.2, random_state=42)
+        # Here, you could simply call your existing model training routine
+        # For example, if you have a function `train_model_on_df`
+        # that returns a trained model, you would call:
+        #
+        # model = train_model_on_df(train_data, val_data, vocab_size, max_history_length, max_title_length)
+        #
+        # For illustration, we simply build and "train" a model as a placeholder:
+        model = build_model(vocab_size, max_title_length, max_history_length, embedding_dim=256, nb_head=8, size_per_head=32, dropout_rate=0.2)
+        # Create data generators (you already have a DataGenerator class)
+        train_generator = DataGenerator(train_data, batch_size=64, max_history_length=max_history_length, max_title_length=max_title_length)
+        val_generator = DataGenerator(val_data, batch_size=64, max_history_length=max_history_length, max_title_length=max_title_length)
+        
+        # Define callbacks, etc.
+        early_stopping = EarlyStopping(monitor='val_AUC', patience=2, mode='max', restore_best_weights=True)
+        csv_logger = CSVLogger(f'training_log_category_{category}.csv', append=True)
+        model_checkpoint = ModelCheckpoint(f'best_model_category_{category}.keras', monitor='val_AUC', mode='max', save_best_only=True)
+        
+        model.fit(
+            train_generator,
+            epochs=5,  # adjust as needed
+            validation_data=val_generator,
+            callbacks=[early_stopping, csv_logger, model_checkpoint]
+        )
+        # Save the model for this category.
+        model.save(f'fastformer_category_{category}.keras')
+        print(f"Saved model for category {category}")
+        category_models[category] = model
+    return category_models
+
+def run_category_based_training(dataset='train', data_dir_train='dataset/train/', news_file='news.tsv', behaviours_file='behaviours.tsv'):
+    """
+    This function integrates the category splitting and per-category model training.
+    
+    Steps:
+      1. Load news and behaviors data.
+      2. Prepare training data grouped by candidate article category.
+      3. Train a Fastformer-based model for each category.
+    
+    Returns:
+      - category_models: Dictionary mapping each category to its trained model.
+      - Additional data (if needed).
+    """
+    # Step 1: Load and preprocess data
+    news_df, behaviors_df = init_dataset(data_dir_train, news_file, behaviours_file)
+    category_train_dfs, news_df, behaviors_df, tokenizer = prepare_category_train_dfs(data_dir_train, news_file, behaviours_file)
+    
+    # You might want to compute vocab_size from the tokenizer.
+    vocab_size = len(tokenizer.word_index) + 1
+    max_history_length = 50
+    max_title_length = 30
+    
+    # Step 2: Train a model for each category.
+    # You could pass an existing function if you already have one,
+    # here we call our new train_category_models function.
+    category_models = train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, base_model_trainer=None)
+    
+    return category_models, news_df, behaviors_df, tokenizer
+
 # ===================== Cluster-Level Evaluation Functions =====================
 def build_cluster_profile(cluster_users, behaviors_df, news_df, cutoff_time, tokenizer, max_history_length=50, max_title_length=30):
     """
@@ -1229,6 +1406,78 @@ def build_meta_training_data(user_ids, behaviors_df, news_df, models_dict, token
         X_meta = np.empty((0, len(models_dict)))
         y_meta = np.empty(0)
     return X_meta, y_meta
+
+import pickle
+import numpy as np
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import roc_auc_score
+
+def train_meta_model_incrementally(user_ids, behaviors_df, news_df, models_dict, tokenizer, 
+                                   tfidf_vectorizer, cutoff_time, batch_size=100, checkpoint_dir="checkpoints", date_str="latest"):
+    """
+    Incrementally trains a meta-model using an SGDClassifier with logistic loss via partial_fit.
+    Saves checkpoints after processing each batch and saves the final model as well.
+    
+    Parameters:
+      - user_ids: List of user IDs.
+      - behaviors_df: DataFrame of user behaviors.
+      - news_df: DataFrame of news/articles.
+      - models_dict: Dictionary of pre-trained base models.
+      - tokenizer: Pre-fitted Keras Tokenizer.
+      - tfidf_vectorizer: Pre-fitted TfidfVectorizer.
+      - cutoff_time: The cutoff time (string or datetime) for splitting historical and future interactions.
+      - batch_size: Number of users per batch.
+      - checkpoint_dir: Directory where checkpoint models will be saved.
+      - date_str: A string (such as the current date) to be appended to the final saved filename.
+      
+    Returns:
+      - meta_model: The final meta-model trained incrementally.
+    """
+    import os
+    if not os.path.exists(checkpoint_dir):
+        os.makedirs(checkpoint_dir)
+    
+    # Initialize an incremental learner; use logistic loss for binary classification.
+    meta_model = SGDClassifier(loss='log', max_iter=1000, tol=1e-3, random_state=42)
+    classes = np.array([0, 1])  # Define classes for the first call to partial_fit
+    
+    num_batches = (len(user_ids) + batch_size - 1) // batch_size
+    
+    for i in range(num_batches):
+        batch_user_ids = user_ids[i * batch_size:(i + 1) * batch_size]
+        print(f"Processing batch {i+1}/{num_batches} with {len(batch_user_ids)} users.")
+        
+        # Build meta-training data for this batch.
+        X_batch, y_batch = build_meta_training_data(batch_user_ids, behaviors_df, news_df, 
+                                                    models_dict, tokenizer, tfidf_vectorizer, cutoff_time)
+        if X_batch.shape[0] == 0:
+            print(f"Batch {i+1} produced no candidate data, skipping.")
+            continue
+        
+        # Update the meta-model using partial_fit.
+        if i == 0:
+            meta_model.partial_fit(X_batch, y_batch, classes=classes)
+        else:
+            meta_model.partial_fit(X_batch, y_batch)
+        
+        # Optionally, evaluate the current model on the batch.
+        batch_auc = roc_auc_score(y_batch, meta_model.predict_proba(X_batch)[:, 1])
+        print(f"After batch {i+1}: Batch AUC = {batch_auc:.4f}")
+        
+        # Save a checkpoint for the current model.
+        checkpoint_filename = os.path.join(checkpoint_dir, f"meta_model_checkpoint_batch_{i+1}.pkl")
+        with open(checkpoint_filename, "wb") as f:
+            pickle.dump(meta_model, f)
+        print(f"Saved checkpoint for batch {i+1} to {checkpoint_filename}")
+    
+    # Save the final meta-model.
+    final_model_filename = f"latest_meta_model_{date_str}.pkl"
+    with open(final_model_filename, "wb") as f:
+        pickle.dump(meta_model, f)
+    print(f"Saved final meta-model to {final_model_filename}")
+    
+    return meta_model
+
 
 def train_meta_models_for_batches(user_ids, behaviors_df, news_df, models_dict, tokenizer, 
                                   tfidf_vectorizer, cutoff_time, batch_size=100):
@@ -3003,8 +3252,8 @@ def run_meta_training(dataset='train', process_dfs=False, process_behaviors=Fals
     logging.info(f"computing or loading global average user profile: get_or_compute_global_average_profile")
     global_average_profile = get_or_compute_global_average_profile(behaviors_df, news_df, tokenizer, cutoff_time_str)
     GLOBAL_AVG_PROFILE = global_average_profile
-    logging.info(f"Starting train_meta_models_for_batches")
-    meta_models, X_meta, y_meta = train_meta_models_for_batches(user_ids_train, behaviors_df, news_df, models_dict, tokenizer, 
+    logging.info(f"Starting train_meta_model_incrementally")
+    meta_model = train_meta_model_incrementally(user_ids_train, behaviors_df, news_df, models_dict, tokenizer, 
                                   tfidf_vectorizer, cutoff_time_str)
     #meta_model, X_meta, y_meta = incremental_train_meta_model(user_ids_train, behaviors_df, news_df, models_dict, 
     #                             tokenizer, tfidf_vectorizer, cutoff_time_str)
@@ -3022,7 +3271,7 @@ def run_meta_training(dataset='train', process_dfs=False, process_behaviors=Fals
     #train_auc = roc_auc_score(y_meta, meta_model.predict_proba(X_meta)[:, 1])
     #print(f"Meta model training AUC: {train_auc:.4f}")
     
-    return meta_models, X_meta, y_meta
+    return meta_model
 
 # ===================== __main__ =====================
 def main(dataset='train', process_dfs=False, process_behaviors=False,
