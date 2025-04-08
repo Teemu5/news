@@ -125,9 +125,24 @@ def prepare_category_train_dfs(data_dir, news_file, behaviors_file, max_title_le
 
     # Build training samples with candidate category information.
     samples = []
+    checkpoint_file = "training_samples_checkpoint.pkl"
+    checkpoint_interval = 1000
+    start_index = 0
+    if os.path.exists(checkpoint_file):
+        with open(checkpoint_file, "rb") as f:
+            checkpoint_data = pickle.load(f)
+            samples = checkpoint_data["samples"]
+            start_index = checkpoint_data["last_index"] + 1
+        print(f"Loaded checkpoint. Resuming from row index {start_index}")
+        logging.info(f"Loaded checkpoint. Resuming from row index {start_index}")
+    else:
+        print("No checkpoint found. Starting from the beginning.")
+        logging.info("No checkpoint found. Starting from the beginning.")
     print("Building training samples...")
     total_rows = len(behaviors_df)
     for i, row in tqdm(behaviors_df.iterrows(), total=behaviors_df.shape[0], desc="Building samples"):
+        if i < start_index:
+            continue
         user_id = row['UserID']
         # Process user history: get candidate training sample history
         history_ids = row['HistoryText'].split() if row['HistoryText'] != "" else []
@@ -152,8 +167,15 @@ def prepare_category_train_dfs(data_dir, news_file, behaviors_file, max_title_le
                 'Label': label,
                 'CandidateCategory': candidate_category
             })
-        if i % 1000 == 0:
+        if (i + 1) % checkpoint_interval == 0:
             logging.info(f"{i+1}/{total_rows} rows done.")
+            # Save checkpoint
+            checkpoint_data = {"samples": samples, "last_index": i}
+            with open(checkpoint_file, "wb") as f:
+                pickle.dump(checkpoint_data, f)
+            print(f"Checkpoint saved at row {i + 1}/{total_rows}")
+            logging.info(f"Checkpoint saved at row {i + 1}/{total_rows}")
+
     train_df = pd.DataFrame(samples)
     print(f"Created training DataFrame with {len(train_df)} samples.")
     
@@ -169,13 +191,30 @@ def prepare_category_train_dfs(data_dir, news_file, behaviors_file, max_title_le
 
     return category_train_dfs, news_df, behaviors_df, tokenizer
 
-def train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=64, epochs=5, dataset_size=''):
+def train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=64, epochs=5, dataset_size='', train_only_new=True):
     """
     Train a model for each category in the category_train_dfs dict.
     """
     category_models = {}
     for category, df in category_train_dfs.items():
+        model_save_path = f'fastformer_{dataset_size}_category_{category}_{epochs}epochs.keras'
+        if train_only_new and os.path.exists(model_save_path):
+            logging.info(f"Skip training existing model: {model_save_path}")
+            logging.info(f"Loading model: {model_save_path}")
+            print(tf.__version__)
+            print(keras.__version__)
+            from tensorflow.keras.utils import custom_object_scope
+            with custom_object_scope({'UserEncoder': UserEncoder, 'NewsEncoder': NewsEncoder}):
+                model = tf.keras.models.load_model(model_save_path)#build_and_load_weights(weights_file)
+                models[category] = model
+            logging.info(f"Model Loaded for {category} category")
+            continue
         print(f"--- Training model for category: {category} ---")
+        gpus = tf.config.list_physical_devices('GPU')
+        if gpus:
+            for gpu in gpus:
+                print(f"enable memory growth on gpu: {gpu}")
+                tf.config.experimental.set_memory_growth(gpu, True)
         # Split into train/validation sets
         train_data, val_data = train_test_split(df, test_size=0.2, random_state=42)
         print(f"Category '{category}': {len(train_data)} training samples, {len(val_data)} validation samples.")
@@ -191,18 +230,24 @@ def train_category_models(category_train_dfs, vocab_size, max_history_length, ma
         csv_logger = CSVLogger(f'training_log_category_{category}.csv', append=True)
         model_checkpoint = ModelCheckpoint(f'best_model_category_{category}.keras', monitor='val_AUC', mode='max', save_best_only=True)
 
+        class_weight = get_class_weights(df['Label'])
+        print(f"class weights:{class_weight}")
         print(f"Training model for category '{category}'...")
         model.fit(
             train_generator,
             epochs=epochs,
             validation_data=val_generator,
-            callbacks=[early_stopping, csv_logger, model_checkpoint]
+            callbacks=[early_stopping, csv_logger, model_checkpoint],
+            class_weight=class_weight
         )
         # Save model
-        model_save_path = f'fastformer_{dataset_size}_category_{category}.keras'
         model.save(model_save_path)
         print(f"Saved model for category '{category}' to {model_save_path}")
         category_models[category] = model
+        
+        del train_data, val_data, train_generator, val_generator, model
+        import gc
+        gc.collect()
     return category_models
 
 def run_category_based_training(dataset_size, data_dir_train, valid_data_dir, zip_file, valid_zip_file, news_file='news.tsv', behaviors_file='behaviors.tsv'):
@@ -220,7 +265,7 @@ def run_category_based_training(dataset_size, data_dir_train, valid_data_dir, zi
     max_title_length = 30
     
     # Step 2: Train a model for each category.
-    category_models = train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=64, epochs=5, dataset_size=dataset_size)
+    category_models = train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=4, epochs=3, dataset_size=dataset_size)
     
     print("Category-based training complete.")
     return category_models, news_df, behaviors_df, tokenizer
@@ -878,11 +923,14 @@ def get_or_compute_global_average_profile(behaviors_df, news_df, tokenizer, cuto
         # Compute the global average profile.
         profiles = []
         user_ids = behaviors_df['UserID'].unique()
-        for user_id in user_ids:
+        total_users = len(user_ids)
+        for i, user_id in enumerate(user_ids):
             history_tensor, history_ids, _ = build_user_profile_tensor(user_id, behaviors_df, news_df, cutoff_time, tokenizer,
                                                                        max_history_length, max_title_length)
             if history_ids:  # Include only users with a non-empty history.
                 profiles.append(history_tensor.numpy())
+            if i % 100 == 0:
+                logging.info(f"{i+1}/{total_users} rows done.")
         if profiles:
             avg_profile = tf.convert_to_tensor(np.mean(np.stack(profiles, axis=0), axis=0), dtype=tf.int32)
         else:
