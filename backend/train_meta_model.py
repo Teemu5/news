@@ -27,7 +27,7 @@ if __name__ == "__main__":
          user_cluster_df_path="user_cluster_df.pkl"
          cluster_id=args.cluster_id
 
-     run_meta_training(dataset=args.dataset,
+     run_meta_training(dataset=args.dataset, dataset_size=args.dataset_size,
          process_dfs=args.process_dfs, process_behaviors=args.process_behaviors,
          data_dir_train=data_dir_train, data_dir_valid=data_dir_valid,
          zip_file_train=zip_file_train, zip_file_valid=zip_file_valid,

@@ -191,65 +191,6 @@ def prepare_category_train_dfs(data_dir, news_file, behaviors_file, max_title_le
 
     return category_train_dfs, news_df, behaviors_df, tokenizer
 
-def train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=64, epochs=5, dataset_size='', train_only_new=True):
-    """
-    Train a model for each category in the category_train_dfs dict.
-    """
-    category_models = {}
-    for category, df in category_train_dfs.items():
-        model_save_path = f'fastformer_{dataset_size}_category_{category}_{epochs}epochs.keras'
-        if train_only_new and os.path.exists(model_save_path):
-            logging.info(f"Skip training existing model: {model_save_path}")
-            logging.info(f"Loading model: {model_save_path}")
-            print(tf.__version__)
-            print(keras.__version__)
-            from tensorflow.keras.utils import custom_object_scope
-            with custom_object_scope({'UserEncoder': UserEncoder, 'NewsEncoder': NewsEncoder}):
-                model = tf.keras.models.load_model(model_save_path)#build_and_load_weights(weights_file)
-                models[category] = model
-            logging.info(f"Model Loaded for {category} category")
-            continue
-        print(f"--- Training model for category: {category} ---")
-        gpus = tf.config.list_physical_devices('GPU')
-        if gpus:
-            for gpu in gpus:
-                print(f"enable memory growth on gpu: {gpu}")
-                tf.config.experimental.set_memory_growth(gpu, True)
-        # Split into train/validation sets
-        train_data, val_data = train_test_split(df, test_size=0.2, random_state=42)
-        print(f"Category '{category}': {len(train_data)} training samples, {len(val_data)} validation samples.")
-
-        # Create data generators (assuming your DataGenerator class uses fields 'HistoryTitles' and 'CandidateTitleTokens')
-        train_generator = DataGenerator(train_data, batch_size=batch_size, max_history_length=max_history_length, max_title_length=max_title_length)
-        val_generator = DataGenerator(val_data, batch_size=batch_size, max_history_length=max_history_length, max_title_length=max_title_length)
-
-        model = build_model(vocab_size, max_title_length, max_history_length, embedding_dim=256, nb_head=8, size_per_head=32, dropout_rate=0.2)
-        model.summary(print_fn=lambda x: print(f"[{category}] {x}"))
-
-        early_stopping = EarlyStopping(monitor='val_AUC', patience=2, mode='max', restore_best_weights=True)
-        csv_logger = CSVLogger(f'training_log_category_{category}.csv', append=True)
-        model_checkpoint = ModelCheckpoint(f'best_model_category_{category}.keras', monitor='val_AUC', mode='max', save_best_only=True)
-
-        class_weight = get_class_weights(df['Label'])
-        print(f"class weights:{class_weight}")
-        print(f"Training model for category '{category}'...")
-        model.fit(
-            train_generator,
-            epochs=epochs,
-            validation_data=val_generator,
-            callbacks=[early_stopping, csv_logger, model_checkpoint],
-            class_weight=class_weight
-        )
-        # Save model
-        model.save(model_save_path)
-        print(f"Saved model for category '{category}' to {model_save_path}")
-        category_models[category] = model
-        
-        del train_data, val_data, train_generator, val_generator, model
-        import gc
-        gc.collect()
-    return category_models
-
 def run_category_based_training(dataset_size, data_dir_train, valid_data_dir, zip_file, valid_zip_file, news_file='news.tsv', behaviors_file='behaviors.tsv'):
     print(f"unzipping datasets: data_dir_train={data_dir_train}, valid_data_dir={valid_data_dir}, zip_file={zip_file}, valid_zip_file={valid_zip_file}")
     unzip_datasets(data_dir_train, valid_data_dir, zip_file, valid_zip_file)
@@ -265,7 +206,7 @@ def run_category_based_training(dataset_size, data_dir_train, valid_data_dir, zi
     max_title_length = 30
     
     # Step 2: Train a model for each category.
-    category_models = train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=4, epochs=3, dataset_size=dataset_size)
+    category_models = train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, 8, 3, dataset_size, False)
     
     print("Category-based training complete.")
     return category_models, news_df, behaviors_df, tokenizer
@@ -894,9 +835,8 @@ import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-def get_or_compute_global_average_profile(behaviors_df, news_df, tokenizer, cutoff_time, 
-                                            max_history_length=50, max_title_length=30,
-                                            filename='global_average_profile.pkl'):
+def get_or_compute_global_average_profile(behaviors_df, news_df, tokenizer, cutoff_time, filename='global_average_profile.pkl', 
+                                            max_history_length=50, max_title_length=30):
     """
     Check if the global average profile has been computed and saved.
     If the file exists, load the global average profile.
@@ -957,17 +897,17 @@ def build_user_profile_tensor(
     4) Return (history_tensor, history_article_ids)
     """
     # Ensure 'Time' is datetime
-    logging.info(f"Started build_user_profile_tensor")
+    #logging.info(f"Started build_user_profile_tensor")
     behaviors_df['Time'] = pd.to_datetime(behaviors_df['Time'], errors='coerce')
     cutoff_dt = pd.to_datetime(cutoff_time)
-    logging.info(f"Time set to datetime")
+    #logging.info(f"Time set to datetime")
 
     # Filter to user’s rows up to cutoff
     user_hist = behaviors_df[
         (behaviors_df['UserID'] == user_id)
         & (behaviors_df['Time'] <= np.datetime64(cutoff_dt))
     ].copy()
-    logging.info(f"Filtered user behaviors up to {cutoff_time}")
+    #logging.info(f"Filtered user behaviors up to {cutoff_time}")
 
     # Collect article IDs from user’s HistoryText
     all_hist_article_ids = set()
@@ -976,7 +916,7 @@ def build_user_profile_tensor(
             continue
         for art in row["HistoryText"].split():
             all_hist_article_ids.add(art)
-    logging.info(f"Collected users history of length:{len(all_hist_article_ids)}")
+    #logging.info(f"Collected users history of length:{len(all_hist_article_ids)}")
 
     original_history_len = len(all_hist_article_ids)
     # Sort by most recent if you prefer
@@ -990,7 +930,7 @@ def build_user_profile_tensor(
     # Keep only up to max_history_length
     if len(history_article_ids) > max_history_length:
         history_article_ids = history_article_ids[-max_history_length:]  # or however you want to slice
-    logging.info(f"Kept users history of length:{len(history_article_ids)}")
+    #logging.info(f"Kept users history of length:{len(history_article_ids)}")
 
     # Build a "history" text from each article’s "CombinedText"
     # or you can build an array of tokenized titles. (Below is an array-of-titles approach.)
@@ -1010,7 +950,7 @@ def build_user_profile_tensor(
             seq = [0]
         seq = pad_sequences([seq], maxlen=max_title_length, padding='post', truncating='post', value=0)[0]
         history_titles.append(seq)
-    logging.info(f"Built combined text from every article in history. history_titles length:{len(history_titles)}")
+    #logging.info(f"Built combined text from every article in history. history_titles length:{len(history_titles)}")
     history_titles = np.array(history_titles, dtype=int)
     if history_titles.ndim == 1 and history_titles.shape[0] == 0:
         history_titles = history_titles.reshape(0, max_title_length)
@@ -1025,12 +965,12 @@ def build_user_profile_tensor(
     else:
         history_titles = np.array(history_titles[-max_history_length:])
 
-    logging.info(f"Convert history_titles to tensor")
+    #logging.info(f"Convert history_titles to tensor")
     # The final shape should be (max_history_length, max_title_length).
     # Convert to a TF tensor if you want:
     history_tensor = tf.convert_to_tensor(history_titles, dtype=tf.int32)
 
-    logging.info(f"Converted history_titles to tensor")
+    #logging.info(f"Converted history_titles to tensor")
     return history_tensor, history_article_ids, original_history_len
 
 # Global cache for candidate pool for a given cutoff_time.
@@ -2666,6 +2606,43 @@ def build_model(vocab_size, max_title_length=30, max_history_length=50, embeddin
 
     return model
 
+def build_and_load_weights(weights_file):
+     print("""Building model: build_model(
+         vocab_size={vocab_size},
+         max_title_length={max_title_length},
+         max_history_length={max_history_length},
+         embedding_dim=256,
+         nb_head=8,
+         size_per_head=32,
+         dropout_rate=0.2
+     )""")
+     model = build_model(
+         vocab_size=vocab_size,
+         max_title_length=max_title_length,
+         max_history_length=max_history_length,
+         embedding_dim=256,
+         nb_head=8,
+         size_per_head=32,
+         dropout_rate=0.2
+     )
+ 
+     # Manually build the model
+     input_shapes = {
+         'history_input': (None, max_history_length, max_title_length),
+         'candidate_input': (None, max_title_length)
+     }
+     # Prepare dummy inputs
+     import numpy as np
+ 
+     dummy_history_input = np.zeros((1, 50, 30), dtype=np.int32)
+     dummy_candidate_input = np.zeros((1, 30), dtype=np.int32)
+ 
+     # Build the model by passing dummy data
+     model.predict({'history_input': dummy_history_input, 'candidate_input': dummy_candidate_input})
+     #model.build(input_shapes)
+     model.load_weights(weights_file)
+     return model
+
 def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_length, max_title_length, num_clusters, batch_size=64, epochs=5, load_models=[]):
     models = {}
 
@@ -2771,6 +2748,95 @@ def train_cluster_models(clustered_data, tokenizer, vocab_size, max_history_leng
     print("Returning models list")
     print(models)
     return models
+
+def load(load_this, custom_objects=None, max_history_length=50, max_title_length=30):
+    logging.info(f"Loading model: {load_this}")
+    print(f"Loading model: {load_this}")
+    custom_objects = {
+        'UserEncoder': UserEncoder,
+        'NewsEncoder': NewsEncoder,
+    }
+    import keras
+    print(tf.__version__)
+    print(tf.keras.__version__)
+    print(keras.__version__)
+    if custom_objects == None:
+        model = tf.keras.models.load_model(load_this)
+    else:
+        #Load model within the custom object scope.
+        from tensorflow.keras.utils import custom_object_scope
+        with custom_object_scope(custom_objects):
+            # Load without compiling to avoid optimizer issues
+            model = tf.keras.models.load_model(load_this, compile=False)
+            dummy_history = tf.zeros((1, max_history_length, max_title_length), dtype=tf.int32)
+            dummy_candidate = tf.zeros((1, max_title_length), dtype=tf.int32)
+            # Call the model once with a dictionary mapping inputs.
+            _ = model({'history_input': dummy_history, 'candidate_input': dummy_candidate})
+
+    print(f"{load_this} Model loaded successfully.")
+    logging.info(f"Model Loaded {load_this}")
+    return model
+
+def train_category_models(category_train_dfs, vocab_size, max_history_length, max_title_length, batch_size=64, epochs=5, dataset_size='', train_only_new=True, train_fraction=1.0):
+    """
+    Train a model for each category in the category_train_dfs dict.
+    """
+    category_models = {}
+    for category, df in category_train_dfs.items():
+        keras_model_save_path = f'fastformer_{dataset_size}_category_{category}_{epochs}epochs.keras'
+        model_save_path = f'fastformer_{dataset_size}_category_{category}_{epochs}epochs.h5'
+        best_model = f'best_model_category_{category}.h5'
+        keras_best_model = f'best_model_category_{category}.keras'
+        if train_only_new and os.path.exists(model_save_path):
+            category_models[category] = load(best_model)
+            continue
+        if train_fraction < 1.0:
+            df = df.sample(frac=train_fraction, random_state=42)
+            print(f"Using {train_fraction*100:.1f}% of data for category '{category}' (n={len(df)})")
+        print(f"--- Training model for category: {category} ---")
+        gpus = tf.config.list_physical_devices('GPU')
+        if gpus:
+            for gpu in gpus:
+                print(f"enable memory growth on gpu: {gpu}")
+                tf.config.experimental.set_memory_growth(gpu, True)
+        # Split into train/validation sets
+        train_data, val_data = train_test_split(df, test_size=0.2, random_state=42)
+        print(f"Category '{category}': {len(train_data)} training samples, {len(val_data)} validation samples.")
+
+        # Create data generators (assuming your DataGenerator class uses fields 'HistoryTitles' and 'CandidateTitleTokens')
+        train_generator = DataGenerator(train_data, batch_size=batch_size, max_history_length=max_history_length, max_title_length=max_title_length)
+        val_generator = DataGenerator(val_data, batch_size=batch_size, max_history_length=max_history_length, max_title_length=max_title_length)
+
+        model = build_model(vocab_size, max_title_length, max_history_length, embedding_dim=256, nb_head=8, size_per_head=32, dropout_rate=0.2)
+        model.summary(print_fn=lambda x: print(f"[{category}] {x}"))
+
+        early_stopping = EarlyStopping(monitor='val_AUC', patience=2, mode='max', restore_best_weights=True)
+        csv_logger = CSVLogger(f'training_log_category_{category}.csv', append=True)
+        model_checkpoint = ModelCheckpoint(best_model, monitor='val_AUC', mode='max', save_best_only=True)
+
+        class_weight = get_class_weights(df['Label'])
+        print(f"class weights:{class_weight}")
+        print(f"Training model for category '{category}'...")
+        model.fit(
+            train_generator,
+            epochs=epochs,
+            validation_data=val_generator,
+            callbacks=[early_stopping, csv_logger, model_checkpoint],
+            class_weight=class_weight
+        )
+        # Save model
+        model.save(model_save_path)
+        print(f"Saved model for category '{category}' to {model_save_path}")
+        category_models[category] = model
+        print(f"Saved model {model} trying to load saved model")
+        loaded_model = load(best_model)
+        print(f"loaded model:{loaded_model}")
+        del train_data, val_data, train_generator, val_generator, model
+        import gc
+        gc.collect()
+    return category_models
+
+
 def is_colab():
     return 'COLAB_GPU' in os.environ
 def make_clustered_data(train_df, num_clusters):
@@ -3235,7 +3301,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-def run_meta_training(dataset='train', process_dfs=False, process_behaviors=False,
+def run_meta_training(dataset='train', dataset_size='small', process_dfs=False, process_behaviors=False,
          data_dir_train='dataset/train/', data_dir_valid='dataset/valid/',
          zip_file_train="MINDlarge_train.zip", zip_file_valid="MINDlarge_dev.zip",
          user_category_profiles_path='', user_cluster_df_path='', cluster_id=None,):
@@ -3286,7 +3352,7 @@ def run_meta_training(dataset='train', process_dfs=False, process_behaviors=Fals
         process_dfs, process_behaviors, data_dir_train, data_dir_valid, zip_file_train, zip_file_valid
     )
     logging.info(f"computing or loading global average user profile: get_or_compute_global_average_profile")
-    global_average_profile = get_or_compute_global_average_profile(behaviors_df, news_df, tokenizer, cutoff_time_str)
+    global_average_profile = get_or_compute_global_average_profile(behaviors_df, news_df, tokenizer, cutoff_time_str, f"global_average_profile_{dataset_size}.pkl")
     GLOBAL_AVG_PROFILE = global_average_profile
     logging.info(f"Starting train_meta_model_incrementally")
     meta_model = train_meta_model_incrementally(user_ids_train, behaviors_df, news_df, models_dict, tokenizer, 
